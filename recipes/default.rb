@@ -30,8 +30,8 @@ node.override['haproxy']['enable_admin'] = false
 log "Overriding haproxy/enable_default_http to 'false'..."
 node.override['haproxy']['enable_default_http'] = false
 
-log "Overriding haproxy/http_chk to '#{node['rs-haproxy']['health_check_uri']}'..."
-node.override['haproxy']['http_chk'] = node['rs-haproxy']['health_check_uri']
+log "Overriding haproxy/httpchk to '#{node['rs-haproxy']['health_check_uri']}'..."
+node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 
 log "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['algorithm']}'..."
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['algorithm']
