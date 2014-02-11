@@ -9,11 +9,11 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = "rs-haproxy-berkshelf"
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "RightImage_Ubuntu_12.04_x64_v13.5.0.1"
+  config.vm.box = "opscode-ubuntu-12.04"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "https://rightscale-vagrant.s3.amazonaws.com/virtualbox/ubuntu/12.04/RightImage_Ubuntu_12.04_x64_v13.5.0.1.box"
+  config.vm.box_url = "https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box"
 
   # Assign this VM to a host-only network IP, allowing you to access it
   # via the IP. Host-only networks can talk to the host machine as well as
@@ -52,8 +52,8 @@ Vagrant.configure("2") do |config|
   # View the documentation for the provider you're using for more
   # information on available options.
 
-  config.ssh.max_tries = 40
-  config.ssh.timeout   = 120
+  # config.ssh.max_tries = 40
+  # config.ssh.timeout   = 120
 
   # The path to the Berksfile to use with Vagrant Berkshelf
   # config.berkshelf.berksfile_path = "./Berksfile"
@@ -66,21 +66,19 @@ Vagrant.configure("2") do |config|
   # to exclusively install and copy to Vagrant's shelf.
   # config.berkshelf.only = []
 
+  config.omnibus.chef_version = :latest
+
   # An array of symbols representing groups of cookbook described in the Vagrantfile
   # to skip installing and copying to Vagrant's shelf.
   # config.berkshelf.except = []
 
   config.vm.provision :chef_solo do |chef|
     chef.json = {
-      :mysql => {
-        :server_root_password => 'rootpass',
-        :server_debian_password => 'debpass',
-        :server_repl_password => 'replpass'
-      }
     }
 
     chef.run_list = [
-        "recipe[rs-haproxy::default]"
+      "recipe[apt]",
+      "recipe[rs-haproxy::default]"
     ]
   end
 end
