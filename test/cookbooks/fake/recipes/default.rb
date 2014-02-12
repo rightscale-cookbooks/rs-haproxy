@@ -19,15 +19,11 @@
 
 include_recipe "machine_tag::default"
 
-ts = Time.now
-
 tags = [
-  "server:uuid=#{node["rightscale"]["instance_uuid"]}",
-  "database:active=true",
-  "database:master_active=#{ts}",
-  "database:lineage=#{node['rs-mysql']['lineage']}",
-  "database:bind_ip_address=#{node['mysql']['bind_address']}",
-  "database:bind_port=#{node['mysql']['port']}"
+  "application:active_app1=true",
+  "application:bind_ip_address_app1=10.1.55.22",
+  "application:bind_port_app1=80",
+  "application:vhost_path_app1=site.com"
 ]
 
 tags.each do |tag|

@@ -22,12 +22,13 @@ suites:
 - name: default
   run_list:
   - recipe[rightscale_tag::default]
+  - recipe[fake::default]
   - recipe[rs-haproxy::default]
   attributes:
     cloud:
       provider: 'vagrant'
     rs-haproxy:
-      pools: "default, app1, app2"
+      pools: "default, app1, app2, app3"
       stats_uri: '/haproxy-status'
       health_check_uri: '/'
       algorithm: 'roundrobin'

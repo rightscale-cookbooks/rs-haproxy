@@ -9,4 +9,5 @@ cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag', branch
 group :integration do
   cookbook 'apt', '~> 2.3.0'
   cookbook 'yum', '~> 2.4.4'
+  cookbook 'fake', path: './test/cookbooks/fake'
 end
