@@ -21,78 +21,100 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
-log "Overriding haproxy/enable_stats_socket to 'true'..."
+# Bind HAProxy to the public IP of the server
+Chef::Log.info "Overriding haproxy/incoming_address to '#{node['cloud']['public_ips'].first}'"
+node.override['haproxy']['incoming_address'] = node['cloud']['public_ips'].first
+
+Chef::Log.info "Overriding haproxy/enable_stats_socket to 'true'..."
 node.override['haproxy']['enable_stats_socket'] = true
 
-log "Overriding haproxy/enable_admin to 'false'..."
-node.override['haproxy']['enable_admin'] = false
-
-log "Overriding haproxy/enable_default_http to 'false'..."
-node.override['haproxy']['enable_default_http'] = false
-
-log "Overriding haproxy/httpchk to '#{node['rs-haproxy']['health_check_uri']}'..."
+Chef::Log.info "Overriding haproxy/http_chk to '#{node['rs-haproxy']['health_check_uri']}'..."
 node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 
-log "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['algorithm']}'..."
+Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['algorithm']}'..."
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['algorithm']
 
-pools = node['rs-haproxy']['pools'].split(%r{, *})
+haproxy_confg = Mash.new(
+  :global => {
+    :maxconn => node[:haproxy][:global_max_connections],
+    :user => node[:haproxy][:user],
+    :group => node[:haproxy][:group],
+    :log => "/dev/log syslog info"
+    :daemon => true,
+    :quiet => true,
+    :pidfile => node['haproxy']['pid_file']
+  },
+  :defaults => {
+    :log => 'global',
+    :mode => 'http'
+  },
+  :frontend => {
+    :all_requests => {
+      :bind => "#{node[:haproxy][:incoming_address]}:#{node[:haproxy][:incoming_port]}"
+      :default_backend => node['rs-haproxy']['pools'].last
+    }
+  }
+)
 
-# Set up frontend
-haproxy_lb 'all_requests' do
-  mode 'http'
-  type 'frontend'
-  bind '127.0.0.1:85'
-  params ({
-    acl: "acl_#{pools.last} hdr_dom(host) -i default",
-    use_backend: "#{pools.last} if acl_default",
-    default_backend: pools.last
-  })
+if node['haproxy']['enable_stats_socket']
+  haproxy_confg[:global][:stats] = "socket #{node['haproxy']['stats_socket_path']}" +
+    " user #{node['haproxy']['stats_socket_user']}" +
+    " group #{node['haproxy']['stats_socket_group']}"
 end
 
 class Chef::Recipe
   include Rightscale::RightscaleTag
 end
 
+# Find all application servers in the deployment
+app_servers = find_application_servers(node)
+app_server_pools = RsHaproxy::Helper.categorize_servers_by_pools(app_servers)
+
 # Set up backend pools in haproxy.cfg
-servers = []
-node['rs-haproxy']['pools'].split(%r{, *}).each do |pool_name|
-  options = {
-    stats: "uri #{node['rs-haproxy']['stats_uri']}"
+node['rs-haproxy']['pools'].each do |pool_name|
+  # Set up load balancer tags for the pool
+  rightscale_tag_loadbalancer pool_name do
+    action :create
+  end
+
+  haproxy_config[:backend][pool_name] ||= {
+    :mode => 'http',
+    :balance => node['haproxy']['balance_algorithm']
   }
-  if node['rs-haproxy']['session_stickiness']
-    options['cookie'] = 'SERVERID insert indirect nocache'
-    # When cookie is enabled the haproxy.cnf should have this dummy server
-    # entry for the haproxy to start without any errors
-    servers << "disabled-server 127.0.0.1:1 disabled"
+
+  if node['haproxy']['enable_stats_socket']
+    haproxy_config[:backend][pool_name][:stats] = "uri #{node['rs-haproxy']['stats_uri']}"
   end
 
   if node['haproxy']['http_chk']
-    options['option'] = "httpchk GET #{node['haproxy']['http_chk']}"
-    options['http-check'] = 'disable-on-404'
+    haproxy_config[:backend][pool_name][:option] = "httpchk GET #{node['haproxy']['http_chk']}"
+    haproxy_config[:backend][pool_name][:'http-check'] = 'disable-on-404'
   end
 
-  # Find all application servers in the deployment and attach those with
-  # application names same as the pool name
-  app_servers = find_application_servers(node, pool_name)
-  unless app_servers.empty?
-    app_servers.each do |server_uuid, server_hash|
-      server_hash['applications'].each do |app_name, app_hash|
-        next if app_name != pool_name
-        servers << "#{server_uuid} #{app_hash['bind_address']}"
-      end
-    end
+  haproxy_config[:backend][pool_name][:server] = []
+  if node['rs-haproxy']['session_stickiness']
+    haproxy_config[:backend][pool_name][:cookie] = 'SERVERID insert indirect nocache'
+    # When cookie is enabled the haproxy.cnf should have this dummy server
+    # entry for the haproxy to start without any errors
+    haproxy_config[:backend][pool_name][:server] << {
+      "disabled-server 127.0.0.1:1" => {
+        :disabled => true
+      }
+    }
   end
 
-  haproxy_lb pool_name do
-    type 'backend'
-    mode 'http'
-    params options
-    servers servers
+  app_server_pools[pool_name].each do |server_uuid, server_hash|
+    haproxy_config[:backend][pool_name][:server] << {
+      "#{server_uuid} #{server_hash['bind_address']}" => {}
+    }
   end
 end
 
-include_recipe 'haproxy::default'
+# Install HAProxy and setup haproxy.cnf
+haproxy "set up haproxy.cnf" do
+  config haproxy_config
+  action :create
+end
 
 # Set up monitoring for HAProxy
 include_recipe 'collectd::default'
