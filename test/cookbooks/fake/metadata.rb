@@ -6,6 +6,5 @@ description      'Installs/Configures a test haproxy server'
 version          '0.1.0'
 
 depends 'rs-haproxy'
-depends 'machine_tag'
 
 recipe 'fake::default', 'Tags servers to be used in the haproxy backend'

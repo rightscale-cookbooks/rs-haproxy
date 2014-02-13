@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-include_recipe "machine_tag::default"
+require 'json'
 
-tags = [
+app1_host1_folder = "/vagrant/cache_dir/machine_tag_cache/app-host-1"
+
+# Tags for a Server on the app1 pool
+app1_host1_tags = [
+  "server:uuid=1111111111",
   "application:active_app1=true",
   "application:bind_ip_address_app1=10.1.55.22",
   "application:bind_port_app1=80",
   "application:vhost_path_app1=site.com"
 ]
 
-tags.each do |tag|
-  mt = machine_tag tag do
-    action :nothing
-  end
-  mt.run_action (:create)
-end
+::FileUtils.mkdir_p(app1_host1_folder)
+::File.open(::File.join(app1_host1_folder, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app1_host1_tags)) }
