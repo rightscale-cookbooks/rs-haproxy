@@ -1,23 +1,30 @@
 require 'spec_helper'
 
-describe file("/etc/haproxy/haproxy.cfg") do
+config_file = '/etc/haproxy/haproxy.cfg'
+
+describe file(config_file) do
   it { should be_file }
 end
 
-config = HAProxy::Config.parse_file('/etc/haproxy/haproxy.cfg')
-
-describe "gem haproxy-tools should be intalled" do
-  describe command("gem list | grep haproxy-tools") do
-    it { should return_stdout /haproxy-tools/  }
+describe "Verify settings in haproxy.cfg file" do
+  [
+    { "global" => "log 127\.0\.0\.1\.*local0$"},
+    { "global" => "log 127\.0\.0\.1\s+local1 notice$" },
+    { "global" => "maxconn 4096" },
+    { "global" => "user haproxy" },
+    { "global" => "group haproxy" },
+    { "global" => "stats socket\s+/var/run/haproxy\.sock user haproxy group haproxy" },
+    { "defaults" => "log\s+global" },
+    { "defaults" => "mode\s+http" }, 
+    { "backend default" => "mode http"}
+  ].each do |pair| 
+    pair.each do |group, setting|
+      it "#{group} should contain #{setting}" do
+        find_haproxy_setting(config_file, /#{group}/, /#{setting}/).should == TrueClass 
+      end
+    end
   end
 end
-
-describe "Verify values in config file" do
-  describe "global maxconn" do
-    config.global["maxconn"].should == "4096"
-  end
-end
-
 
 describe service("haproxy") do
   it { should be_enabled }
