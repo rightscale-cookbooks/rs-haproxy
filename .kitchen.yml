@@ -25,7 +25,7 @@ suites:
 - name: default
   run_list:
   - recipe[rightscale_tag::default]
-  - recipe[fake::default]
+#  - recipe[fake::default]
   - recipe[rs-haproxy::default]
   provisioner:
     solo_rb:

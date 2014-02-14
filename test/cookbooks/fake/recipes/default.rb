@@ -19,7 +19,7 @@
 
 require 'json'
 
-app1_host1_folder = "/vagrant/cache_dir/machine_tag_cache/app-host-1"
+app1_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app-host-1"
 
 # Tags for a Server on the app1 pool
 app1_host1_tags = [
@@ -31,5 +31,5 @@ app1_host1_tags = [
   "application:vhost_path_app1=site.com"
 ]
 
-::FileUtils.mkdir_p(app1_host1_folder)
-::File.open(::File.join(app1_host1_folder, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app1_host1_tags)) }
+::FileUtils.mkdir_p(app1_host1_dir)
+::File.open(::File.join(app1_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app1_host1_tags)) }
