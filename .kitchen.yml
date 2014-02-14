@@ -35,7 +35,7 @@ suites:
       provider: 'vagrant'
       public_ips: ['33.33.33.5']
     rs-haproxy:
-      pools: ['default', 'app1', 'app2', 'app3']
+      pools: ['app1', 'app2', 'app3', 'default']
       stats_uri: '/haproxy-status'
       health_check_uri: '/'
       algorithm: 'roundrobin'

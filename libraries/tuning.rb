@@ -40,11 +40,24 @@ module RsHaproxy
     end
 
     def self.defaults_config(node)
-      {
+      config_hash = {
         'log' => 'global',
         'mode' => 'http',
-        'option' => ['httplog', 'dontlognull', 'redispatch']
+        'option' => ['httplog', 'dontlognull', 'redispatch'],
+        'mode' => 'http',
+        'balance' => node['haproxy']['balance_algorithm'],
       }
+
+      if node['haproxy']['enable_stats_socket']
+        config_hash['stats'] = "uri #{node['rs-haproxy']['stats_uri']}"
+      end
+
+      if node['haproxy']['httpchk']
+        config_hash['option'] = "httpchk GET #{node['haproxy']['httpchk']}"
+        config_hash['http-check'] = 'disable-on-404'
+      end
+
+      config_hash
     end
 
     def self.frontend_config(node, section_name)
@@ -59,27 +72,16 @@ module RsHaproxy
     def self.backend_pool_config(node, pool_name, options = {})
       config_hash = {
         pool_name => {
-          'mode' => 'http',
-          'balance' => node['haproxy']['balance_algorithm'],
           'server' => []
         }
       }
-
-      if node['haproxy']['enable_stats_socket']
-        config_hash[pool_name]['stats'] = "uri #{node['rs-haproxy']['stats_uri']}"
-      end
-
-      if node['haproxy']['httpchk']
-        config_hash[pool_name]['option'] = "httpchk GET #{node['haproxy']['httpchk']}"
-        config_hash[pool_name]['http-check'] = 'disable-on-404'
-      end
 
       if node['rs-haproxy']['session_stickiness']
         config_hash[pool_name]['cookie'] = 'SERVERID insert indirect nocache'
         # When cookie is enabled the haproxy.cnf should have this dummy server
         # entry for the haproxy to start without any errors
         config_hash[pool_name]['server'] << {
-          'disabled-server 127.0.0.1:1' => { 'disabled' => ' ' }
+          'disabled-server 127.0.0.1:1' => {'disabled' => true}
         }
       end
 
