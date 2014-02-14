@@ -8,7 +8,7 @@ include Serverspec::Helper::DetectOS
 # returns true if setting is found under give group.
 def find_haproxy_setting(config_file,  regex_group, regex_setting)
   hacfg = IO.readlines( config_file )
-  hacfg = hacfg.reject! { |line|  line =~ /^#/ || line =~ /.*#/ }
+  hacfg = hacfg.reject! { |line|  line =~ /^#/ || line =~ /^\s*#/  || line =~ /^\s*$/ }
   
   i = 0 
   while i < hacfg.length() do
