@@ -8,8 +8,6 @@ end
 
 describe "Verify settings in haproxy.cfg file" do
   [
-    { "global" => "log 127\.0\.0\.1\.*local0$"},
-    { "global" => "log 127\.0\.0\.1\s+local1 notice$" },
     { "global" => "maxconn 4096" },
     { "global" => "user haproxy" },
     { "global" => "group haproxy" },
