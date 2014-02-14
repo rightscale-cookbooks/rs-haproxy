@@ -43,7 +43,7 @@ module RsHaproxy
       {
         'log' => 'global',
         'mode' => 'http',
-        'options' => ['httplog', 'dontlognull', 'redispatch']
+        'option' => ['httplog', 'dontlognull', 'redispatch']
       }
     end
 
@@ -79,7 +79,7 @@ module RsHaproxy
         # When cookie is enabled the haproxy.cnf should have this dummy server
         # entry for the haproxy to start without any errors
         config_hash[pool_name]['server'] << {
-          'disabled-server 127.0.0.1:1' => {'disabled' => true}
+          'disabled-server 127.0.0.1:1' => { 'disabled' => ' ' }
         }
       end
 
