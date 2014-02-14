@@ -36,6 +36,10 @@ describe "The proper user and group should exist on the server" do
   end
 end
 
+describe port(80) do
+  it { should be_listening.with('tcp')  }
+end
+
 describe service("haproxy") do
   it { should be_enabled }
   it { should be_running }
