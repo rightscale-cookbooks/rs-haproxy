@@ -2,7 +2,7 @@ site :opscode
 
 metadata
 
-cookbook 'haproxy', github: 'hw-cookbooks/haproxy'
+cookbook 'haproxy', github: 'nitinmohan87/haproxy', branch: 'fix_dynamic_config_generation'
 cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', ref: 'ec50609ed6eb193e0411f30aced91befa571940f'
 cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag', branch: 'white_14_02_acu128798_three_tier_tags'
 

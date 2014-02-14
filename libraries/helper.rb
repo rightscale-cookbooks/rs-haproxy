@@ -78,8 +78,8 @@ module RsHaproxy
       pools_hash = {}
       servers.each do |server_uuid, server_hash|
         server_hash['applications'].each do |app_name, app_hash|
-          pools_hash[app_name] ||= []
-          pools_hash[app_name] << {server_uuid => app_hash}
+          pools_hash[app_name] ||= {}
+          pools_hash[app_name][server_uuid] = app_hash
         end
       end
       pools_hash

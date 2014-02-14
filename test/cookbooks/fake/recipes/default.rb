@@ -24,6 +24,7 @@ app1_host1_folder = "/vagrant/cache_dir/machine_tag_cache/app-host-1"
 # Tags for a Server on the app1 pool
 app1_host1_tags = [
   "server:uuid=1111111111",
+  "application:active=true",
   "application:active_app1=true",
   "application:bind_ip_address_app1=10.1.55.22",
   "application:bind_port_app1=80",

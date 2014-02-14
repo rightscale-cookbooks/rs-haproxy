@@ -5,6 +5,9 @@ driver_config:
   customize:
     cpus: 2
     memory: 1024
+  network:
+    - ["private_network", {ip: "10.0.0.5"}]
+
 
 platforms:
 - name: ubuntu-12.04
@@ -24,13 +27,18 @@ suites:
   - recipe[rightscale_tag::default]
   - recipe[fake::default]
   - recipe[rs-haproxy::default]
+  provisioner:
+    solo_rb:
+      log_location: /var/log/chef-solo.log
   attributes:
     cloud:
       provider: 'vagrant'
+      public_ips: ['10.0.0.5']
     rs-haproxy:
-      pools: "default, app1, app2, app3"
+      pools: ['default', 'app1', 'app2', 'app3']
       stats_uri: '/haproxy-status'
       health_check_uri: '/'
       algorithm: 'roundrobin'
+      session_stickiness: true
     rightscale:
       instance_uuid: '12345UUID'

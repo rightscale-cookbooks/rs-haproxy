@@ -34,12 +34,12 @@ node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['algorithm']}'..."
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['algorithm']
 
-haproxy_confg = Mash.new(
+haproxy_config = Mash.new(
   :global => {
     :maxconn => node[:haproxy][:global_max_connections],
     :user => node[:haproxy][:user],
     :group => node[:haproxy][:group],
-    :log => "/dev/log syslog info"
+    :log => "/dev/log syslog info",
     :daemon => true,
     :quiet => true,
     :pidfile => node['haproxy']['pid_file']
@@ -50,14 +50,14 @@ haproxy_confg = Mash.new(
   },
   :frontend => {
     :all_requests => {
-      :bind => "#{node[:haproxy][:incoming_address]}:#{node[:haproxy][:incoming_port]}"
+      :bind => "#{node[:haproxy][:incoming_address]}:#{node[:haproxy][:incoming_port]}",
       :default_backend => node['rs-haproxy']['pools'].last
     }
   }
 )
 
 if node['haproxy']['enable_stats_socket']
-  haproxy_confg[:global][:stats] = "socket #{node['haproxy']['stats_socket_path']}" +
+  haproxy_config[:global][:stats] = "socket #{node['haproxy']['stats_socket_path']}" +
     " user #{node['haproxy']['stats_socket_user']}" +
     " group #{node['haproxy']['stats_socket_group']}"
 end
@@ -73,10 +73,11 @@ app_server_pools = RsHaproxy::Helper.categorize_servers_by_pools(app_servers)
 # Set up backend pools in haproxy.cfg
 node['rs-haproxy']['pools'].each do |pool_name|
   # Set up load balancer tags for the pool
-  rightscale_tag_loadbalancer pool_name do
+  rightscale_tag_load_balancer pool_name do
     action :create
   end
 
+  haproxy_config[:backend] ||= {}
   haproxy_config[:backend][pool_name] ||= {
     :mode => 'http',
     :balance => node['haproxy']['balance_algorithm']
@@ -103,10 +104,31 @@ node['rs-haproxy']['pools'].each do |pool_name|
     }
   end
 
-  app_server_pools[pool_name].each do |server_uuid, server_hash|
-    haproxy_config[:backend][pool_name][:server] << {
-      "#{server_uuid} #{server_hash['bind_address']}" => {}
-    }
+  if app_server_pools[pool_name].nil?
+    next
+  else
+    app_server_pools[pool_name].each do |server_uuid, server_hash|
+      backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
+
+=begin
+      hash = {
+        :inter => 300,
+        :rise => 2,
+        :fall => 3,
+        :maxconn => node['haproxy']['member_max_connections']
+      }
+
+      if node['rs-haproxy']['session_stickiness']
+        hash[:cookie] = server_uuid
+      end
+
+      if node['haproxy']['http_chk']
+        hash[:check] = true
+      end
+=end
+
+      haproxy_config[:backend][pool_name][:server] << {backend_server => {}}
+    end
   end
 end
 
