@@ -27,6 +27,7 @@ attribute "rs-haproxy/pools",
     " used for naming server pool backends. Application servers can provide" +
     " any numbers of URIs or FQDNs to join corresponding server pool" +
     " backends.Example: www.mysite.com, api.mysite.com, /serverid, default",
+  :type => 'array',
   :required => "recommended",
   :default => ["default"],
   :recipes => ['rs-haproxy::default']
@@ -48,7 +49,6 @@ attribute "rs-haproxy/stats_user",
     "The username that is required to access the load balancer" +
     " statistics report page. Example: cred:STATS_USER",
   :required => "optional",
-  :default => "",
   :recipes => ['rs-haproxy::default']
 
 attribute "rs-haproxy/stats_password",
@@ -57,7 +57,6 @@ attribute "rs-haproxy/stats_password",
     "The password that is required to access the load balancer statistics" +
     " report page. Example: cred:STATS_PASSWORD",
   :required => "optional",
-  :default => "",
   :recipes => ['rs-haproxy::default']
 
 attribute "rs-haproxy/session_stickiness",
