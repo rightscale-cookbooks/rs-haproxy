@@ -35,32 +35,11 @@ Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['a
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['algorithm']
 
 haproxy_config = Mash.new(
-  :global => {
-    :maxconn => node[:haproxy][:global_max_connections],
-    :user => node[:haproxy][:user],
-    :group => node[:haproxy][:group],
-    :log => "/dev/log syslog info",
-    :daemon => true,
-    :quiet => true,
-    :pidfile => node['haproxy']['pid_file']
-  },
-  :defaults => {
-    :log => 'global',
-    :mode => 'http'
-  },
-  :frontend => {
-    :all_requests => {
-      :bind => "#{node[:haproxy][:incoming_address]}:#{node[:haproxy][:incoming_port]}",
-      :default_backend => node['rs-haproxy']['pools'].last
-    }
-  }
+  'global' => RsHaproxy::Tuning.global_config(node),
+  'defaults' => RsHaproxy::Tuning.defaults_config(node),
+  'frontend' => RsHaproxy::Tuning.frontend_config(node, 'all_requests'),
+  'backend' => {}
 )
-
-if node['haproxy']['enable_stats_socket']
-  haproxy_config[:global][:stats] = "socket #{node['haproxy']['stats_socket_path']}" +
-    " user #{node['haproxy']['stats_socket_user']}" +
-    " group #{node['haproxy']['stats_socket_group']}"
-end
 
 class Chef::Recipe
   include Rightscale::RightscaleTag
@@ -77,57 +56,13 @@ node['rs-haproxy']['pools'].each do |pool_name|
     action :create
   end
 
-  haproxy_config[:backend] ||= {}
-  haproxy_config[:backend][pool_name] ||= {
-    :mode => 'http',
-    :balance => node['haproxy']['balance_algorithm']
-  }
+  haproxy_config['backend'].merge!(RsHaproxy::Tuning.backend_pool_config(node, pool_name))
 
-  if node['haproxy']['enable_stats_socket']
-    haproxy_config[:backend][pool_name][:stats] = "uri #{node['rs-haproxy']['stats_uri']}"
-  end
-
-  if node['haproxy']['http_chk']
-    haproxy_config[:backend][pool_name][:option] = "httpchk GET #{node['haproxy']['http_chk']}"
-    haproxy_config[:backend][pool_name][:'http-check'] = 'disable-on-404'
-  end
-
-  haproxy_config[:backend][pool_name][:server] = []
-  if node['rs-haproxy']['session_stickiness']
-    haproxy_config[:backend][pool_name][:cookie] = 'SERVERID insert indirect nocache'
-    # When cookie is enabled the haproxy.cnf should have this dummy server
-    # entry for the haproxy to start without any errors
-    haproxy_config[:backend][pool_name][:server] << {
-      "disabled-server 127.0.0.1:1" => {
-        :disabled => true
-      }
-    }
-  end
-
-  if app_server_pools[pool_name].nil?
-    next
-  else
+  unless app_server_pools[pool_name].nil?
     app_server_pools[pool_name].each do |server_uuid, server_hash|
       backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
 
-=begin
-      hash = {
-        :inter => 300,
-        :rise => 2,
-        :fall => 3,
-        :maxconn => node['haproxy']['member_max_connections']
-      }
-
-      if node['rs-haproxy']['session_stickiness']
-        hash[:cookie] = server_uuid
-      end
-
-      if node['haproxy']['http_chk']
-        hash[:check] = true
-      end
-=end
-
-      haproxy_config[:backend][pool_name][:server] << {backend_server => {}}
+      haproxy_config['backend'][pool_name]['server'] << RsHaproxy::Tuning.backend_server_config(node, backend_server)
     end
   end
 end
