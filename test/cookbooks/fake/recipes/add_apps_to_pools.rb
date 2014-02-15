@@ -63,3 +63,18 @@ app2_host1_tags = [
 
 ::FileUtils.mkdir_p(app2_host1_dir)
 ::File.open(::File.join(app2_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app2_host1_tags)) }
+
+default_folder = "/vagrant/cache_dir/machine_tag_cache/default"
+
+# Tags for server1 on the app2 pool
+default_tags = [
+  "server:uuid=discourse",
+  "application:active=true",
+  "application:active_default=true",
+  "application:bind_ip_address_default=166.78.170.64",
+  "application:bind_port_default=80",
+  "application:vhost_path_default=discourse.test.rightscale.com"
+]
+
+::FileUtils.mkdir_p(default_folder)
+::File.open(::File.join(default_folder, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(default_tags)) }

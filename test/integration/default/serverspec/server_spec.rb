@@ -44,3 +44,9 @@ describe service("haproxy") do
   it { should be_enabled }
   it { should be_running }
 end
+
+describe "Should return the correct Discourse webpage greeting" do
+  describe command('curl 33.33.33.5/login | grep "Welcome"') do
+    it { should return_stdout 'Welcome to RightScale Rightscale Discourse'}
+  end
+end
