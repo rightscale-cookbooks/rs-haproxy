@@ -28,7 +28,7 @@ app1_host1_tags = [
   "application:active_app1=true",
   "application:bind_ip_address_app1=10.1.55.22",
   "application:bind_port_app1=80",
-  "application:vhost_path_app1=site.com"
+  "application:vhost_path_app1=alpha.com"
 ]
 
 ::FileUtils.mkdir_p(app1_host1_dir)
@@ -43,7 +43,7 @@ app1_host2_tags = [
   "application:active_app1=true",
   "application:bind_ip_address_app1=10.1.55.33",
   "application:bind_port_app1=80",
-  "application:vhost_path_app1=site.com"
+  "application:vhost_path_app1=beta.com"
 ]
 
 ::FileUtils.mkdir_p(app1_host2_dir)
@@ -58,11 +58,26 @@ app2_host1_tags = [
   "application:active_app2=true",
   "application:bind_ip_address_app2=10.1.66.22",
   "application:bind_port_app2=80",
-  "application:vhost_path_app2=site.com"
+  "application:vhost_path_app2=charlie.com"
 ]
 
 ::FileUtils.mkdir_p(app2_host1_dir)
 ::File.open(::File.join(app2_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app2_host1_tags)) }
+
+app3_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app3-host1"
+
+# Tags for server1 on the app2 pool
+app3_host1_tags = [
+  "server:uuid=app3host1",
+  "application:active=true",
+  "application:active_app3=true",
+  "application:bind_ip_address_app3=10.1.77.44",
+  "application:bind_port_app3=80",
+  "application:vhost_path_app3=delta.com"
+]
+
+::FileUtils.mkdir_p(app3_host1_dir)
+::File.open(::File.join(app3_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app3_host1_tags)) }
 
 default_folder = "/vagrant/cache_dir/machine_tag_cache/default"
 
