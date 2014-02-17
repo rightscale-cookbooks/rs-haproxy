@@ -38,11 +38,12 @@ Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['a
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['algorithm']
 
 haproxy_config = Mash.new(
-  'global' => RsHaproxy::Tuning.global_config(node),
-  'defaults' => RsHaproxy::Tuning.defaults_config(node),
-  'frontend' => RsHaproxy::Tuning.frontend_config(node, 'all_requests'),
-  'backend' => {}
+  'global' => RsHaproxy::Config.global(node),
+  'defaults' => RsHaproxy::Config.defaults(node)
 )
+
+haproxy_config['frontend'] ||= {}
+haproxy_config['frontend'].merge!(RsHaproxy::Config.frontend(node, 'all_requests'))
 
 class Chef::Recipe
   include Rightscale::RightscaleTag
@@ -54,18 +55,33 @@ app_server_pools = RsHaproxy::Helper.categorize_servers_by_pools(app_servers)
 
 # Set up backend pools in haproxy.cfg
 node['rs-haproxy']['pools'].each do |pool_name|
+  # Get friendly pool name accepted by haproxy when naming the backend section
+  # in haproxy.cfg. Example: '/app' is changed to '_app'
+  pool_name_friendly = RsHaproxy::Helper.get_friendly_pool_name(pool_name)
+
   # Set up load balancer tags for the pool
   rightscale_tag_load_balancer pool_name do
     action :create
   end
 
-  haproxy_config['backend'].merge!(RsHaproxy::Tuning.backend_pool_config(node, pool_name))
+  # Setup backend section
+  haproxy_config['backend'] ||= {}
+  haproxy_config['backend'].merge!(RsHaproxy::Config.backend_pool(node, pool_name_friendly))
 
+  # Setup ACLs
+  haproxy_config['frontend']['all_requests']['acl'] ||= {}
+  haproxy_config['frontend']['all_requests']['use_backend'] ||= {}
+  acl_config = RsHaproxy::Config.setup_acls('all_requests', pool_name)
+  haproxy_config['frontend']['all_requests']['acl'].merge!(acl_config['acl'])
+  haproxy_config['frontend']['all_requests']['use_backend'].merge!(acl_config['use_backend'])
+
+  # Add servers to the corresponding backend section
   unless app_server_pools[pool_name].nil?
     app_server_pools[pool_name].each do |server_uuid, server_hash|
       backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
 
-      haproxy_config['backend'][pool_name]['server'] << RsHaproxy::Tuning.backend_server_config(node, backend_server)
+      haproxy_config['backend'][pool_name_friendly]['server'] ||= []
+      haproxy_config['backend'][pool_name_friendly]['server'] << RsHaproxy::Config.backend_server(node, backend_server)
     end
   end
 end

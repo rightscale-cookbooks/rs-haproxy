@@ -1,13 +1,13 @@
 #
 # Cookbook Name:: rs-haproxy
-# Library:: tuning
+# Library:: config
 #
 # Copyright (C) 2014 RightScale, Inc.
-#·
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#·
+#
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -18,8 +18,16 @@
 #
 
 module RsHaproxy
-  module Tuning
-    def self.global_config(node)
+  # A module for helpers to configure HAProxy.
+  #
+  module Config
+    # Configures the global section in haproxy.cfg.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [Hash] the global config hash
+    #
+    def self.global(node)
       config_hash = {
         'maxconn' => node['haproxy']['global_max_connections'],
         'user' => node['haproxy']['user'],
@@ -39,7 +47,13 @@ module RsHaproxy
       config_hash
     end
 
-    def self.defaults_config(node)
+    # Configures the default section in haproxy.cfg.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [Hash] the defaults config hash
+    #
+    def self.defaults(node)
       config_hash = {
         'log' => 'global',
         'mode' => 'http',
@@ -60,43 +74,82 @@ module RsHaproxy
       config_hash
     end
 
-    def self.frontend_config(node, section_name)
-      {
-        section_name => {
+    # Configures the frontend section in haproxy.cfg.
+    #
+    # @param node [Chef::Node] the chef node
+    # @param frontend_name [String] the name for the frontend section
+    #
+    # @return [Hash] the frontend config hash
+    #
+    def self.frontend(node, frontend_name)
+      config_hash = {
+        frontend_name => {
           'bind' => "#{node[:haproxy][:incoming_address]}:#{node[:haproxy][:incoming_port]}",
-          'default_backend' => node['rs-haproxy']['pools'].last
+          'default_backend' => node['rs-haproxy']['pools'].last,
         }
       }
     end
 
-    def self.backend_pool_config(node, pool_name, options = {})
+    # Sets up access control lists (ACLs) in haproxy.cfg.
+    #
+    # @param frontend_name [String] the name for the frontend section
+    # @param pool_name [String] the pool name
+    #
+    # @return [Hash] the ACLs config hash
+    #
+    def self.setup_acls(frontend_name, pool_name)
       config_hash = {
-        pool_name => {
-          'server' => []
-        }
+        'acl' => {},
+        'use_backend' => {}
+      }
+
+      pool_name_friendly = RsHaproxy::Helper.get_friendly_pool_name(pool_name)
+
+      acl_name = "acl_#{pool_name_friendly}"
+      if pool_name.include?('/')
+        config_hash['acl'][acl_name] = "path_dom -i #{pool_name}"
+      else
+        config_hash['acl'][acl_name] = "hdr(dom) -i #{pool_name}"
+      end
+
+      config_hash['use_backend'][pool_name_friendly] = "if #{acl_name}"
+
+      config_hash
+    end
+
+    # Sets up the backend section for a given pool.
+    #
+    # @param node [Chef::Node] the chef node
+    #
+    # @return [Hash] the backend pool hash
+    #
+    def self.backend_pool(node, pool_name)
+      config_hash = {
+        pool_name => {}
       }
 
       if node['rs-haproxy']['session_stickiness']
         config_hash[pool_name]['cookie'] = 'SERVERID insert indirect nocache'
         # When cookie is enabled the haproxy.cnf should have this dummy server
         # entry for the haproxy to start without any errors
+        config_hash[pool_name]['server'] ||= []
         config_hash[pool_name]['server'] << {
           'disabled-server 127.0.0.1:1' => {'disabled' => true}
         }
       end
 
-      config_hash[pool_name].merge!(options)
       config_hash
     end
 
     # Adds configuration options to the backend servers in haproxy.cfg.
     #
     # @param node [Chef::Node] the chef node
-    # @param options [Hash{Symbol => Fixnum, nil}] the optional parameters to add to the configuration
+    # @param backend_server [String] the server to be added to the backend section
+    # @param options [Hash] the optional parameters to add to the server
     #
     # @return [Hash] the server configuration hash
     #
-    def self.backend_server_config(node, backend_server, options = {})
+    def self.backend_server(node, backend_server, options = {})
       config_hash = {
         backend_server => {
           'inter' => 300,

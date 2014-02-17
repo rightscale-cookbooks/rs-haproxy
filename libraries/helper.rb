@@ -85,56 +85,17 @@ module RsHaproxy
       pools_hash
     end
 
-    def self.get_global_config(node)
-      {
-        :maxconn => node[:haproxy][:global_max_connections],
-        :user => node[:haproxy][:user],
-        :group => node[:haproxy][:group],
-        :log => "/dev/log syslog info",
-        :daemon => true,
-        :quiet => true,
-        :pidfile => node['haproxy']['pid_file']
-      }
-    end
-
-    def self.get_backend_pool_config(node, options = {})
-      config_hash = {
-        :mode => 'http',
-        :balance => node['haproxy']['balance_algorithm']
-      }
-
-      if node['haproxy']['enable_stats_socket']
-        config_hash[:stats] = "uri #{node['rs-haproxy']['stats_uri']}"
-      end
-
-      if node['haproxy']['http_chk']
-        config_hash[:option] = "httpchk GET #{node['haproxy']['http_chk']}"
-        config_hash[:'http-check'] = 'disable-on-404'
-      end
-
-      config_hash.merge(options)
-    end
-
-    # Adds configuration options to the backend servers in haproxy.cfg.
+    # Gets a haproxy.cfg compatible pool name.
     #
-    # @param node [Chef::Node] the chef node
-    # @param options [Hash{Symbol => Fixnum, nil}] the optional parameters to add to the configuration
+    # @param pool_name [String] the pool name
     #
-    # @return [Hash] the server configuration hash
+    # @return [String] the friendly pool name
     #
-    def self.get_backend_server_config(node, options = {})
-      config_hash = {
-        :inter => 300,
-        :rise => 2,
-        :fall => 3,
-        :maxconn => node['haproxy']['member_max_connections']
-      }
-
-      if node['haproxy']['http_chk']
-        config_hash[:check] = true
-      end
-
-      config_hash.merge(options)
+    # @example Given a pool name www.foo.com/app
+    #   this returns 'www.foo.com_app'
+    #
+    def self.get_friendly_pool_name(pool_name)
+      pool_name.gsub(/[\/]/, '_')
     end
   end
 end
