@@ -53,6 +53,22 @@ end
 app_servers = find_application_servers(node)
 app_server_pools = RsHaproxy::Helper.categorize_servers_by_pools(app_servers)
 
+# If this recipe is called via the remote_recipe resource, merge the
+# application server information sent through the resource with the
+# application server pools hash. This is to ensure the application server
+# which made the remote recipe call is added to the list of application servers
+# in the deployment.
+if node['remote_recipe'] && node['cloud']['provider'] != 'vagrant'
+  remote_server_uuid = node['remote_recipe']['server_id']
+  remote_server_pool = node['remote_recipe']['pool_name']
+  app_server_pools[remote_server_pool] ||= {}
+  app_server_pools[remote_server_pool][remote_server_uuid] = {
+    'bind_ip_address' => node['remote_recipe']['bind_ip_address'],
+    'bind_port' => node['remote_recipe']['bind_ip_port']
+  }
+end
+
+
 # Set up backend pools in haproxy.cfg
 node['rs-haproxy']['pools'].each do |pool_name|
   # Get friendly pool name accepted by haproxy when naming the backend section
