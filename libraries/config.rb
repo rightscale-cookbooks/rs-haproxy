@@ -84,7 +84,7 @@ module RsHaproxy
     def self.frontend(node, frontend_name)
       config_hash = {
         frontend_name => {
-          'bind' => "#{node[:haproxy][:incoming_address]}:#{node[:haproxy][:incoming_port]}",
+          'bind' => "*:#{node[:haproxy][:incoming_port]}",
           'default_backend' => node['rs-haproxy']['pools'].last,
         }
       }
