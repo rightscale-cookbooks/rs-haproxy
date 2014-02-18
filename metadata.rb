@@ -25,8 +25,8 @@ attribute "rs-haproxy/pools",
     " 'www.mysite.com' or '/appserver', will mimic basic behavior of" +
     " one load balancer with one pool of application servers. This will be" +
     " used for naming server pool backends. Application servers can provide" +
-    " any numbers of URIs or FQDNs to join corresponding server pool" +
-    " backends.Example: www.mysite.com, api.mysite.com, /serverid, default",
+    " any number of URIs or FQDNs to join corresponding server pool" +
+    " backends. Example: www.mysite.com, api.mysite.com, /serverid, default",
   :type => 'array',
   :required => "recommended",
   :default => ["default"],
