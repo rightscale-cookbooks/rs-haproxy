@@ -50,22 +50,22 @@ describe "Verify correct port set and redirects to backend server." do
     it { should be_listening.with('tcp')  }
   end
   describe "Accessing ip:port should return redirect message" do
-    describe command('curl 33.33.33.5:80 | grep -o "You are being.*redirected"') do
+    describe command('curl --silent 33.33.33.5:80 | grep -o "You are being.*redirected"') do
       it { should return_stdout 'You are being <a href="http://33.33.33.5/login">redirected' }
     end
   end
   describe "Request at IP/haproxy-status should return stats page" do
-    describe command('curl 33.33.33.5/haproxy-status | grep -o "Statistics Report for HAProxy"') do
+    describe command('curl --silent 33.33.33.5/haproxy-status | grep -o "Statistics Report for HAProxy"') do
       it { should return_stdout 'Statistics Report for HAProxy' }
     end
   end
   describe "Should return the correct Discourse webpage greeting from backend" do
-    describe command('curl 33.33.33.5/login | grep -o "Welcome to RightScale RightScale Discourse"') do
+    describe command('curl --silent 33.33.33.5/login | grep -o "Welcome to RightScale RightScale Discourse"') do
       it { should return_stdout 'Welcome to RightScale RightScale Discourse'}
     end
   end
   describe "Should return backend if we specify redirect but not /login" do
-    describe command('curl -L 33.33.33.5 | grep -o "Welcome to RightScale RightScale Discourse"') do
+    describe command('curl --silent -L 33.33.33.5 | grep -o "Welcome to RightScale RightScale Discourse"') do
       it { should return_stdout 'Welcome to RightScale RightScale Discourse'}
     end
   end
