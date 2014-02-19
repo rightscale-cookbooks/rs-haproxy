@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
+
 # rs-haproxy cookbook
 
 Sets up HAProxy on a server and attaches all application server in the same deployment
