@@ -60,7 +60,7 @@ if node['remote_recipe'] && node['cloud']['provider'] != 'vagrant'
     app_server_pools[remote_server_pool] ||= {}
     app_server_pools[remote_server_pool][remote_server_uuid] = {
       'bind_ip_address' => node['remote_recipe']['bind_ip_address'],
-      'bind_port' => node['remote_recipe']['bind_ip_port']
+      'bind_port' => node['remote_recipe']['bind_port']
     }
   elsif node['remote_recipe']['action'] == 'detach'
     # Remove application server from the respective pool
