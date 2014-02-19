@@ -17,9 +17,6 @@
 # limitations under the License.
 #
 
-# Install the curl cookbook so we can test the application servers
-include_recipe 'curl'
-
 marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
