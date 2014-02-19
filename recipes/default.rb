@@ -65,7 +65,7 @@ if node['remote_recipe'] && node['cloud']['provider'] != 'vagrant'
   elsif node['remote_recipe']['action'] == 'detach'
     # Remove application server from the respective pool
     if app_server_pools[remote_server_pool]
-      app_server_pools[remote_server_pool].delete!(remote_server_uuid)
+      app_server_pools[remote_server_pool].delete(remote_server_uuid)
     end
   else
     raise "Unsupported action '#{node['remote_recipe']['action']}' passed via remote_recipe!"
