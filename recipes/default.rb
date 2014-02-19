@@ -59,15 +59,25 @@ app_server_pools = RsHaproxy::Helper.categorize_servers_by_pools(app_servers)
 # which made the remote recipe call is added to the list of application servers
 # in the deployment.
 if node['remote_recipe'] && node['cloud']['provider'] != 'vagrant'
-  remote_server_uuid = node['remote_recipe']['server_id']
   remote_server_pool = node['remote_recipe']['pool_name']
-  app_server_pools[remote_server_pool] ||= {}
-  app_server_pools[remote_server_pool][remote_server_uuid] = {
-    'bind_ip_address' => node['remote_recipe']['bind_ip_address'],
-    'bind_port' => node['remote_recipe']['bind_ip_port']
-  }
-end
+  remote_server_uuid = node['remote_recipe']['server_id']
 
+  if node['remote_recipe']['action'] == 'attach'
+    # Add the application server information to the respective pool
+    app_server_pools[remote_server_pool] ||= {}
+    app_server_pools[remote_server_pool][remote_server_uuid] = {
+      'bind_ip_address' => node['remote_recipe']['bind_ip_address'],
+      'bind_port' => node['remote_recipe']['bind_ip_port']
+    }
+  elsif node['remote_recipe']['action'] == 'detach'
+    # Remove application server from the respective pool
+    if app_server_pools[remote_server_pool]
+      app_server_pools[remote_server_pool].delete!(remote_server_uuid)
+    end
+  else
+    raise "Unsupported action '#{node['remote_recipe']['action']}' passed via remote_recipe!"
+  end
+end
 
 # Set up backend pools in haproxy.cfg
 node['rs-haproxy']['pools'].each do |pool_name|
