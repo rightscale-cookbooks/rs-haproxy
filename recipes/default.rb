@@ -21,10 +21,6 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
-# Bind HAProxy to the public IP of the server
-Chef::Log.info "Overriding haproxy/incoming_address to '#{node['cloud']['public_ips'].first}'"
-node.override['haproxy']['incoming_address'] = node['cloud']['public_ips'].first
-
 Chef::Log.info "Overriding haproxy/enable_stats_socket to 'true'..."
 node.override['haproxy']['enable_stats_socket'] = true
 
