@@ -12,21 +12,22 @@ include Serverspec::Helper::DetectOS
 # return true if found, false otherwise.
 #
 def find_haproxy_setting(config_file,  regex_group, regex_setting)
-  hacfg = IO.readlines( config_file )
-  hacfg = hacfg.reject! { |line|  line =~ /^#/ || line =~ /^\s*#/  || line =~ /^\s*$/ }
-  
-  i = 0 
-  while i < hacfg.length() do
-    if hacfg[i] =~ /^\S/ and hacfg[i] =~ /#{regex_group}/
-        i += 1
-        while hacfg[i] =~ /^\s/ do
-           if hacfg[i] =~ /#{regex_setting}/ 
-              return true 
-           end 
-           i += 1
-        end 
-    end 
-    i += 1
-  end 
+  hapcfg = IO.readlines( config_file )
+  hapcfg.reject! { |line|  line =~ /^#/ || line =~ /^\s*#/  || line =~ /^\s*$/ }
+
+  begin_non_white_space = /^\S/
+  in_group = false
+
+  hapcfg.each do |line|
+    if in_group == false and line =~ begin_non_white_space and line =~ /#{regex_group}/
+       in_group = true
+       next
+    elsif in_group == true and line =~ begin_non_white_space
+       in_group = false
+    elsif in_group == true and line =~ /#{regex_setting}/
+        return true
+    end
+  end
+
   return false
 end
