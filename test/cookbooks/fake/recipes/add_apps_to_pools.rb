@@ -31,14 +31,18 @@ app1_host1_tags = [
   "application:vhost_path_app1=alpha.com"
 ]
 
-directory app1_host1_dir do
-  action :create
+a1h1_dir = directory app1_host1_dir do
+  action :nothing
 end
 
-file "#{app1_host1_dir}/tags.json" do
+a1h1_dir.run_action(:create)
+
+a1h1_file = file "#{a1h1_dir}/tags.json" do
   content JSON.pretty_generate(app1_host1_tags)
-  action :create
+  action :nothing
 end
+
+a1h1_file.run_action(:create)
 
 app1_host2_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host2"
 
@@ -52,14 +56,18 @@ app1_host2_tags = [
   "application:vhost_path_app1=beta.com"
 ]
 
-directory app1_host2_dir do
-  action :create
+a1h2_dir = directory app1_host2_dir do
+  action :nothing
 end
 
-file "#{app1_host2_dir}/tags.json" do
+a1h2_dir.run_action(:create)
+
+a1h2_file = file "#{app1_host2_dir}/tags.json" do
   content JSON.pretty_generate(app1_host2_tags)
-  action :create
+  action :nothing
 end
+
+a1h2_file.run_action(:create)
 
 app2_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app2-host1"
 
@@ -73,14 +81,18 @@ app2_host1_tags = [
   "application:vhost_path_app2=charlie.com"
 ]
 
-directory app2_host1_dir do
-  action :create
+a2h1_dir = directory app2_host1_dir do
+  action :nothing
 end
 
-file "#{app2_host1_dir}/tags.json" do
+a2h1_dir.run_action(:create)
+
+a2h1_file = file "#{app2_host1_dir}/tags.json" do
   content JSON.pretty_generate(app2_host1_tags)
-  action :create
+  action :nothing
 end
+
+a2h1_file.run_action(:create)
 
 app3_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app3-host1"
 
@@ -94,14 +106,18 @@ app3_host1_tags = [
   "application:vhost_path_app3=delta.com"
 ]
 
-directory app3_host1_dir do
-  action :create
+a3h1_dir = directory app3_host1_dir do
+  action :nothing
 end
 
-file "#{app3_host1_dir}/tags.json" do
+a3h1_dir.run_action(:create)
+
+a3h1_file = file "#{app3_host1_dir}/tags.json" do
   content JSON.pretty_generate(app3_host1_tags)
-  action :create
+  action :nothing
 end
+
+a3h1_file.run_action(:create)
 
 default_folder = "/vagrant/cache_dir/machine_tag_cache/default"
 
@@ -115,11 +131,15 @@ default_tags = [
   "application:vhost_path_default=discourse.test.rightscale.com"
 ]
 
-directory default_folder do
-  action :create
+default_dir = directory default_folder do
+  action :nothing
 end
 
-file "#{default_folder}/tags.json" do
+default_dir.run_action(:create)
+
+default_file = file "#{default_folder}/tags.json" do
   content JSON.pretty_generate(default_tags)
-  action :create
+  action :nothing
 end
+
+default_file.run_action(:create)
