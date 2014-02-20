@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: fake
-# Recipe:: default
+# Recipe:: add_apps_to_pools
 #
 # Copyright (C) 2013 RightScale, Inc.
 #
