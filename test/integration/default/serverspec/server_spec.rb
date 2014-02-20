@@ -107,7 +107,7 @@ describe "Verify settings through haproxy socket" do
     ["default",      "BACKEND",           "status", "UP"]
   ].each do |stat|
     it "#{stat[0]} #{stat[1]} should have #{stat[2]} of #{stat[3]}" do
-      haproxy_stat("#{stat[0]}", "#{stat[1]}", "#{stat[2]}").should == "#{stat[3]}"
+      haproxy_stat(stat[0], stat[1], stat[2]).should == stat[3]
     end
   end
 end
