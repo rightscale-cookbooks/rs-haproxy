@@ -31,8 +31,14 @@ app1_host1_tags = [
   "application:vhost_path_app1=alpha.com"
 ]
 
-::FileUtils.mkdir_p(app1_host1_dir)
-::File.open(::File.join(app1_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app1_host1_tags)) }
+directory app1_host1_dir do
+  action :create
+end
+
+file "#{app1_host1_dir}/tags.json" do
+  content JSON.pretty_generate(app1_host1_tags)
+  action :create
+end
 
 app1_host2_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host2"
 
@@ -46,8 +52,14 @@ app1_host2_tags = [
   "application:vhost_path_app1=beta.com"
 ]
 
-::FileUtils.mkdir_p(app1_host2_dir)
-::File.open(::File.join(app1_host2_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app1_host2_tags)) }
+directory app1_host2_dir do
+  action :create
+end
+
+file "#{app1_host2_dir}/tags.json" do
+  content JSON.pretty_generate(app1_host2_tags)
+  action :create
+end
 
 app2_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app2-host1"
 
@@ -61,8 +73,14 @@ app2_host1_tags = [
   "application:vhost_path_app2=charlie.com"
 ]
 
-::FileUtils.mkdir_p(app2_host1_dir)
-::File.open(::File.join(app2_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app2_host1_tags)) }
+directory app2_host1_dir do
+  action :create
+end
+
+file "#{app2_host1_dir}/tags.json" do
+  content JSON.pretty_generate(app2_host1_tags)
+  action :create
+end
 
 app3_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app3-host1"
 
@@ -76,8 +94,14 @@ app3_host1_tags = [
   "application:vhost_path_app3=delta.com"
 ]
 
-::FileUtils.mkdir_p(app3_host1_dir)
-::File.open(::File.join(app3_host1_dir, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(app3_host1_tags)) }
+directory app3_host1_dir do
+  action :create
+end
+
+file "#{app3_host1_dir}/tags.json" do
+  content JSON.pretty_generate(app3_host1_tags)
+  action :create
+end
 
 default_folder = "/vagrant/cache_dir/machine_tag_cache/default"
 
@@ -91,5 +115,11 @@ default_tags = [
   "application:vhost_path_default=discourse.test.rightscale.com"
 ]
 
-::FileUtils.mkdir_p(default_folder)
-::File.open(::File.join(default_folder, 'tags.json'), 'w') { |file| file.write(::JSON.pretty_generate(default_tags)) }
+directory default_folder do
+  action :create
+end
+
+file "#{default_folder}/tags.json" do
+  content JSON.pretty_generate(default_tags)
+  action :create
+end
