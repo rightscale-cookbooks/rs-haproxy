@@ -71,8 +71,14 @@ end
 # and puts the data into a csv format, from which we can request values
 # given the parameter name.
 def haproxy_stat( regex_pxname, regex_svname, regex_query )
-  socket = UNIXSocket.new('/var/run/haproxy.sock')
-  socket.puts('show stat')
+
+  begin
+    socket = UNIXSocket.new('/var/run/haproxy.sock')
+    socket.puts('show stat')
+  rescue
+    retry
+  end
+
   content = ""
   while line = socket.gets do
     content << line
