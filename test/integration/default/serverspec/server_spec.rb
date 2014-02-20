@@ -78,4 +78,8 @@ describe "Verify correct port set and redirects to backend server." do
   end
 end
 
-
+describe "check info settings" do
+  describe "maxconn should be 4095" do
+    it { haproxy_info("maxconn").should == "4096" }
+  end
+end

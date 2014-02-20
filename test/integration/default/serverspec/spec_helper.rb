@@ -1,5 +1,7 @@
 require 'serverspec'
 require 'pathname'
+require 'socket'
+require 'csv'
 
 include Serverspec::Helper::Exec
 include Serverspec::Helper::DetectOS
@@ -31,3 +33,34 @@ def find_haproxy_setting(config_file,  regex_group, regex_setting)
 
   return false
 end
+
+# Helper function to sort through haproxy socket info.
+#
+# @param regex_setting is the setting we want to look the value for.
+# returns the value of the parameter
+#
+# This function reads the haproxy socket.  It parses through the info section
+# and puts the data into a csv format, from which we can request values
+# given the parameter name.
+def haproxy_info( regex_setting )
+  socket = UNIXSocket.new('/var/run/haproxy.sock')
+  socket.puts('show info')
+  content = ""
+  while line = socket.gets do
+    content << line.split(':').join(',')
+  end
+  
+  csv_content = CSV.parse(content)
+  
+  csv_content.each do |line|
+    if line[0] =~ /#{regex_setting}/i 
+     return line[1].strip()
+    end
+  end
+
+  return nil
+end
+
+
+
+
