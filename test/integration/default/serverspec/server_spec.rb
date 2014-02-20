@@ -78,9 +78,14 @@ describe "Verify correct port set and redirects to backend server." do
   end
 end
 
-describe "check info settings" do
-  describe "maxconn should be 4096" do
-    it { haproxy_info("maxconn").should == "4096" }
+describe "Verify info setting through haproxy socket" do
+  {
+     maxconn: "4096",
+     maxsock: "8204"
+  }.each do |key, val|
+    it "The setting #{key} should be set to #{val}" do
+      haproxy_info("#{key}").should == "#{val}"
+    end
   end
 end
 
