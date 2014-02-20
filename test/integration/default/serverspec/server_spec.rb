@@ -79,7 +79,32 @@ describe "Verify correct port set and redirects to backend server." do
 end
 
 describe "check info settings" do
-  describe "maxconn should be 4095" do
+  describe "maxconn should be 4096" do
     it { haproxy_info("maxconn").should == "4096" }
   end
 end
+
+describe "Verify settings through haproxy socket" do
+  [
+    ["all_requests", "FRONTEND",          "status", "OPEN"],
+    ["app1",         "disabled-server",   "status", "MAINT"],
+    ["app1",         "app1host2",         "status", "no check"],
+    ["app1",         "app1host1",         "status", "no check"],
+    ["app1",         "BACKEND",           "status", "UP"],
+    ["app2",         "disabled-server",   "status", "MAINT"],
+    ["app2",         "app2host1",         "status", "no check"],
+    ["app2",         "BACKEND",           "status", "UP"],
+    ["app3",         "disabled-server",   "status", "MAINT"],
+    ["app3",         "app3host1",         "status", "no check"],
+    ["app3",         "BACKEND",           "status", "UP"],
+    ["default",      "disabled-server",   "status", "MAINT"],
+    ["default",      "discourse",         "status", "no check"],
+    ["default",      "BACKEND",           "status", "UP"]
+  ].each do |stat|
+    it "#{stat[0]} #{stat[1]} should have #{stat[2]} of #{stat[3]}" do
+      haproxy_stat("#{stat[0]}", "#{stat[1]}", "#{stat[2]}").should == "#{stat[3]}"
+    end
+  end
+end
+
+

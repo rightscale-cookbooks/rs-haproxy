@@ -62,5 +62,32 @@ def haproxy_info( regex_setting )
 end
 
 
+# Helper function to sort through haproxy socket info.
+#
+# @param regex_setting is the setting we want to look the value for.
+# returns the value of the parameter
+#
+# This function reads the haproxy socket.  It parses through the info section
+# and puts the data into a csv format, from which we can request values
+# given the parameter name.
+def haproxy_stat( regex_pxname, regex_svname, regex_query )
+  socket = UNIXSocket.new('/var/run/haproxy.sock')
+  socket.puts('show stat')
+  content = ""
+  while line = socket.gets do
+    content << line
+  end
+  
+  csv_content = CSV.parse(content)
+  index  = csv_content[0].index("#{regex_query}")
+
+  csv_content.each do |line|
+    if line[0] =~ /#{regex_pxname}/i and line[1] =~ /#{regex_svname}/ 
+     return line[index].strip()
+    end
+  end
+
+  return nil
+end
 
 
