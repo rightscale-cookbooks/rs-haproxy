@@ -56,16 +56,9 @@ def haproxy_info( regex_setting )
     end
   end
 
-  content = ""
   while line = socket.gets do
-    content << line.split(':').join(',')
-  end
-  
-  csv_content = CSV.parse(content)
-  
-  csv_content.each do |line|
-    if line[0] =~ /#{regex_setting}/i 
-     return line[1].strip()
+    if line =~ /#{regex_setting}/i
+      return line.match(/#{regex_setting}:\s+(.*)/i).captures[0]
     end
   end
 
