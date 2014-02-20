@@ -43,8 +43,19 @@ end
 # and puts the data into a csv format, from which we can request values
 # given the parameter name.
 def haproxy_info( regex_setting )
-  socket = UNIXSocket.new('/var/run/haproxy.sock')
-  socket.puts('show info')
+ 
+  socket = nil
+
+  10.times do
+    begin
+      socket = UNIXSocket.new('/var/run/haproxy.sock')
+      socket.puts('show info')
+      break
+    rescue
+      next
+    end
+  end
+
   content = ""
   while line = socket.gets do
     content << line.split(':').join(',')
@@ -74,11 +85,16 @@ end
 # first two values in the row.  The colum is slected by name.
 def haproxy_stat( pxname, svname, column )
 
-  begin
-    socket = UNIXSocket.new('/var/run/haproxy.sock')
-    socket.puts('show stat')
-  rescue
-    retry
+  socket = nil
+
+  10.times do 
+    begin
+      socket = UNIXSocket.new('/var/run/haproxy.sock')
+      socket.puts('show stat')
+      break
+    rescue
+      next
+    end
   end
 
   content = ""
