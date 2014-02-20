@@ -32,12 +32,13 @@ app1_host1_tags = [
 ]
 
 a1h1_dir = directory app1_host1_dir do
+  recursive true
   action :nothing
 end
 
 a1h1_dir.run_action(:create)
 
-a1h1_file = file "#{a1h1_dir}/tags.json" do
+a1h1_file = file "#{app1_host1_dir}/tags.json" do
   content JSON.pretty_generate(app1_host1_tags)
   action :nothing
 end
@@ -57,6 +58,7 @@ app1_host2_tags = [
 ]
 
 a1h2_dir = directory app1_host2_dir do
+  recursive true
   action :nothing
 end
 
@@ -82,6 +84,7 @@ app2_host1_tags = [
 ]
 
 a2h1_dir = directory app2_host1_dir do
+  recursive true
   action :nothing
 end
 
@@ -108,6 +111,7 @@ app3_host1_tags = [
 
 a3h1_dir = directory app3_host1_dir do
   action :nothing
+  recursive true
 end
 
 a3h1_dir.run_action(:create)
@@ -133,6 +137,7 @@ default_tags = [
 
 default_dir = directory default_folder do
   action :nothing
+  recursive true
 end
 
 default_dir.run_action(:create)
