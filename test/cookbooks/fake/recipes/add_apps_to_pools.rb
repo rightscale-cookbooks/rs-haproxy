@@ -19,6 +19,8 @@
 
 require 'json'
 
+include_recipe 'fake::default'
+
 app1_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host1"
 
 # Tags for server1 on the app1 pool
