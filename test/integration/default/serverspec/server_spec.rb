@@ -33,21 +33,24 @@ describe "Verify settings in haproxy.cfg file" do
     [ "backend default",  "server discourse 166.78.170.64:80 inter 300 rise 2 fall 3 maxconn 100 cookie discourse" ]
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
-        find_haproxy_setting(config_file, pair.first, pair.last).should == true 
+        find_haproxy_setting(config_file, pair.first, pair.last).should == true
     end
   end
 end
 
 describe service("haproxy") do
   it { should be_enabled }
+
   it { should be_running }
 end
 
 describe "The proper user and group should exist on the server" do
   describe user('haproxy') do
+
     it { should exist }
   end
   describe user('haproxy') do
+
     it { should belong_to_group 'haproxy' }
   end
 end
@@ -112,4 +115,20 @@ describe "Verify settings through haproxy socket" do
   end
 end
 
+describe 'load_balancer server tags' do
+  hostname = `hostname -s`.chomp
+  tag_file = "/vagrant/cache_dir/machine_tag_cache/#{hostname}/tags.json"
 
+  # let(:host_name) { Socket.gethostname }
+  # let(:tag_file) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
+  describe file(tag_file) do
+    it { should be_file }
+    its(:content) { should match /server:uuid=12345UUID/ }
+    its(:content) { should match /load_balancer:active=true/ }
+    its(:content) { should match /server:public_ip_0=33\.33\.33\.5/ }
+    its(:content) { should match /load_balancer:active_app1=true/}
+    its(:content) { should match /load_balancer:active_app2=true/}
+    its(:content) { should match /load_balancer:active_app3=true/}
+    its(:content) { should match /load_balancer:active_default=true/ }
+  end
+end

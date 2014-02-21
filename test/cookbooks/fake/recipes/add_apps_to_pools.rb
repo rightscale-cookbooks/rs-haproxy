@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require_recipe 'fake::default'
-
 require 'json'
 
 app1_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host1"
@@ -36,16 +34,12 @@ app1_host1_tags = [
 a1h1_dir = directory app1_host1_dir do
   recursive true
   action :nothing
-end
-
-a1h1_dir.run_action(:create)
+end.run_action(:create)
 
 a1h1_file = file "#{app1_host1_dir}/tags.json" do
   content JSON.pretty_generate(app1_host1_tags)
   action :nothing
-end
-
-a1h1_file.run_action(:create)
+end.run_action(:create)
 
 app1_host2_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host2"
 
@@ -62,16 +56,12 @@ app1_host2_tags = [
 a1h2_dir = directory app1_host2_dir do
   recursive true
   action :nothing
-end
-
-a1h2_dir.run_action(:create)
+end.run_action(:create)
 
 a1h2_file = file "#{app1_host2_dir}/tags.json" do
   content JSON.pretty_generate(app1_host2_tags)
   action :nothing
-end
-
-a1h2_file.run_action(:create)
+end.run_action(:create)
 
 app2_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app2-host1"
 
@@ -88,16 +78,12 @@ app2_host1_tags = [
 a2h1_dir = directory app2_host1_dir do
   recursive true
   action :nothing
-end
-
-a2h1_dir.run_action(:create)
+end.run_action(:create)
 
 a2h1_file = file "#{app2_host1_dir}/tags.json" do
   content JSON.pretty_generate(app2_host1_tags)
   action :nothing
-end
-
-a2h1_file.run_action(:create)
+end.run_action(:create)
 
 app3_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app3-host1"
 
@@ -114,16 +100,12 @@ app3_host1_tags = [
 a3h1_dir = directory app3_host1_dir do
   action :nothing
   recursive true
-end
-
-a3h1_dir.run_action(:create)
+end.run_action(:create)
 
 a3h1_file = file "#{app3_host1_dir}/tags.json" do
   content JSON.pretty_generate(app3_host1_tags)
   action :nothing
-end
-
-a3h1_file.run_action(:create)
+end.run_action(:create)
 
 default_folder = "/vagrant/cache_dir/machine_tag_cache/default"
 
@@ -140,13 +122,9 @@ default_tags = [
 default_dir = directory default_folder do
   action :nothing
   recursive true
-end
-
-default_dir.run_action(:create)
+end.run_action(:create)
 
 default_file = file "#{default_folder}/tags.json" do
   content JSON.pretty_generate(default_tags)
   action :nothing
-end
-
-default_file.run_action(:create)
+end.run_action(:create)
