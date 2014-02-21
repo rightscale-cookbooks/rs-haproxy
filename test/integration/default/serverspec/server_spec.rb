@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'socket'
 
 config_file = '/etc/haproxy/haproxy.cfg'
 
@@ -116,19 +117,40 @@ describe "Verify settings through haproxy socket" do
 end
 
 describe 'load_balancer server tags' do
-  hostname = `hostname -s`.chomp
-  tag_file = "/vagrant/cache_dir/machine_tag_cache/#{hostname}/tags.json"
+  let(:host_name) { Socket.gethostname }
+  let(:tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
 
-  # let(:host_name) { Socket.gethostname }
-  # let(:tag_file) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
-  describe file(tag_file) do
+  it "should have a UUID of 12345UUID" do
+    tags['server:uuid'].first.value.should eq ('12345UUID')
+  end
+
+  it "should be an active load balancer" do
+    tags['load_balancer:active'].first.value.should be_true
+  end
+
+  it "should include a public IP address of 33.33.33.5" do
+    tags['server:public_ip_0'].first.value.should eq ('33.33.33.5')
+  end
+
+  it "should be be active for app1" do
+    tags['load_balancer:active_app1'].first.value.should be_true
+  end
+
+  it "should be be active for app2" do
+    tags['load_balancer:active_app2'].first.value.should be_true
+  end
+
+  it "should be be active for app3" do
+    tags['load_balancer:active_app3'].first.value.should be_true
+  end
+
+  it "should be true for active_default" do
+    tags['load_balancer:active_default'].first.value.should be_true
+  end
+end
+
+describe "Verify monitoring file" do
+  describe file("/usr/share/collectd/haproxy.db") do
     it { should be_file }
-    its(:content) { should match /server:uuid=12345UUID/ }
-    its(:content) { should match /load_balancer:active=true/ }
-    its(:content) { should match /server:public_ip_0=33\.33\.33\.5/ }
-    its(:content) { should match /load_balancer:active_app1=true/}
-    its(:content) { should match /load_balancer:active_app2=true/}
-    its(:content) { should match /load_balancer:active_app3=true/}
-    its(:content) { should match /load_balancer:active_default=true/ }
   end
 end

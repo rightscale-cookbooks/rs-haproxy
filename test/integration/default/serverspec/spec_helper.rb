@@ -2,12 +2,22 @@ require 'serverspec'
 require 'pathname'
 require 'socket'
 require 'csv'
+require 'json'
+require 'rubygems/dependency_installer'
 
 include Serverspec::Helper::Exec
 include Serverspec::Helper::DetectOS
 
+# server_spec requires Gems to be installed in a specific path so the following is needed to make machine_tag
+# available for testing
+installer = Gem::DependencyInstaller.new
+installer.install('machine_tag')
+Gem.clear_paths
+
+require 'machine_tag'
+
 # Helper function to sort through the haproxy.cfg
-# 
+#
 # @param config_file [String] the name of the config file (/var/haproxy/haproxy.cfg)
 # @param regex_group [String] is the section name in the haproxy config (global, default, ....)
 # @param regex_setting [String] is a string used as a regex to match setting underl group
@@ -43,7 +53,7 @@ end
 # and puts the data into a csv format, from which we can request values
 # given the parameter name.
 def haproxy_info( regex_setting )
- 
+
   socket = nil
 
   10.times do
@@ -74,13 +84,13 @@ end
 # returns the value found at the selected row and column.
 #
 # This function reads the haproxy socket.  It parses through the info section
-# and puts the data into a csv format.  The row is selected by providing the 
+# and puts the data into a csv format.  The row is selected by providing the
 # first two values in the row.  The colum is slected by name.
 def haproxy_stat( pxname, svname, column )
 
   socket = nil
 
-  10.times do 
+  10.times do
     begin
       socket = UNIXSocket.new('/var/run/haproxy.sock')
       socket.puts('show stat')
@@ -94,12 +104,12 @@ def haproxy_stat( pxname, svname, column )
   while line = socket.gets do
     content << line
   end
-  
+
   csv_content = CSV.parse(content)
   index  = csv_content[0].index("#{column}")
 
   csv_content.each do |line|
-    if line[0] =~ /#{pxname}/i and line[1] =~ /#{svname}/ 
+    if line[0] =~ /#{pxname}/i and line[1] =~ /#{svname}/
      return line[index].strip()
     end
   end
