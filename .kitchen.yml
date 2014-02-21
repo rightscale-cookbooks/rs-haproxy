@@ -26,9 +26,7 @@ suites:
   run_list:
   - recipe[rightscale_tag::default]
   - recipe[fake::add_apps_to_pools]
-  - recipe[fake::socat]
   - recipe[rs-haproxy::default]
-  - recipe[curl]
   provisioner:
     solo_rb:
       log_location: /var/log/chef-solo.log
