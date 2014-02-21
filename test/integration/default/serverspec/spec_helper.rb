@@ -8,9 +8,9 @@ include Serverspec::Helper::DetectOS
 
 # Helper function to sort through the haproxy.cfg
 # 
-# @param config_file the name of the config file (/var/haproxy/haproxy.cfg)
-# @param regex_group is the section name in the haproxy config (global, default, ....)
-# @param regex_setting is a string used as a regex to match setting underl group
+# @param config_file [String] the name of the config file (/var/haproxy/haproxy.cfg)
+# @param regex_group [String] is the section name in the haproxy config (global, default, ....)
+# @param regex_setting [String] is a string used as a regex to match setting underl group
 # return true if found, false otherwise.
 #
 def find_haproxy_setting(config_file,  regex_group, regex_setting)
