@@ -107,8 +107,6 @@ unless node['cloud']['provider'] == 'vagrant'
     if app_server_pools[remote_server_pool]
       app_server_pools[remote_server_pool].delete(remote_server_uuid)
     end
-  else
-    raise "Unsupported action '#{node['rs-haproxy']['action']}' passed via remote_recipe!"
   end
 end
 
