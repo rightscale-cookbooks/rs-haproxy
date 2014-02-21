@@ -84,7 +84,7 @@ end
 
 # Find all application servers in the deployment
 app_servers = find_application_servers(node)
-app_server_pools = Rightscale::RightscaleTag.group_servers_by_application_name(app_servers)
+app_server_pools = group_servers_by_application_name(app_servers)
 
 # If this recipe is called via the remote_recipe resource, merge the
 # application server information sent through the resource with the
