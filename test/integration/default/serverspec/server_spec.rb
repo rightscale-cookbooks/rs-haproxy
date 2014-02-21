@@ -88,7 +88,7 @@ describe "Verify info setting through haproxy socket" do
      maxsock: "8204"
   }.each do |key, val|
     it "The setting #{key} should be set to #{val}" do
-      haproxy_info("#{key}").should == "#{val}"
+      haproxy_info("#{key}").should == val
     end
   end
 end
