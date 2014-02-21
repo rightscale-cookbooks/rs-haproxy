@@ -36,4 +36,5 @@ default['rs-haproxy']['session_stickiness'] = true
 default['rs-haproxy']['health_check_uri'] = '/'
 
 # Algorithm used by load balancer to direct traffic
+# Supported algorithms - "roundrobin", "leastconn", "source"
 default['rs-haproxy']['algorithm'] = 'roundrobin'

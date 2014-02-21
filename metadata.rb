@@ -33,7 +33,7 @@ attribute "rs-haproxy/pools",
   :recipes => ['rs-haproxy::default']
 
 attribute "rs-haproxy/stats_uri",
-  :display_name => "Status URI",
+  :display_name => "Statistics URI",
   :description =>
     "The URI for the load balancer statistics report page." +
     " This page lists the current session, queued session, response error," +
@@ -44,7 +44,7 @@ attribute "rs-haproxy/stats_uri",
   :recipes => ['rs-haproxy::default']
 
 attribute "rs-haproxy/stats_user",
-  :display_name => "Status Page Username",
+  :display_name => "Statistics Page Username",
   :description =>
     "The username that is required to access the load balancer" +
     " statistics report page. Example: cred:STATS_USER",
@@ -52,7 +52,7 @@ attribute "rs-haproxy/stats_user",
   :recipes => ['rs-haproxy::default']
 
 attribute "rs-haproxy/stats_password",
-  :display_name => "Status Page Password",
+  :display_name => "Statistics Page Password",
   :description =>
     "The password that is required to access the load balancer statistics" +
     " report page. Example: cred:STATS_PASSWORD",

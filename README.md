@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
-
 # rs-haproxy cookbook
+
+[![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
 
 Sets up HAProxy on a server and attaches all application server in the same deployment
 as the HAProxy server.
@@ -17,12 +17,6 @@ as the HAProxy server.
   * CentOS 6
 
 # Usage
-
-Add a dependency to your cookbook's `metadata.rb`:
-
-```ruby
-depends 'rs-haproxy'
-```
 
 Add the `rs-haproxy::default` recipe to your run list to set up HAProxy server. It also attaches all existing application servers in the deployment to the corresponding pools
 that the HAProxy serves.
@@ -51,8 +45,40 @@ direct traffic. Default: `roundrobin`
 
 ## `rs-haproxy::default`
 
-Sets up a HAProxy server. Attaches all existing application servers in the deployment to
-the corresponding pools that the HAProxy serves.
+Sets up an HAProxy server. Attaches all existing application servers in the
+deployment to the corresponding pools that the HAProxy serves.
+
+This recipe can also be invoked by an application server in the same deployment
+via [remote_recipe](remote_recipe resource) to attach/detach server from the
+load balancer. The server invoking this recipe should pass the `action` attribute
+as either `attach` or `detach` via [remote_recipe](remote_recipe resource) to attach
+or detach from the load balancer respectively.
+
+**Example 1:** Attach application server to load balancer
+
+```ruby
+remote_recipe "Attach me to HAPRoxy load balancer" do
+  recipe 'rs-haproxy::default'
+  attributes 'rs-haproxy' => {
+    'action' => 'attach',
+    # Other attributes useful to attach server to HAProxy
+    ...
+  }
+end
+```
+
+**Example 1:** Detach application server from load balancer
+
+```ruby
+remote_recipe "Detach me from HAProxy load balancer" do
+  recipe 'rs-haproxy::default'
+  attributes 'rs-haproxy' => {
+    'action' => 'detach',
+    # Other attributes useful to detach server from HAProxy
+    ...
+  }
+end
+```
 
 # Author
 

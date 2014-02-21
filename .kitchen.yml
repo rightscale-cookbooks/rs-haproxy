@@ -37,6 +37,8 @@ suites:
     rs-haproxy:
       pools: ['app1', 'app2', 'app3', 'default']
       stats_uri: '/haproxy-status'
+      stats_user: 'user'
+      stats_password: 'pass'
       health_check_uri: '/'
       algorithm: 'roundrobin'
       session_stickiness: true

@@ -19,6 +19,4 @@
 
 include_recipe 'curl'
 
-package 'socat' do
-  action :upgrade
-end
+package 'socat'
