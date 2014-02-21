@@ -66,7 +66,7 @@ describe "Verify correct port set and redirects to backend server." do
     end
   end
   describe "Request at IP/haproxy-status should return stats page" do
-    describe command('curl --silent 33.33.33.5/haproxy-status | grep -o "Statistics Report for HAProxy"') do
+    describe command('curl --silent -u user:pass 33.33.33.5/haproxy-status | grep -o "Statistics Report for HAProxy"') do
       it { should return_stdout 'Statistics Report for HAProxy' }
     end
   end
