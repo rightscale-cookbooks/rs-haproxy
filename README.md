@@ -18,8 +18,20 @@ as the HAProxy server.
 
 # Usage
 
-Add the `rs-haproxy::default` recipe to your run list to set up HAProxy server. It also attaches all existing application servers in the deployment to the corresponding pools
-that the HAProxy serves.
+* Add the `rs-haproxy::default` recipe to your run list to install HAProxy as a package and
+set up HAProxy server.
+* Run the `rs-haproxy::tags` recipe to set up load balancer related machine tags to the
+HAProxy server. Refer to [rightscale_tag cookbook][Load Balancer Tags] for the list of tags
+set on a load balancer server.
+* To attach all existing application servers in the deployment to the corresponding backend
+pools served by HAProxy, run the `rs-haproxy::frontend` recipe. This recipe finds the
+application server in the deployment by querying for the [application tags][Application Server Tags]
+on the server.
+* Run the `rs-haproxy::monitoring` to install HAProxy collectd plugin and set up monitoring for
+the HAProxy server.
+
+[Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers
+[Application Server Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
 
 # Attributes
 
@@ -45,40 +57,27 @@ direct traffic. Default: `roundrobin`
 
 ## `rs-haproxy::default`
 
-Sets up an HAProxy server. Attaches all existing application servers in the
-deployment to the corresponding pools that the HAProxy serves.
+Installs HAProxy as a package and configures an HAProxy server. This recipe simply sets up the HAProxy
+configuration file using the [haproxy LWRP](https://github.com/hw-cookbooks/haproxy#haproxy), enables,
+and starts the HAProxy service.
 
-This recipe can also be invoked by an application server in the same deployment
-via [remote_recipe](remote_recipe resource) to attach/detach server from the
-load balancer. The server invoking this recipe should pass the `action` attribute
-as either `attach` or `detach` via [remote_recipe](remote_recipe resource) to attach
-or detach from the load balancer respectively.
+## `rs-haproxy::tags`
 
-**Example 1:** Attach application server to load balancer
+Tags the HAProxy server with the load balancer related machine tags. Refer to [rightscale_tag cookbook][Load Balancer Tags]
+for the list of tags set on a load balancer server. This recipe must be run to make the HAProxy server
+discoverable to the application servers in the deployment. The application servers can then attach to
+the HAProxy server by running the `rs-haproxy::backend` recipe.
 
-```ruby
-remote_recipe "Attach me to HAPRoxy load balancer" do
-  recipe 'rs-haproxy::default'
-  attributes 'rs-haproxy' => {
-    'action' => 'attach',
-    # Other attributes useful to attach server to HAProxy
-    ...
-  }
-end
-```
+## `rs-haproxy::monitoring`
 
-**Example 1:** Detach application server from load balancer
+Sets up monitoring for the HAProxy service. This recipe installs the HAProxy collectd plugin to monitor
+the HAProxy process.
 
-```ruby
-remote_recipe "Detach me from HAProxy load balancer" do
-  recipe 'rs-haproxy::default'
-  attributes 'rs-haproxy' => {
-    'action' => 'detach',
-    # Other attributes useful to detach server from HAProxy
-    ...
-  }
-end
-```
+## `rs-haproxy::frontend`
+
+Attaches all existing application servers in the deployment to the corresponding pools served by HAProxy
+server. This recipe finds the application server in the deployment by querying for the [application tags][Application Server Tags]
+on the application server.
 
 # Author
 

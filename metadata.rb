@@ -12,7 +12,10 @@ depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag'
 
 recipe 'rs-haproxy::default', 'Installs HAProxy and sets up monitoring for the HAProxy process.'
-recipe 'rs-haproxy::add_application_server', 'Adds an application server to the backend section in the haproxy.cnf file'
+recipe 'rs-haproxy::tags', 'Adds load balancer related machine tags to the load balancer server.'
+recipe 'rs-haproxy::monitoring', 'Configures monitoring by setting up collectd plugin for HAProxy.'
+recipe 'rs-haproxy::frontend', 'Queries for application servers in the deployment and adds them' +
+ ' to the corresponding backend pools served by the load balancer.'
 
 attribute "rs-haproxy/pools",
   :display_name => "Load Balance Pools",

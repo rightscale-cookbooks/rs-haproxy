@@ -24,9 +24,28 @@ platforms:
 suites:
 - name: default
   run_list:
-  - recipe[rightscale_tag::default]
-  - recipe[fake::add_apps_to_pools]
   - recipe[rs-haproxy::default]
+  - recipe[rs-haproxy::tags]
+  - recipe[rs-haproxy::monitoring]
+  attributes:
+    cloud:
+      provider: 'vagrant'
+      public_ips: ['33.33.33.5']
+    rs-haproxy:
+      pools: ['app1', 'app2', 'app3', 'default']
+      stats_uri: '/haproxy-status'
+      stats_user: 'user'
+      stats_password: 'pass'
+      health_check_uri: '/'
+      algorithm: 'roundrobin'
+      session_stickiness: true
+    rightscale:
+      instance_uuid: '12345UUID'
+
+- name: backend
+  run_list:
+  - recipe[fake::add_apps_to_pools]
+  - recipe[rs-haproxy::frontend]
   provisioner:
     solo_rb:
       log_location: /var/log/chef-solo.log
