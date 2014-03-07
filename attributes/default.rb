@@ -40,4 +40,4 @@ default['rs-haproxy']['health_check_uri'] = '/'
 default['rs-haproxy']['algorithm'] = 'roundrobin'
 
 # Action to be performed on a backend application server
-default['rs-haproxy']['action'] = 'attach'
+default['rs-haproxy']['application_action'] = 'attach'

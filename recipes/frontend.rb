@@ -39,7 +39,7 @@ app_server_pools = group_servers_by_application_name(app_servers)
 remote_server_pool = node['rs-haproxy']['application_name']
 remote_server_uuid = node['rs-haproxy']['application_server_id']
 
-case node['rs-haproxy']['action']
+case node['rs-haproxy']['application_action']
 when 'attach'
   # Add the application server information to the respective pool
   app_server_pools[remote_server_pool] ||= {}
