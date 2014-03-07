@@ -36,24 +36,27 @@ app_server_pools = group_servers_by_application_name(app_servers)
 # application server pools hash. This is to ensure the application server
 # which made the remote recipe call is added to the list of application servers
 # in the deployment.
-remote_server_pool = node['rs-haproxy']['application_name']
-remote_server_uuid = node['rs-haproxy']['application_server_id']
+unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
+  raise "Load balancer pool name is missing in the remote recipe call!" if node['remote_recipe']['pool_name'].nil?
+  remote_server_pool = node['remote_recipe']['pool_name']
 
-case node['rs-haproxy']['application_action']
-when 'attach'
-  # Add the application server information to the respective pool
-  app_server_pools[remote_server_pool] ||= {}
-  app_server_pools[remote_server_pool][remote_server_uuid] = {
-    'bind_ip_address' => node['rs-haproxy']['application_bind_ip'],
-    'bind_port' => node['rs-haproxy']['application_bind_port']
-  }
-when 'detach'
-  # Remove application server from the respective pool
-  if app_server_pools[remote_server_pool]
-    app_server_pools[remote_server_pool].delete(remote_server_uuid)
+  raise "Instance UUID of the remote server is missing!" if node['remote_recipe']['application_server_id'].nil?
+  remote_server_uuid = node['remote_recipe']['application_server_id']
+
+  case node['remote_recipe']['application_action']
+  when 'attach'
+    # Add the application server information to the respective pool
+    app_server_pools[remote_server_pool] ||= {}
+    app_server_pools[remote_server_pool][remote_server_uuid] = {
+      'bind_ip_address' => node['remote_recipe']['application_bind_ip'],
+      'bind_port' => node['remote_recipe']['application_bind_port']
+    }
+  when 'detach'
+    # Remove application server from the respective pool
+    if app_server_pools[remote_server_pool]
+      app_server_pools[remote_server_pool].delete(remote_server_uuid)
+    end
   end
-else
-  raise "Unknown action '#{node['rs-haproxy']['action']}' for HAProxy!"
 end
 
 # Set up backend pools in haproxy.cfg

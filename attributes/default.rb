@@ -38,6 +38,3 @@ default['rs-haproxy']['health_check_uri'] = '/'
 # Algorithm used by load balancer to direct traffic
 # Supported algorithms - "roundrobin", "leastconn", "source"
 default['rs-haproxy']['algorithm'] = 'roundrobin'
-
-# Action to be performed on a backend application server
-default['rs-haproxy']['application_action'] = 'attach'
