@@ -9,11 +9,11 @@ version          '0.1.0'
 depends 'marker', '~> 1.0.0'
 depends 'haproxy'
 depends 'collectd', '~> 1.1.0'
-depends 'rightscale_tag'
+depends 'rightscale_tag', '~> 1.0.1'
 
 recipe 'rs-haproxy::default', 'Installs HAProxy and sets up monitoring for the HAProxy process.'
 recipe 'rs-haproxy::tags', 'Adds load balancer related machine tags to the load balancer server.'
-recipe 'rs-haproxy::monitoring', 'Configures monitoring by setting up collectd plugin for HAProxy.'
+recipe 'rs-haproxy::collectd', 'Configures monitoring by setting up collectd plugin for HAProxy.'
 recipe 'rs-haproxy::frontend', 'Queries for application servers in the deployment and adds them' +
  ' to the corresponding backend pools served by the load balancer.'
 recipe 'rs-haproxy::backend', 'Attaches an application server to the HAProxy load balancer in the' +
