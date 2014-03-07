@@ -46,15 +46,15 @@ server_hash["applications"].each do |application_name, app_hash|
   end
 
   remote_request_hash = {
-    'rs-haproxy': {
-      'server_id': instance_uuid,
-      'pool_name': application_name,
-      'application_action': 'detach'
+    'rs-haproxy' => {
+      'server_id' => instance_uuid,
+      'pool_name' => application_name,
+      'application_action' => 'detach'
     }
   }
 
   file "/tmp/rs-haproxy_remote_request.json" do
-    mode 660
+    mode 0660
     content ::JSON.pretty_generate(remote_request_hash)
   end
 
