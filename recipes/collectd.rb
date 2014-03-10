@@ -1,6 +1,6 @@
 #
 # Cookbook Name:: rs-haproxy
-# Recipe:: monitoring
+# Recipe:: collectd
 #
 # Copyright (C) 2014 RightScale, Inc.
 #
@@ -21,12 +21,14 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
+node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
+
 include_recipe 'collectd::default'
 
 log "Setting up monitoring for HAProxy..."
 
 # Put the haproxy.rb collectd plugin script into the collectd lib directory
-template "#{node['collectd']['plugin_dir']}/haproxy.rb" do
+template "#{node['collectd']['plugin_dir']}/haproxy" do
   source 'haproxy.rb.erb'
   owner node['haproxy']['user']
   group node['haproxy']['group']
@@ -37,21 +39,10 @@ template "#{node['collectd']['plugin_dir']}/haproxy.rb" do
   )
 end
 
-file '/usr/share/collectd/haproxy.db' do
+cookbook_file '/usr/share/collectd/haproxy.db' do
   mode 0644
-  content [
-    "haproxy_sessions\tcurrent_queued:GAUGE:0:65535, current_session:GAUGE:0:65535",
-    "haproxy_traffic\t\tcumulative_requests:COUNTER:0:200000000, response_errors:COUNTER:0:200000000, health_check_errors:COUNTER:0:200000000",
-    "haproxy_status\t\tstatus:GAUGE:-255:255"
-  ].join("\n")
-  action :create
-end
-
-ruby_block "Add '/usr/share/collectd/haproxy.db' to collectd TypesDB" do
-  block do
-    node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
-  end
-  notifies :create, "template[/etc/collectd/collectd.conf]"
+  source 'haproxy.db'
+  action :create_if_missing
 end
 
 collectd_plugin 'haproxy' do

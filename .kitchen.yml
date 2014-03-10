@@ -26,7 +26,7 @@ suites:
   run_list:
   - recipe[rs-haproxy::default]
   - recipe[rs-haproxy::tags]
-  - recipe[rs-haproxy::monitoring]
+  - recipe[rs-haproxy::collectd]
   attributes:
     cloud:
       provider: 'vagrant'
