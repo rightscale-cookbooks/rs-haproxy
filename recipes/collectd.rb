@@ -56,6 +56,7 @@ cookbook_file '/usr/share/collectd/haproxy.db' do
   action :create_if_missing
 end
 
+# Set up haproxy monitoring
 collectd_plugin 'haproxy' do
   template 'haproxy.conf.erb'
   cookbook 'rs-haproxy'
@@ -66,6 +67,7 @@ collectd_plugin 'haproxy' do
   })
 end
 
+# Set up haproxy process monitoring
 collectd_plugin 'processes' do
   options({
     :process => 'haproxy'
