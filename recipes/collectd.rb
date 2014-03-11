@@ -21,9 +21,16 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
+chef_gem 'chef-rewind'
+require 'chef/rewind'
+
 node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
 
 include_recipe 'collectd::default'
+
+rewind 'ruby_block[delete_old_plugins]' do
+  action :nothing
+end
 
 log "Setting up monitoring for HAProxy..."
 
