@@ -28,6 +28,10 @@ node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/sh
 
 include_recipe 'collectd::default'
 
+# collectd::default recipe attempts to delete collectd plugins that were not
+# created during the same runlist as this recipe. Some common plugins are installed
+# as a part of base install which runs in a different runlist. This resource
+# will safeguard the base plugins from being removed.
 rewind 'ruby_block[delete_old_plugins]' do
   action :nothing
 end
@@ -59,5 +63,11 @@ collectd_plugin 'haproxy' do
     :collectd_lib => node['collectd']['plugin_dir'],
     :instance_uuid => node['rightscale']['instance_uuid'],
     :haproxy_socket => node['haproxy']['stats_socket_path']
+  })
+end
+
+collectd_plugin 'processes' do
+  options({
+    :process => 'haproxy'
   })
 end
