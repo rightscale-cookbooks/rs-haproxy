@@ -24,6 +24,10 @@ end
 chef_gem 'chef-rewind'
 require 'chef/rewind'
 
+if node['rightscale'] && node['rightscale']['instance_uuid']
+  node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
+end
+
 node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
 
 include_recipe 'collectd::default'

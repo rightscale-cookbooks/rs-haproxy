@@ -28,6 +28,8 @@ suites:
   - recipe[rs-haproxy::tags]
   - recipe[rs-haproxy::collectd]
   attributes:
+    rightscale:
+      instance_uuid: '01-ABCDEFGH0123'
     cloud:
       provider: 'vagrant'
       public_ips: ['33.33.33.5']
