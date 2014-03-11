@@ -52,12 +52,11 @@ cookbook_file '/usr/share/collectd/haproxy.db' do
   action :create_if_missing
 end
 
-collectd_plugin 'haproxy' do
-  template 'haproxy.conf.erb'
-  cookbook 'rs-haproxy'
+collectd_plugin 'exec' do
   options({
-    :collectd_lib => node['collectd']['plugin_dir'],
-    :instance_uuid => node['rightscale']['instance_uuid'],
-    :haproxy_socket => node['haproxy']['stats_socket_path']
+    :exec => "\"haproxy\" \"#{node['collectd']['plugin_dir']}/haproxy\"" +
+      " \"--hostid\" \"#{node['rightscale']['instance_uuid']}\"" +
+      " \"--socket\" \"#{node['haproxy']['stats_socket_path']}\"" +
+      " \"--sampling-interval\" \"10\""
   })
 end

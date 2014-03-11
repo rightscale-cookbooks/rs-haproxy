@@ -1,3 +1,0 @@
-<Plugin exec>
-  Exec "haproxy" "<%= @options[:collectd_lib] %>/haproxy" "--hostid" "<%= @options[:instance_uuid] %>" "--socket" "<%= @options[:haproxy_socket] %>" "--sampling-interval" "10"
-</Plugin>
