@@ -27,7 +27,7 @@ set on a load balancer server.
 pools served by HAProxy, run the `rs-haproxy::frontend` recipe. This recipe finds the
 application server in the deployment by querying for the [application tags][Application Server Tags]
 on the server.
-* Run the `rs-haproxy::monitoring` to install HAProxy collectd plugin and set up monitoring for
+* Run the `rs-haproxy::collectd` to install HAProxy collectd plugin and set up monitoring for
 the HAProxy server.
 
 [Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers
@@ -68,7 +68,7 @@ for the list of tags set on a load balancer server. This recipe must be run to m
 discoverable to the application servers in the deployment. The application servers can then attach to
 the HAProxy server by running the `rs-haproxy::backend` recipe.
 
-## `rs-haproxy::monitoring`
+## `rs-haproxy::collectd`
 
 Sets up monitoring for the HAProxy service. This recipe installs the HAProxy collectd plugin to monitor
 the HAProxy process.
