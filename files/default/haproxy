@@ -1,0 +1,113 @@
+#!/bin/bash
+
+## HAProxy 1.3.14+ collectd plugin.
+## Requires using 'stats socket <path> [{uid | user} <uid>] [{gid | group} <gid>] [mode <mode>]'
+## options of HAProxy 1.3.14+
+
+usage()
+{
+  echo "Usage: $0 -d/--hostid <hostname> [-s/--socket <socket>] [-i/--sampling-interval]"
+  echo "    -d/--hostid:         The hostname of the machine. Instance ID or UUID"
+  echo "    -s/--socket:           The UNIX socket descriptor location (/etc/haproxy/status)"
+  echo "    -i/--sampling-interval:  The sample interval of the file check (in seconds).  Default: 20 seconds"
+  exit 1
+}
+
+# Default values
+hostid=""
+socket='/var/run/haproxy.sock'
+interval=20
+
+# Get command line arguments
+if [[ $# -le 1 ]]
+then
+  usage
+fi
+
+while [[ $# -gt 1 ]]
+do
+  cmd_option="$1"
+  shift
+
+  case $cmd_option in
+    -d|--hostid)
+      hostid=$1
+      shift
+      ;;
+    -i|--sampling-interval)
+      interval=$1
+      shift
+      ;;
+    -s|--socket)
+      socket=$1
+      shift
+      ;;
+    *)
+      usage
+      ;;
+  esac
+done
+
+if [[ $hostid == "" ]]
+then
+  echo "Host ID is missing!"
+  usage
+fi
+
+get_status_code()
+{
+  case $1 in
+    # Server is actively up.
+    UP)
+      $server_status=2
+      ;;
+     # Server is actively down.
+    DOWN)
+      $server_status=-2
+      ;;
+    # Server up but going down. Haproxy returns UP x/y.
+    GOINGDOWN)
+      $server_status=-1
+      ;;
+    # Server down but going up. Haproxy returns DOWN x/y.
+    GOINGUP)
+      $server_status=1
+      ;;
+    # not checked. Haproxy returns "no check".
+    NOCHECK)
+      $server_status=0
+      ;;
+    # Up with load balancing disabled. Haproxy returns "NOLB".
+    NOLB)
+      $server_status=0
+      ;;
+  esac
+}
+
+while true
+do
+  current_time=`date +%s`
+  echo "show stat" | socat - UNIX-CLIENT:$socket \
+  | while IFS=',' read pxname svname qcur qmax scur smax slim stot bin bout dreq dresp ereq econ eresp wretr wredis status weight act bck chkfail chdown lastchg downtime qlimit pid iid sid throttle lbtot tracked type rate rate_lim rate_max check_status check_code check_duration hrsp_1xx hrsp_2xx hrsp_3xx hrsp_4xx hrsp_5xx hrsp_other hanafail req_rate req_rate_max req_tot cli_abrt srv_abrt
+  do
+    # Skip the header line
+    if [[ "$svname" != "svname" && ! -z "$svname" ]]
+    then
+      if [[ "$svname" == "BACKEND" && "$svname" != "disabled-server" ]]
+      then
+        echo "PUTVAL $hostid/haproxy-$pxname/haproxy_sessions-total $current_time:$qcur:$scur"
+        echo "PUTVAL $hostid/haproxy-$pxname/haproxy_traffic-total $current_time:$stot:$eresp:0"
+      fi
+
+      if [[ ! $svname =~ (FRONT|BACK)END ]]
+      then
+        get_status_code $status
+        echo "PUTVAL $hostid/haproxy-$pxname/haproxy_sessions-$svname $current_time:$qcur:$scur"
+        echo "PUTVAL $hostid/haproxy-$pxname/haproxy_traffic-$svname $current_time:$stot:$eresp:$chkfail"
+        echo "PUTVAL $hostid/haproxy-$pxname/haproxy_status-$svname $current_time:$server_status"
+      fi
+    fi
+  done
+
+  sleep $interval
+done

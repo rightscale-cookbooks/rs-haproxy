@@ -39,7 +39,6 @@ suites:
       stats_user: 'user'
       stats_password: 'pass'
       health_check_uri: '/'
-      algorithm: 'roundrobin'
       session_stickiness: true
     rightscale:
       instance_uuid: '12345UUID'
@@ -61,7 +60,6 @@ suites:
       stats_user: 'user'
       stats_password: 'pass'
       health_check_uri: '/'
-      algorithm: 'roundrobin'
       session_stickiness: true
     rightscale:
       instance_uuid: '12345UUID'

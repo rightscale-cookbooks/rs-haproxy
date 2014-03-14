@@ -28,7 +28,10 @@ if node['rightscale'] && node['rightscale']['instance_uuid']
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
 end
 
-node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
+# Add the custom haproxy gauges file to collectd config
+unless node['collectd']['types_db'].include?('/usr/share/collectd/haproxy.db')
+  node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
+end
 
 include_recipe 'collectd::default'
 
@@ -42,22 +45,21 @@ end
 
 log "Setting up monitoring for HAProxy..."
 
-# Put the haproxy.rb collectd plugin script into the collectd lib directory
-template "#{node['collectd']['plugin_dir']}/haproxy" do
-  source 'haproxy.rb.erb'
-  owner node['haproxy']['user']
-  group node['haproxy']['group']
-  mode '0755'
+# Install socat package which is required by the haproxy collectd script
+package 'socat'
+
+# Put the haproxy collectd plugin script into the collectd lib directory
+cookbook_file "#{node['collectd']['plugin_dir']}/haproxy" do
+  source 'haproxy'
+  mode 0755
   cookbook 'rs-haproxy'
-  variables(
-    :socket => node['haproxy']['stats_socket_path']
-  )
+  action :create
 end
 
 cookbook_file '/usr/share/collectd/haproxy.db' do
   mode 0644
   source 'haproxy.db'
-  action :create_if_missing
+  action :create
 end
 
 # Set up haproxy monitoring

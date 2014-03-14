@@ -2,7 +2,7 @@
 # Cookbook Name:: rs-haproxy
 # Attribute:: default
 #
-# Copyright (C) 2013 RightScale, Inc.
+# Copyright (C) 2014 RightScale, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,4 +37,4 @@ default['rs-haproxy']['health_check_uri'] = '/'
 
 # Algorithm used by load balancer to direct traffic
 # Supported algorithms - "roundrobin", "leastconn", "source"
-default['rs-haproxy']['algorithm'] = 'roundrobin'
+default['rs-haproxy']['balance_algorithm'] = 'roundrobin'

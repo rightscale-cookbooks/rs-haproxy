@@ -4,10 +4,10 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '0.1.0'
+version          '1.0.0'
 
 depends 'marker', '~> 1.0.0'
-depends 'haproxy'
+depends 'haproxy', '~> 1.6.0'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.1'
 
@@ -33,7 +33,11 @@ attribute "rs-haproxy/pools",
   :type => 'array',
   :required => "recommended",
   :default => ["default"],
-  :recipes => ['rs-haproxy::default']
+  :recipes => [
+    'rs-haproxy::default',
+    'rs-haproxy::tags',
+    'rs-haproxy::frontend'
+  ]
 
 attribute "rs-haproxy/stats_uri",
   :display_name => "Statistics URI",
@@ -73,7 +77,10 @@ attribute "rs-haproxy/session_stickiness",
   :required => "optional",
   :choice => ["true", "false"],
   :default => "true",
-  :recipes => ['rs-haproxy::default']
+  :recipes => [
+    'rs-haproxy::default',
+    'rs-haproxy::frontend'
+  ]
 
 attribute "rs-haproxy/health_check_uri",
   :display_name => "Health Check URI",
@@ -84,7 +91,7 @@ attribute "rs-haproxy/health_check_uri",
   :default => "/",
   :recipes => ['rs-haproxy::default']
 
-attribute "rs-haproxy/algorithm",
+attribute "rs-haproxy/balance_algorithm",
   :display_name => "Load Balancing Algorithm",
   :description =>
     "The algorithm that the load balancer will use to direct traffic." +

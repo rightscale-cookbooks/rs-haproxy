@@ -10,7 +10,7 @@ as the HAProxy server.
 * Chef 11 or higher
 * Cookbook requirements
   * [haproxy](http://community.opscode.com/cookbooks/haproxy)
-  * [rightscale_tag](https://github.com/rightscale-cookbooks/rightscale_tag)
+  * [rightscale_tag](http://community.opscode.com/cookbooks/rightscale_tag)
   * [marker](http://community.opscode.com/cookbooks/marker)
 * Platform
   * Ubuntu 12.04
@@ -36,7 +36,7 @@ the HAProxy server.
 # Attributes
 
 * `node['rs-haproxy']['pools']` - The list of pools that the HAProxy answers. The order
-of the items in the list will be preserved when answering to requests. Last entry will
+of the items in the list will be preserved when answering to requests. The last entry will
 be the default backend and will answer for all pools not listed here.
 Default: `['default']`
 * `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report 
@@ -50,7 +50,7 @@ report page.
 to (via a cookie). Default: `true`.
 * `node['rs-haproxy']['health_check_uri']` - The URI that the load balancer will use to
 check the health of a server. Default: `/`
-* `node['rs-haproxy']['algorithm']` - The algorithm that the load balancer will use to
+* `node['rs-haproxy']['balance_algorithm']` - The algorithm that the load balancer will use to
 direct traffic. Default: `roundrobin`
 
 # Recipes
