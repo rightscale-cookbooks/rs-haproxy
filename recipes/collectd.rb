@@ -29,7 +29,7 @@ if node['rightscale'] && node['rightscale']['instance_uuid']
 end
 
 # Add the custom haproxy gauges file to collectd config
-unless node.override['collectd']['types_db'].include?('/usr/share/collectd/haproxy.db')
+unless node['collectd']['types_db'].include?('/usr/share/collectd/haproxy.db')
   node.override['collectd']['types_db'] = node['collectd']['types_db'] + ['/usr/share/collectd/haproxy.db']
 end
 

@@ -91,7 +91,6 @@ node['rs-haproxy']['pools'].each do |pool_name|
       end
 
       backend_servers_list << {backend_server => backend_server_hash}
-      Chef::Log.info "##############{backend_servers_list}"
     end
 
     node.set['haproxy']['config']['backend'][pool_name_config]['server'] ||= []

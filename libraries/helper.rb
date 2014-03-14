@@ -29,7 +29,7 @@ module RsHaproxy
     #   this returns 'www.foo.com_app'
     #
     def self.get_config_pool_name(pool_name)
-      pool_name.gsub(/[\/]/, '_')
+      pool_name.gsub('/', '_')
     end
   end
 end
