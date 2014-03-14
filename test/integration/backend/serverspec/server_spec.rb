@@ -1,34 +1,19 @@
 require 'spec_helper'
+require 'pathname'
+require 'socket'
+require 'csv'
 
-def haproxy_stat( pxname, svname, column )
+# Helper variable to sort through haproxy socket info.
 
-  socket = nil
-
-  10.times do
-    begin
-      socket = UNIXSocket.new('/var/run/haproxy.sock')
+let(:haproxy_show_stat) do
+  begin
+    UNIXSocket.open('/var/run/haproxy.sock') do |socket|
       socket.puts('show stat')
-      break
-    rescue
-      next
+      CSV.parse(socket.read)
     end
+  rescue Errno::EPIPE
+    retry
   end
-
-  content = ""
-  while line = socket.gets do
-    content << line
-  end
-
-  csv_content = CSV.parse(content)
-  index  = csv_content[0].index("#{column}")
-
-  csv_content.each do |line|
-    if line[0] =~ /#{pxname}/i and line[1] =~ /#{svname}/
-     return line[index].strip()
-    end
-  end
-
-  return nil
 end
 
 describe service("haproxy") do
@@ -72,7 +57,13 @@ describe "Verify settings through haproxy socket" do
     ["default",      "BACKEND",           "status", "UP"]
   ].each do |pool_name, server, status, status_state|
     it "#{pool_name} #{server} should have #{status} of #{status_state}" do
-      haproxy_stat(pool_name, server, status).should == status_state
+      csv_content = haproxy_show_stat
+      index  = csv_content[0].index("#{status}")
+      csv_content.each do |line|
+        if line[0] =~ /#{pool_name}/i and line[1] =~ /#{server}/
+          return line[index].strip()
+        end
+      end
     end
   end
 end
