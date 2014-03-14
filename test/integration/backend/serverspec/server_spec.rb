@@ -1,5 +1,36 @@
 require 'spec_helper'
 
+def haproxy_stat( pxname, svname, column )
+
+  socket = nil
+
+  10.times do
+    begin
+      socket = UNIXSocket.new('/var/run/haproxy.sock')
+      socket.puts('show stat')
+      break
+    rescue
+      next
+    end
+  end
+
+  content = ""
+  while line = socket.gets do
+    content << line
+  end
+
+  csv_content = CSV.parse(content)
+  index  = csv_content[0].index("#{column}")
+
+  csv_content.each do |line|
+    if line[0] =~ /#{pxname}/i and line[1] =~ /#{svname}/
+     return line[index].strip()
+    end
+  end
+
+  return nil
+end
+
 describe service("haproxy") do
   it { should be_enabled }
   it { should be_running }
@@ -39,9 +70,9 @@ describe "Verify settings through haproxy socket" do
     ["default",      "disabled-server",   "status", "MAINT"],
     ["default",      "discourse",         "status", "no check"],
     ["default",      "BACKEND",           "status", "UP"]
-  ].each do |stat|
-    it "#{stat[0]} #{stat[1]} should have #{stat[2]} of #{stat[3]}" do
-      haproxy_stat(stat[0], stat[1], stat[2]).should == stat[3]
+  ].each do |pool_name, server, status, status_state|
+    it "#{pool_name} #{server} should have #{status} of #{status_state}" do
+      haproxy_stat(pool_name, server, status).should == status_state
     end
   end
 end
