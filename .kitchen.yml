@@ -36,8 +36,8 @@ suites:
     rs-haproxy:
       pools: ['app1', 'app2', 'app3', 'default']
       stats_uri: '/haproxy-status'
-      stats_user: 'user'
-      stats_password: 'pass'
+      statsuser: 'user'
+      statspass: 'pass'
       health_check_uri: '/'
       session_stickiness: true
     rightscale:
@@ -45,7 +45,7 @@ suites:
 
 - name: backend
   run_list:
-  - recipe[fake::add_apps_to_pools]
+  - recipe[fake::default]
   - recipe[rs-haproxy::frontend]
   provisioner:
     solo_rb:
@@ -57,8 +57,8 @@ suites:
     rs-haproxy:
       pools: ['app1', 'app2', 'app3', 'default']
       stats_uri: '/haproxy-status'
-      stats_user: 'user'
-      stats_password: 'pass'
+      statsuser: 'user'
+      statspass: 'pass'
       health_check_uri: '/'
       session_stickiness: true
     rightscale:
