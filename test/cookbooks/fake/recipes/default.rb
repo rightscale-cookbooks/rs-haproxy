@@ -22,112 +22,34 @@ package 'socat'
 
 require 'json'
 
-app1_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host1"
-
-# Tags for server1 on the app1 pool
-app1_host1_tags = [
-  "server:uuid=app1host1",
-  "application:active=true",
-  "application:active_app1=true",
-  "application:bind_ip_address_app1=10.1.55.22",
-  "application:bind_port_app1=80",
-  "application:vhost_path_app1=alpha.com"
+apps_list2 = [
+  ["app1", "app1_host1", "app1host1", "10.1.55.22", "alpha.com"],
+  ["app1", "app1_host2", "app1host2", "10.1.55.33", "bravo.com"],
+  ["app2", "app2_host1", "app2host1", "10.1.66.22", "charlie.com"],
+  ["app3", "app3host1", "app3host1", "110.1.77.44", "delta.com"],
+  ["default", "default_host", "discourse", "166.78.170.64", "discourse.test.rightscale.com"]
 ]
 
-a1h1_dir = directory app1_host1_dir do
-  recursive true
-  action :nothing
-end.run_action(:create)
+apps_list.each do |app, app_host, uuid, ip, domain|
 
-a1h1_file = file "#{app1_host1_dir}/tags.json" do
-  content JSON.pretty_generate(app1_host1_tags)
-  action :nothing
-end.run_action(:create)
+  tags = [
+    "server:uuid=#{uuid}",
+    "application:active=true",
+    "application:active_#{app}=true",
+    "application:bind_ip_address_default=#{ip}",
+    "application:bind_port_default=80",
+    "application:vhost_path_default=#{domain}"
+  ]
 
-app1_host2_dir = "/vagrant/cache_dir/machine_tag_cache/app1-host2"
+  r = directory "/vagrant/cache_dir/machine_tag_cache/#{app_host}" do
+    action :nothing
+    recursive true
+  end
+  r.run_action(:create)
 
-# Tags for server2 on the app1 pool
-app1_host2_tags = [
-  "server:uuid=app1host2",
-  "application:active=true",
-  "application:active_app1=true",
-  "application:bind_ip_address_app1=10.1.55.33",
-  "application:bind_port_app1=80",
-  "application:vhost_path_app1=beta.com"
-]
-
-a1h2_dir = directory app1_host2_dir do
-  recursive true
-  action :nothing
-end.run_action(:create)
-
-a1h2_file = file "#{app1_host2_dir}/tags.json" do
-  content JSON.pretty_generate(app1_host2_tags)
-  action :nothing
-end.run_action(:create)
-
-app2_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app2-host1"
-
-# Tags for server1 on the app2 pool
-app2_host1_tags = [
-  "server:uuid=app2host1",
-  "application:active=true",
-  "application:active_app2=true",
-  "application:bind_ip_address_app2=10.1.66.22",
-  "application:bind_port_app2=80",
-  "application:vhost_path_app2=charlie.com"
-]
-
-a2h1_dir = directory app2_host1_dir do
-  recursive true
-  action :nothing
-end.run_action(:create)
-
-a2h1_file = file "#{app2_host1_dir}/tags.json" do
-  content JSON.pretty_generate(app2_host1_tags)
-  action :nothing
-end.run_action(:create)
-
-app3_host1_dir = "/vagrant/cache_dir/machine_tag_cache/app3-host1"
-
-# Tags for server1 on the app2 pool
-app3_host1_tags = [
-  "server:uuid=app3host1",
-  "application:active=true",
-  "application:active_app3=true",
-  "application:bind_ip_address_app3=10.1.77.44",
-  "application:bind_port_app3=80",
-  "application:vhost_path_app3=delta.com"
-]
-
-a3h1_dir = directory app3_host1_dir do
-  action :nothing
-  recursive true
-end.run_action(:create)
-
-a3h1_file = file "#{app3_host1_dir}/tags.json" do
-  content JSON.pretty_generate(app3_host1_tags)
-  action :nothing
-end.run_action(:create)
-
-default_folder = "/vagrant/cache_dir/machine_tag_cache/default"
-
-# Tags for server1 on the app2 pool
-default_tags = [
-  "server:uuid=discourse",
-  "application:active=true",
-  "application:active_default=true",
-  "application:bind_ip_address_default=166.78.170.64",
-  "application:bind_port_default=80",
-  "application:vhost_path_default=discourse.test.rightscale.com"
-]
-
-default_dir = directory default_folder do
-  action :nothing
-  recursive true
-end.run_action(:create)
-
-default_file = file "#{default_folder}/tags.json" do
-  content JSON.pretty_generate(default_tags)
-  action :nothing
-end.run_action(:create)
+  f = file "/vagrant/cache_dir/machine_tag_cache/#{app_host}/tags.json" do
+    content JSON.pretty_generate(tags)
+    action :nothing
+  end
+  f.run_action(:create)
+end
