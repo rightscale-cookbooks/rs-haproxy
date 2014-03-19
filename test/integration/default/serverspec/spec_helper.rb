@@ -48,29 +48,14 @@ end
 #
 # @param regex_setting [String] is the setting we want to look the value for.
 # returns the value of the parameter
-#
-# This function reads the haproxy socket.  It parses through the info section
-# and puts the data into a csv format, from which we can request values
-# given the parameter name.
+
 def haproxy_info( regex_setting )
 
-  socket = nil
-
-  10.times do
-    begin
-      socket = UNIXSocket.new('/var/run/haproxy.sock')
-      socket.puts('show info')
-      break
-    rescue
-      next
-    end
-  end
-
-  while line = socket.gets do
+  haproxy_show_info.each do |line|
     if line =~ /#{regex_setting}/i
       return line.match(/#{regex_setting}:\s+(.*)/i).captures[0]
+      end
     end
-  end
 
   return nil
 end

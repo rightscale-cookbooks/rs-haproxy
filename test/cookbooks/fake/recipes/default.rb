@@ -22,7 +22,7 @@ package 'socat'
 
 require 'json'
 
-apps_list2 = [
+apps_list = [
   ["app1", "app1_host1", "app1host1", "10.1.55.22", "alpha.com"],
   ["app1", "app1_host2", "app1host2", "10.1.55.33", "bravo.com"],
   ["app2", "app2_host1", "app2host1", "10.1.66.22", "charlie.com"],

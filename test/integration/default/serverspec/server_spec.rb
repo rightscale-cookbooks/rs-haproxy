@@ -58,6 +58,23 @@ describe "The proper user and group should exist on the server" do
 end
 
 describe "Verify info setting through haproxy socket" do
+
+  #This grabs the info from the socket and stores each line in an array
+  let(:haproxy_show_info) do
+    begin
+      socket_info = []
+      UNIXSocket.open('/var/run/haproxy.sock') do |socket|
+        socket.puts('show info')
+        while line = socket.gets do
+          socket_info.push(line)
+        end
+      end
+      return socket_info
+    rescue Errno::EPIPE
+      retry
+    end
+  end
+
   {
      maxconn: "4096",
      maxsock: "8204"
