@@ -2,8 +2,15 @@
 
 [![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
 
-Sets up HAProxy on a server and attaches all application server in the same deployment
-as the HAProxy server.
+Sets up HAProxy load balancer on a server. It also provides recipe to setup HAProxy as the front-end
+server by attaching all application servers in the same deployment as the HAProxy server to its
+back-end.
+
+The mechanism by which the HAProxy server identifies application servers in the same deployment is
+by using machine tags. Refer to the [rightscale_tag cookbook][RightScale Tag] for more information
+on the machine tags set up on the servers in a RightScale environment.
+
+[RightScale Tag]: https://github.com/rightscale-cookbooks/rightscale_tag
 
 # Requirements
 

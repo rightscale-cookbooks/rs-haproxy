@@ -57,6 +57,10 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
       app_server_pools[remote_server_pool].delete(remote_server_uuid)
     end
   end
+
+  # Reset the 'remote_recipe' hash in the node to nil to ensure subsequent recipe runs
+  # don't use the existing values from this hash.
+  node.set['remote_recipe'] = nil
 end
 
 # Set up backend pools in haproxy.cfg

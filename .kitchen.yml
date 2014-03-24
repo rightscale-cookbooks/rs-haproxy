@@ -6,7 +6,7 @@ driver_config:
     cpus: 2
     memory: 1024
   network:
-    - ["private_network", {ip: "33.33.33.5"}]
+    - ["private_network", {ip: "192.0.2.2"}]
 
 platforms:
 - name: ubuntu-12.04
@@ -20,6 +20,10 @@ platforms:
     box: opscode-centos-6.4
     box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
 
+# Tests the basic HAProxy configuration, load balancer related machine tags set on the server, and
+# the HAProxy collectd monitoring configuration. The HAProxy configuration is verified by ensuring
+# the HAProxy parameters in the haproxy.cfg file are set up as expected.
+#
 suites:
 - name: default
   run_list:
@@ -31,33 +35,34 @@ suites:
       instance_uuid: '01-ABCDEFGH0123'
     cloud:
       provider: 'vagrant'
-      public_ips: ['33.33.33.5']
+      public_ips: ['192.0.2.2']
     rs-haproxy:
       pools: ['app1', 'app2', 'app3', 'default']
       stats_uri: '/haproxy-status'
-      statsuser: 'user'
-      statspass: 'pass'
+      stats_user: 'statsuser'
+      stats_pass: 'statspass'
       health_check_uri: '/'
       session_stickiness: true
     rightscale:
       instance_uuid: '12345UUID'
 
+# Tests the HAProxy backend configuration by setting up fake application servers and attaching them
+# to HAProxy. The tests verify that the application servers are attached to the appropriate backend
+# pools served by HAProxy.
+#
 - name: backend
   run_list:
   - recipe[fake::default]
   - recipe[rs-haproxy::frontend]
-  provisioner:
-    solo_rb:
-      log_location: /var/log/chef-solo.log
   attributes:
     cloud:
       provider: 'vagrant'
-      public_ips: ['33.33.33.5']
+      public_ips: ['192.0.2.2']
     rs-haproxy:
       pools: ['app1', 'app2', 'app3', 'default']
       stats_uri: '/haproxy-status'
-      statsuser: 'user'
-      statspass: 'pass'
+      stats_user: 'statsuser'
+      stats_pass: 'statspass'
       health_check_uri: '/'
       session_stickiness: true
     rightscale:

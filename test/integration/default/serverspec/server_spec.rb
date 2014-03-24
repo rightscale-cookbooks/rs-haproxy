@@ -97,8 +97,8 @@ describe 'load_balancer server tags' do
     tags['load_balancer:active'].first.value.should be_true
   end
 
-  it "should include a public IP address of 33.33.33.5" do
-    tags['server:public_ip_0'].first.value.should eq ('33.33.33.5')
+  it "should include a public IP address of 192.0.2.2" do
+    tags['server:public_ip_0'].first.value.should eq ('192.0.2.2')
   end
 
   it "should be be active for app1" do
