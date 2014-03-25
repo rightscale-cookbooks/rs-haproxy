@@ -39,6 +39,13 @@ attribute "rs-haproxy/pools",
     'rs-haproxy::frontend'
   ]
 
+attribute "rs-haproxy/ssl_pem",
+  :display_name => "HAProxy SSL PEM",
+  :description => "PEM file containing the SSL certificates and keys for" +
+    " SSL authentication.",
+  :required => "optional",
+  :recipes => ['rs-haproxy::default']
+
 attribute "rs-haproxy/stats_uri",
   :display_name => "Statistics URI",
   :description =>

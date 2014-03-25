@@ -21,6 +21,21 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
+# Override haproxy cookbook attributes
+Chef::Log.info "Overriding haproxy/install_method to 'source'..."
+node.override['haproxy']['install_method'] = 'source'
+
+Chef::Log.info "Overriding haproxy/source/version to '1.5-dev22'..."
+node.override['haproxy']['source']['version'] = '1.5-dev22'
+
+source_url = 'http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev22.tar.gz'
+Chef::Log.info "Overriding haproxy/source/url to '#{source_url}'"
+node.override['haproxy']['source']['url'] = source_url
+node.override['haproxy']['source']['checksum'] = '980332c79ab0ffa908c77fafdf61b8cc'
+
+Chef::Log.info "Overriding haproxy/source/use_openssl to 'true'"
+node.override['haproxy']['source']['use_openssl'] = true
+
 Chef::Log.info "Overriding haproxy/enable_stats_socket to 'true'..."
 node.override['haproxy']['enable_stats_socket'] = true
 
@@ -49,11 +64,30 @@ haproxy_config = Mash.new(
   },
   'frontend' => {
     'all_requests' => {
-      'bind' => "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}",
+      # HTTP bind address
+      "bind #{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}" => "",
       'default_backend' => node['rs-haproxy']['pools'].last
     }
   }
 )
+
+# Configure SSL if a pem file is provided
+if node['rs-haproxy']['ssl_pem']
+  # Create the pem file in the HAProxy configuration directory
+  file "#{node['haproxy']['conf_dir']}/ssl_cert.pem" do
+    content node['rs-haproxy']['ssl_pem']
+    mode 0600
+    action :create
+  end
+
+  # HTTPS bind address
+  https_bind = "bind #{node['haproxy']['ssl_incoming_address']}:#{node['haproxy']['ssl_incoming_port']}"
+  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{node['haproxy']['conf_dir']}/ssl_cert.pem"
+
+  # Redirect all HTTP requests to HTTPS
+  haproxy_config['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
+end
+
 
 # Set up haproxy socket
 if node['haproxy']['enable_stats_socket']
@@ -71,12 +105,13 @@ if node['rs-haproxy']['stats_uri']
   end
 end
 
+# Enable HTTP health checks
 if node['haproxy']['httpchk']
   haproxy_config['defaults']['option'] = "httpchk GET #{node['haproxy']['httpchk']}"
   haproxy_config['defaults']['http-check'] = 'disable-on-404'
 end
 
-# Set up backend pools in haproxy.cfg
+# Set up backend pools and ACLs in haproxy.cfg
 node['rs-haproxy']['pools'].each do |pool_name|
   # Get pool name accepted by haproxy when naming the backend section
   # in haproxy.cfg. Example: '/app' is changed to '_app'
