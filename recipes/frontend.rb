@@ -72,10 +72,10 @@ node['rs-haproxy']['pools'].each do |pool_name|
   node.set['haproxy']['config']['backend'][pool_name_config] = {}
 
   # Add servers to the corresponding backend section
-  unless app_server_pools[pool_name].nil?
+  unless app_server_pools[pool_name_config].nil?
     backend_servers_list ||= []
 
-    app_server_pools[pool_name].each do |server_uuid, server_hash|
+    app_server_pools[pool_name_config].each do |server_uuid, server_hash|
       backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
 
       backend_server_hash = {

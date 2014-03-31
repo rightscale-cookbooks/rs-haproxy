@@ -8,6 +8,7 @@ cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', branch: 'generalize
 group :integration do
   cookbook 'apt', '~> 2.3.0'
   cookbook 'yum', '~> 2.4.4'
+  cookbook 'rs-application_php', github: 'rightscale-cookbooks/rs-application_php'
   cookbook 'curl'
   cookbook 'fake', path: './test/cookbooks/fake'
 end

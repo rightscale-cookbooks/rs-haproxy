@@ -31,7 +31,7 @@ node.override['haproxy']['source']['version'] = '1.5-dev22'
 source_url = 'http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev22.tar.gz'
 Chef::Log.info "Overriding haproxy/source/url to '#{source_url}'"
 node.override['haproxy']['source']['url'] = source_url
-node.override['haproxy']['source']['checksum'] = '980332c79ab0ffa908c77fafdf61b8cc'
+node.override['haproxy']['source']['checksum'] = 'b0978b4802a48ee60ca79c01c0b020c5155ac8248af65d24a248ace91b87ac2e'
 
 Chef::Log.info "Overriding haproxy/source/use_openssl to 'true'"
 node.override['haproxy']['source']['use_openssl'] = true
@@ -66,23 +66,31 @@ haproxy_config = Mash.new(
     'all_requests' => {
       # HTTP bind address
       "bind #{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}" => "",
-      'default_backend' => node['rs-haproxy']['pools'].last
+      'default_backend' => RsHaproxy::Helper.get_config_pool_name(node['rs-haproxy']['pools'].last)
     }
   }
 )
 
-# Configure SSL if a pem file is provided
-if node['rs-haproxy']['ssl_pem']
+# Configure SSL if the SSL certificate and the keys are provided
+if node['rs-haproxy']['ssl_cert']
+  haproxy_conf_dir = ::File.join(node['haproxy']['source']['prefix'], node['haproxy']['conf_dir'])
+  ssl_cert_file = ::File.join(haproxy_conf_dir, 'ssl_cert.pem')
+
+  # Create the HAProxy configuration directory
+  directory haproxy_conf_dir
+
   # Create the pem file in the HAProxy configuration directory
-  file "#{node['haproxy']['conf_dir']}/ssl_cert.pem" do
-    content node['rs-haproxy']['ssl_pem']
+  file ssl_cert_file do
+    content node['rs-haproxy']['ssl_cert']
     mode 0600
     action :create
   end
 
   # HTTPS bind address
   https_bind = "bind #{node['haproxy']['ssl_incoming_address']}:#{node['haproxy']['ssl_incoming_port']}"
-  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{node['haproxy']['conf_dir']}/ssl_cert.pem"
+
+  # SSL certificate configuration
+  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file}"
 
   # Redirect all HTTP requests to HTTPS
   haproxy_config['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
@@ -136,9 +144,14 @@ node['rs-haproxy']['pools'].each do |pool_name|
   haproxy_config['frontend']['all_requests']['acl'] ||= {}
   acl_name = "acl_#{pool_name_config}"
   if pool_name.include?('/')
+    # If pool name contains a '/' then the ACL should match the path in the request URI.
+    # e.g., www.example.com/index
     haproxy_config['frontend']['all_requests']['acl'][acl_name] = "path_dom -i #{pool_name}"
   else
-    haproxy_config['frontend']['all_requests']['acl'][acl_name] = "hdr(dom) -i #{pool_name}"
+    # Else the ACL should match the domain name in the host name of the request URI.
+    # e.g., if the request URI is http://test.example.com then the ACL will match 'test.example.com'
+    # if the request URI is http://example.com then the ACL will match 'example.com'
+    haproxy_config['frontend']['all_requests']['acl'][acl_name] = "hdr_dom(host) -i -m dom #{pool_name}"
   end
   haproxy_config['frontend']['all_requests']['use_backend'] ||= {}
   haproxy_config['frontend']['all_requests']['use_backend'][pool_name_config] = "if #{acl_name}"
