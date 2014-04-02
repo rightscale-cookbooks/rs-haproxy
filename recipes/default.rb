@@ -65,8 +65,7 @@ haproxy_config = Mash.new(
   'frontend' => {
     'all_requests' => {
       # HTTP bind address
-      "bind #{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}" => "",
-      'default_backend' => RsHaproxy::Helper.get_config_pool_name(node['rs-haproxy']['pools'].last)
+      "bind #{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}" => ""
     }
   }
 )
@@ -96,7 +95,6 @@ if node['rs-haproxy']['ssl_cert']
   haproxy_config['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
 end
 
-
 # Set up haproxy socket
 if node['haproxy']['enable_stats_socket']
   haproxy_config['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" +
@@ -119,42 +117,8 @@ if node['haproxy']['httpchk']
   haproxy_config['defaults']['http-check'] = 'disable-on-404'
 end
 
-# Set up backend pools and ACLs in haproxy.cfg
-node['rs-haproxy']['pools'].each do |pool_name|
-  # Get pool name accepted by haproxy when naming the backend section
-  # in haproxy.cfg. Example: '/app' is changed to '_app'
-  pool_name_config = RsHaproxy::Helper.get_config_pool_name(pool_name)
-
-  # Setup backend section
-  haproxy_config['backend'] ||= {}
-  haproxy_config['backend'][pool_name_config] ||= {}
-
-  # Configure session stickiness using cookies
-  if node['rs-haproxy']['session_stickiness']
-    haproxy_config['backend'][pool_name_config]['cookie'] = 'SERVERID insert indirect nocache'
-    # When cookie is enabled the haproxy.cnf should have this dummy server
-    # entry for the haproxy to start without any errors
-    haproxy_config['backend'][pool_name_config]['server'] ||= []
-    haproxy_config['backend'][pool_name_config]['server'] << {
-      'disabled-server 127.0.0.1:1' => {'disabled' => true}
-    }
-  end
-
-  # Setup ACLs
-  haproxy_config['frontend']['all_requests']['acl'] ||= {}
-  acl_name = "acl_#{pool_name_config}"
-  if pool_name.include?('/')
-    # If pool name contains a '/' then the ACL should match the path in the request URI.
-    # e.g., www.example.com/index
-    haproxy_config['frontend']['all_requests']['acl'][acl_name] = "path_dom -i #{pool_name}"
-  else
-    # Else the ACL should match the domain name in the host name of the request URI.
-    # e.g., if the request URI is http://test.example.com then the ACL will match 'test.example.com'
-    # if the request URI is http://example.com then the ACL will match 'example.com'
-    haproxy_config['frontend']['all_requests']['acl'][acl_name] = "hdr_dom(host) -i -m dom #{pool_name}"
-  end
-  haproxy_config['frontend']['all_requests']['use_backend'] ||= {}
-  haproxy_config['frontend']['all_requests']['use_backend'][pool_name_config] = "if #{acl_name}"
+if node['rs-haproxy']['session_stickiness']
+  haproxy_config['defaults']['cookie'] = 'SERVERID insert indirect nocache'
 end
 
 # Install HAProxy and setup haproxy.cnf

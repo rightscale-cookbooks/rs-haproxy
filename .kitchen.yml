@@ -37,18 +37,16 @@ suites:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']
     rs-haproxy:
-      pools: ['app1', 'app2', 'app3', 'default']
+      pools: ['test_example', 'appserver', 'example']
       stats_uri: '/haproxy-status'
       stats_user: 'statsuser'
-      stats_pass: 'statspass'
+      stats_password: 'statspass'
       health_check_uri: '/'
       session_stickiness: true
-    rightscale:
-      instance_uuid: '12345UUID'
 
-# Tests the HAProxy backend configuration by setting up fake application servers and attaching them
-# to HAProxy. The tests verify that the application servers are attached to the appropriate backend
-# pools served by HAProxy.
+# Tests the HAProxy frontend and backend configuration and SSL by setting up fake application servers
+# and attaching them to HAProxy. The tests verify that the application servers are attached to the
+# appropriate backend pools served by HAProxy.
 #
 - name: backend
   run_list:
@@ -59,11 +57,59 @@ suites:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']
     rs-haproxy:
-      pools: ['app1', 'app2', 'app3', 'default']
+      pools: ['test_example', 'appserver', 'example']
       stats_uri: '/haproxy-status'
-      stats_user: 'statsuser'
-      stats_pass: 'statspass'
       health_check_uri: '/'
       session_stickiness: true
-    rightscale:
-      instance_uuid: '12345UUID'
+
+      # Self-signed certificate used only for testing purposes
+      ssl_cert: |
+        -----BEGIN CERTIFICATE-----
+        MIIDbTCCAlWgAwIBAgIJANNJaqtzzPtzMA0GCSqGSIb3DQEBBQUAME0xCzAJBgNV
+        BAYTAkNPMQswCQYDVQQIDAJTVDELMAkGA1UEBwwCTE8xDDAKBgNVBAoMA09SRzEW
+        MBQGA1UEAwwNKi5leGFtcGxlLmNvbTAeFw0xNDAzMjgxNzU2MTRaFw0xNDA0Mjcx
+        NzU2MTRaME0xCzAJBgNVBAYTAkNPMQswCQYDVQQIDAJTVDELMAkGA1UEBwwCTE8x
+        DDAKBgNVBAoMA09SRzEWMBQGA1UEAwwNKi5leGFtcGxlLmNvbTCCASIwDQYJKoZI
+        hvcNAQEBBQADggEPADCCAQoCggEBANY+Dusdv7j2FxU08vF6+4ulIuXHKOKSh7sN
+        vUmrYqgkh6dkUlP8eqk2ZfBkC+tcJhqUPnsBkc4Bv5rFEzNXms1I1yqPnRSbVtrH
+        r1zxEB10jNiV3yqRi037jvEFsFymV+9RxIBhDJyfS7phrLbOHT9Tl7FMWbAAy8L/
+        FZqcAF8Lrz2fOi0H1P5+Ys532u2tB1pzzVqLZL7gzGmro7co4zQoQuPw+E1rM6yp
+        bCa/SaEjaot478byALIWT9H8gSl5+NETQOZislphdo+E/Sn1Q7ri4jUxzfEroUg1
+        PG0DmS+Q+55XkQCtTU8jy5eUHIS/UBfCEV5Um8jwf3TBd2AAWn0CAwEAAaNQME4w
+        HQYDVR0OBBYEFKMcB808OTOxYiyImcjUGkAsuj2aMB8GA1UdIwQYMBaAFKMcB808
+        OTOxYiyImcjUGkAsuj2aMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEB
+        ADh9b1q8103fzyFrYwq70417j4c/Odp7Qt43DCrf4eEGegyPcmGG198MpEricBqn
+        /47wVNog43WECsE6z9VTRj2L+V0j1rLxWqD5MrYyxm7GnEyOpUKdajNoEDqU8yVZ
+        FctGygXkYg+hxMSqxLBkCznN6lol5W7DPffJmPDYLVM5K9FJPR1ZFnyv73t47yj+
+        SpQQH6VM8D363UBO0mxsRhXlvkFT+hlGSLp3rO5gAqnxAJfqhk25D8fWXpu4yKjb
+        jTgOCQAaV+DDrH7hA2mSof8X/w7+TqymiZoKTsTIIWFOqUtye17NZ3UJsaBhMqXq
+        Yar7xBUgaIL0ZyXIYoKZ8ZI=
+        -----END CERTIFICATE-----
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDWPg7rHb+49hcV
+        NPLxevuLpSLlxyjikoe7Db1Jq2KoJIenZFJT/HqpNmXwZAvrXCYalD57AZHOAb+a
+        xRMzV5rNSNcqj50Um1bax69c8RAddIzYld8qkYtN+47xBbBcplfvUcSAYQycn0u6
+        Yay2zh0/U5exTFmwAMvC/xWanABfC689nzotB9T+fmLOd9rtrQdac81ai2S+4Mxp
+        q6O3KOM0KELj8PhNazOsqWwmv0mhI2qLeO/G8gCyFk/R/IEpefjRE0DmYrJaYXaP
+        hP0p9UO64uI1Mc3xK6FINTxtA5kvkPueV5EArU1PI8uXlByEv1AXwhFeVJvI8H90
+        wXdgAFp9AgMBAAECggEAZxhr82ZYaTg6+WCGe//TZmqr9Wi2WvlqSXAeI4JOsl0J
+        zlpvZ6z6lczwlxJ9zd+FEos92dFyiXC79E1bpPxGKP0hVYDQdScfT56B27bBK3t3
+        f433WzO4lmk0avVy3dLKRAbUCXcqK4BYX7M6+qkK1/tw5se37QMlCovXqJPjddh2
+        lZF538XD8Pc7zs+Dnthwp9d+OW92pshnWaJfoZs1SUaGAhA+lx/6eoU3K0HwAVVF
+        9prZaYklXtPat+giEbJ9qzcsqxf2SVkFK8dPY85Zg6hQHzen4ySSdAnsvYCcSKWG
+        CqWiytpELxKPcTgpb53Xdsh/9i/BBvlwb0tlpWIQIQKBgQD8ESDLxx3PqZG7+YE2
+        UGPKSO43ILnwlfT0ekRLhMj6rP2pldPjgmf62+WB6CGMrCIKYKLQMPWv+TzIEg9w
+        c72c+aKj3p4yiUeu/7OAwdWTCmWOt2ExKW47OkuFKN6RnWX858ZJA4io+C9IM23P
+        XGg/bdv95gQLmc9dJ5+rgIP1qQKBgQDZldd1t9BjZAu6JJfPvU8WUD6AdJdOyP0h
+        8Q/YKRCy+Sc2KXYVcH2DuCGeBJVqZGxYUZlIcBjRAq0VMr2N1Wnj/3fjOEGPzj+9
+        mnLBA7R21hdKpbKeGuIVrbOuCH6qCBE9p4tzBgoU1BqasKjn5OoQNk56BS/t6Q5K
+        Qe5p1QyatQKBgQCS4LgnhcMNOlW9Hsn4CCfdu1lzrhIq6nZt7sDU8G7cAulcY/2v
+        2FEWkAPQCp9iBPtg6KZ2gdDn1WdhfYSZlheq3Ju0uQedkvi+NCk4obn9kFVVL+3m
+        Y6njwTg4Q3RNjVXcZIHaEcEUFGoYvD8EUWg9bZp+/ATnbZyzP19+48gA4QKBgCKC
+        K0vWPUymH14EU7d01Mg7Lc59r0mlgtARRWwJB0b7UQa8CKhZ0O5FE7/WBkR7bNuN
+        BXyBms37WKwWAg4unL62U7NLxsoh8eYGStDl34dBaSxDn1KH/PdnNyoQ2tXotaNL
+        oUg62vp2sUl7Xy54Fc9Aba3YiMN4xPVuA3vxeDBJAoGAIHwCGNA7r5xC4Gel8uSj
+        aH8H7162CHCNQqg47b/3FXyJ/rAlExTCTpEZAbaHyg10aFuPb6b/rbhbwUI/B7Se
+        nD6eZ4JCINrqFlZibBcyKUjYIF6DfjH+hqTNJoast6HVJk9YQ4VRyxU2UHR8ziaj
+        1OKIMSYK4WtZl0ZmbKMuIlw=
+        -----END PRIVATE KEY-----

@@ -20,16 +20,13 @@ recipe 'rs-haproxy::frontend', 'Queries for application servers in the deploymen
 attribute "rs-haproxy/pools",
   :display_name => "Load Balance Pools",
   :description =>
-    "List of URIs or FQDNs for which the load balancer" +
-    " will create server pools to answer website requests. The order of the" +
+    "List of application pools for which the load balancer" +
+    " will create backend pools to answer website requests. The order of the" +
     " items in the list will be preserved when answering to requests." +
-    " Last entry will be the default backend and will answer for all URIs and" +
-    " FQDNs not listed here. A single entry of any name, e.g. 'default', " +
-    " 'www.mysite.com' or '/appserver', will mimic basic behavior of" +
-    " one load balancer with one pool of application servers. This will be" +
-    " used for naming server pool backends. Application servers can provide" +
-    " any number of URIs or FQDNs to join corresponding server pool" +
-    " backends. Example: www.mysite.com, api.mysite.com, /serverid, default",
+    " Last entry will be considered as the default backend and will answer for all" +
+    " requests. Application servers can provide any number of URIs or FQDNs (virtual host paths)" +
+    " to join corresponding server pool backends. The pool names can have only" +
+    " alphanumeric characters and underscores. Example: mysite, _api, default123",
   :type => 'array',
   :required => "recommended",
   :default => ["default"],
@@ -43,7 +40,10 @@ attribute "rs-haproxy/ssl_cert",
   :display_name => "HAProxy SSL Certificate",
   :description => "SSL certificates and keys for SSL authentication.",
   :required => "optional",
-  :recipes => ['rs-haproxy::default']
+  :recipes => [
+    'rs-haproxy::default',
+    'rs-haproxy::frontend'
+  ]
 
 attribute "rs-haproxy/stats_uri",
   :display_name => "Statistics URI",

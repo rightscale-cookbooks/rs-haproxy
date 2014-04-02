@@ -27,31 +27,28 @@ on the machine tags set up on the servers in a RightScale environment.
 
 * Add the `rs-haproxy::default` recipe to your run list to install HAProxy as a package and
 set up HAProxy server.
-* Run the `rs-haproxy::tags` recipe to set up load balancer related machine tags to the
-HAProxy server. Refer to [rightscale_tag cookbook][Load Balancer Tags] for the list of tags
-set on a load balancer server.
 * To attach all existing application servers in the deployment to the corresponding backend
 pools served by HAProxy, run the `rs-haproxy::frontend` recipe. This recipe finds the
 application server in the deployment by querying for the [application tags][Application Server Tags]
 on the server.
-* Run the `rs-haproxy::collectd` to install HAProxy collectd plugin and set up monitoring for
-the HAProxy server.
 
-[Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers
 [Application Server Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
 
 # Attributes
 
 * `node['rs-haproxy']['pools']` - The list of pools that the HAProxy answers. The order
 of the items in the list will be preserved when answering to requests. The last entry will
-be the default backend and will answer for all pools not listed here.
-Default: `['default']`
+be the default backend and will answer for all pools not listed here. The pool names can only
+have alphanumeric characters and underscores. Default: `['default']`
+* `node['rs-haproxy']['ssl_cert']` - The SSL certificate contents to set up HTTPS support in
+HAProxy. If this attribute is set to `nil`, then HAProxy will be set up without support for
+HTTPS. Default: `nil`
 * `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report 
-page.
+page. Default: `/haproxy-status`
 * `node['rs-haproxy']['stats_user']` - Username for the load balancer statistics report 
-page.
+page. Default: `nil`
 * `node['rs-haproxy']['stats_password']` - Password for the load balancer statistics
-report page.
+report page. Default: `nil`
 * `node['rs-haproxy']['session_stickiness']` - Determines session stickiness. Setting to
 `true`, the load balancer will reconnect a session to the last server it was connected
 to (via a cookie). Default: `true`.
@@ -64,9 +61,11 @@ direct traffic. Default: `roundrobin`
 
 ## `rs-haproxy::default`
 
-Installs HAProxy as a package and configures an HAProxy server. This recipe simply sets up the HAProxy
-configuration file using the [haproxy LWRP](https://github.com/hw-cookbooks/haproxy#haproxy), enables,
-and starts the HAProxy service.
+Installs HAProxy 1.5 by downloading the source package and compiling it. This recipe simply sets up
+the HAProxy configuration file using the [haproxy LWRP](https://github.com/hw-cookbooks/haproxy#haproxy),
+enables, and starts the HAProxy service. If the `node['rs-haproxy']['ssl_cert']` attribute is set
+with the SSL certificate contents, then this recipe will configure HTTPS support on the HAProxy
+server.
 
 ## `rs-haproxy::tags`
 
