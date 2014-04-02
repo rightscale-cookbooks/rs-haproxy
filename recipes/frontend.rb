@@ -49,7 +49,8 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
     app_server_pools[remote_server_pool] ||= {}
     app_server_pools[remote_server_pool][remote_server_uuid] = {
       'bind_ip_address' => node['remote_recipe']['application_bind_ip'],
-      'bind_port' => node['remote_recipe']['application_bind_port']
+      'bind_port' => node['remote_recipe']['application_bind_port'],
+      'vhost_path' => node['remote_recipe']['vhost_path']
     }
   when 'detach'
     # Remove application server from the respective pool
@@ -57,23 +58,41 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
       app_server_pools[remote_server_pool].delete(remote_server_uuid)
     end
   end
+
+  # Reset the 'remote_recipe' hash in the node to nil to ensure subsequent recipe runs
+  # don't use the existing values from this hash.
+  node.set['remote_recipe'] = nil
 end
 
-# Set up backend pools in haproxy.cfg
-node.set['haproxy']['config']['backend'] = {}
-node['rs-haproxy']['pools'].each do |pool_name|
-  # Get pool name accepted by haproxy when naming the backend section
-  # in haproxy.cfg. Example: '/app' is changed to '_app'
-  pool_name_config = RsHaproxy::Helper.get_config_pool_name(pool_name)
-  node.set['haproxy']['config']['backend'][pool_name_config] = {}
+node.set['haproxy']['config']['frontend'] = {}
+node.set['haproxy']['config']['frontend']['all_requests'] ||= {}
+node.set['haproxy']['config']['frontend']['all_requests']['default_backend'] = node['rs-haproxy']['pools'].last
 
-  # Add servers to the corresponding backend section
+node.set['haproxy']['config']['backend'] = {}
+
+node['rs-haproxy']['pools'].each do |pool_name|
+  # If there exists application servers with application name same as pool name, setup ACLs
+  # and backend for the pool.
   unless app_server_pools[pool_name].nil?
-    backend_servers_list ||= []
+    node.set['haproxy']['config']['backend'][pool_name] = {}
+
+    acl_setting = ''
+    backend_servers_list = []
 
     app_server_pools[pool_name].each do |server_uuid, server_hash|
-      backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
+      if server_hash['vhost_path'].include?('/')
+        # If vhost_path contains a '/' then the ACL should match the path in the request URI.
+        # e.g., if the request uri is www.example.com/index then the ACL will match '/index'
+        acl_setting = "path_dom -i #{server_hash['vhost_path']}"
+      else
+        # Else the ACL should match the domain name in the host name of the request URI.
+        # e.g., if the request URI is http://test.example.com then the ACL will
+        # match 'test.example.com'
+        # if the request URI is http://example.com then the ACL will match 'example.com'
+        acl_setting = "hdr_dom(host) -i -m dom #{server_hash['vhost_path']}"
+      end
 
+      backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
       backend_server_hash = {
         'inter' => 300,
         'rise' => 2,
@@ -87,14 +106,23 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       # Configure cookie for backend server
       if node['rs-haproxy']['session_stickiness']
+        # When cookie is enabled the haproxy.cnf should have this dummy server
+        # entry for the haproxy to start without any errors
+        backend_servers_list << {'disabled-server 127.0.0.1:1' => {'disabled' => true}}
         backend_server_hash['cookie'] = backend_server.split(' ').first
       end
 
       backend_servers_list << {backend_server => backend_server_hash}
     end
 
-    node.set['haproxy']['config']['backend'][pool_name_config]['server'] ||= []
-    node.set['haproxy']['config']['backend'][pool_name_config]['server'] = backend_servers_list
+    acl_name = "acl_#{pool_name}"
+    node.set['haproxy']['config']['frontend']['all_requests']['acl'] ||= {}
+    node.set['haproxy']['config']['frontend']['all_requests']['acl'][acl_name] = acl_setting
+    node.set['haproxy']['config']['frontend']['all_requests']['use_backend'] ||= {}
+    node.set['haproxy']['config']['frontend']['all_requests']['use_backend'][pool_name] = "if #{acl_name}"
+
+    node.set['haproxy']['config']['backend'][pool_name]['server'] ||= []
+    node.set['haproxy']['config']['backend'][pool_name]['server'] = backend_servers_list
   end
 end
 

@@ -22,34 +22,43 @@ package 'socat'
 
 require 'json'
 
-apps_list = [
-  ["app1", "app1_host1", "app1host1", "10.1.55.22", "alpha.com"],
-  ["app1", "app1_host2", "app1host2", "10.1.55.33", "bravo.com"],
-  ["app2", "app2_host1", "app2host1", "10.1.66.22", "charlie.com"],
-  ["app3", "app3host1", "app3host1", "110.1.77.44", "delta.com"],
-  ["default", "default_host", "discourse", "166.78.170.64", "discourse.test.rightscale.com"]
-]
+# Create 3 fake application servers that binds to 192.0.2.2:8080. Have 1 application server
+# serve for URL requests 'www.example.com', 1 server to serve URL requests '*/appserver',
+# and the other server to serve URL requests 'test.example.com'. All the application servers
+# will be serving the same application set up later in the recipe. We can verify HAProxy
+# backend configuration by checking if it serves pages from the correct application server
+# based on the request URL.
+[
+  ["01-ABCDEFGH0123", "test_example", "test.example.com"],
+  ["02-ABCDEFGH0123", "appserver", "/appserver"],
+  ["03-ABCDEFGH0123", "example", "example.com"]
+].each do |server_uuid, app_name, vhost|
 
-apps_list.each do |app, app_host, uuid, ip, domain|
-
+  # Fake machine_tags to be set in the VM to simulate 2-tier deployment
   tags = [
-    "server:uuid=#{uuid}",
+    "server:uuid=#{server_uuid}",
     "application:active=true",
-    "application:active_#{app}=true",
-    "application:bind_ip_address_default=#{ip}",
-    "application:bind_port_default=80",
-    "application:vhost_path_default=#{domain}"
+    "application:active_#{app_name}=true",
+    "application:bind_ip_address_#{app_name}=192.0.2.2",
+    "application:bind_port_#{app_name}=8080",
+    "application:vhost_path_#{app_name}=#{vhost}"
   ]
 
-  r = directory "/vagrant/cache_dir/machine_tag_cache/#{app_host}" do
+  r = directory "/vagrant/cache_dir/machine_tag_cache/#{server_uuid}" do
     action :nothing
     recursive true
   end
   r.run_action(:create)
 
-  f = file "/vagrant/cache_dir/machine_tag_cache/#{app_host}/tags.json" do
+  f = file "/vagrant/cache_dir/machine_tag_cache/#{server_uuid}/tags.json" do
     content JSON.pretty_generate(tags)
     action :nothing
   end
   f.run_action(:create)
 end
+
+# Set up an application server in the VM to verify HAProxy backend configuration
+node.set['rs-application_php']['application_name'] = 'example'
+node.set['rs-application_php']['scm']['revision'] = 'unified_php'
+node.set['rs-application_php']['scm']['repository'] = 'git://github.com/rightscale/examples.git'
+include_recipe 'rs-application_php::default'

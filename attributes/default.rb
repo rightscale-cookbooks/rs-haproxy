@@ -20,6 +20,9 @@
 # The pools served by the HAProxy load balancer
 default['rs-haproxy']['pools'] = ['default']
 
+# SSL certificate to set up HTTPS support
+default['rs-haproxy']['ssl_cert'] = nil
+
 # URI for HAProxy statistics
 default['rs-haproxy']['stats_uri'] = '/haproxy-status'
 

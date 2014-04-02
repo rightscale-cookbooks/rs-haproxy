@@ -1,5 +1,3 @@
-#backend
-
 require 'spec_helper'
 require 'pathname'
 require 'socket'
@@ -14,8 +12,7 @@ include Serverspec::Helper::DetectOS
 # @param svname [String] the second value in the row we want to select.
 # Returns the value found at the selected row and under the status column
 #
-def haproxy_stat( pxname, svname )
-
+def haproxy_stat(pxname, svname)
   csv_content = haproxy_show_stat
   index  = csv_content[0].index("status")
 
@@ -28,25 +25,108 @@ def haproxy_stat( pxname, svname )
   return nil
 end
 
+config_file = '/usr/local/etc/haproxy/haproxy.cfg'
+
 describe service("haproxy") do
   it { should be_enabled }
   it { should be_running }
 end
 
-describe "Verify correct port set and redirects to backend server." do
-  context "Accessing ip:port should return redirect message" do
-    describe command('curl --silent 33.33.33.5:80') do
-      it { should return_stdout /You are being <a href="http:\/\/33\.33\.33\.5\/login">redirected/ }
+describe "Verify frontend settings in haproxy.cfg file" do
+  [
+    ["frontend all_requests", "default_backend example"],
+    ["frontend all_requests", "use_backend test_example if acl_test_example"],
+    ["frontend all_requests", "use_backend appserver if acl_appserver"],
+    ["frontend all_requests", "use_backend example if acl_example"],
+    ["frontend all_requests", "bind 0.0.0.0:80"],
+    ["frontend all_requests", "bind 0.0.0.0:443 ssl crt /usr/local/etc/haproxy/ssl_cert.pem"],
+    ["frontend all_requests", "redirect scheme https if !{ ssl_fc }"],
+  ].each do |pair|
+    it "#{pair.first} should contain #{pair.last}" do
+      find_haproxy_setting(config_file, pair.first, pair.last).should == true
     end
   end
-  context "Should return the correct Discourse webpage greeting from backend" do
-    describe command('curl --silent 33.33.33.5/login') do
-      it { should return_stdout /Welcome to RightScale RightScale Discourse/ }
+end
+
+describe "Verify backend configuration" do
+  context "SSL certificate not passed to the curl call" do
+    context "Connecting to port 443" do
+      describe command([
+        'curl',
+        '--silent',
+        '--resolve www.example.com:443:192.0.2.2',
+        'https://www.example.com'
+      ].join(' ')) do
+        it { should return_exit_status 60 }
+      end
+    end
+
+    # Connecting to port 80 should redirect to HTTPS
+    context "Connecting to port 80" do
+      describe command([
+        'curl',
+        '--silent',
+        '--write-out "HTTP Response Code: %{http_code}\nRedirect URL: %{redirect_url}\n"',
+        '--resolve www.example.com:80:192.0.2.2',
+        'http://www.example.com'
+      ].join(' ')) do
+        its(:stdout) do
+          should match /HTTP Response Code: 302/
+          should match /Redirect URL: https:\/\/www.example.com\//
+        end
+      end
     end
   end
-  context "Should return backend if we specify redirect but not /login" do
-    describe command('curl --silent -L 33.33.33.5') do
-      it { should return_stdout /Welcome to RightScale RightScale Discourse/ }
+
+  context "SSL certificate passed to the curl call" do
+    describe command([
+      'curl',
+      '--silent',
+      '--resolve www.example.com:443:192.0.2.2',
+      '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
+      'https://www.example.com'
+    ].join(' ')) do
+      it { should return_stdout /Basic html serving succeeded\./ }
+    end
+
+    context "When application servers are attached to HAProxy pools" do
+      describe "Verify if HAProxy serves pages from all application servers" do
+        describe command([
+          'curl',
+          '--silent',
+          '--resolve www.example.com:443:192.0.2.2',
+          '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
+          '--cookie-jar /tmp/cookie',
+          'https://www.example.com;',
+          'cat /tmp/cookie'
+        ].join(' ')) do
+          it { should return_stdout /03-ABCDEFGH0123/ }
+        end
+
+        describe command([
+          'curl',
+          '--silent',
+          '--resolve www.example.com:443:192.0.2.2',
+          '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
+          '--cookie-jar /tmp/cookie',
+          'https://www.example.com/appserver/;',
+          'cat /tmp/cookie'
+        ].join(' ')) do
+          it { should return_stdout /02-ABCDEFGH0123/ }
+        end
+
+        describe command([
+          'curl',
+          '--silent',
+          '--resolve test.example.com:443:192.0.2.2',
+          '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
+          '--cookie-jar /tmp/cookie',
+          'https://test.example.com;',
+          'cat /tmp/cookie'
+        ].join(' ')) do
+          it { should return_stdout /01-ABCDEFGH0123/ }
+        end
+      end
     end
   end
 end
@@ -55,7 +135,7 @@ describe "Verify settings through haproxy socket" do
 
   # This function reads the haproxy socket.  It parses through the info section
   # and puts the data into a csv format.  The row is selected by providing the
-  # first two values in the row.  The column is slected by name.
+  # first two values in the row.  The column is selected by name.
   #
   let(:haproxy_show_stat) do
     begin
@@ -69,22 +149,18 @@ describe "Verify settings through haproxy socket" do
   end
 
   [
-    ["all_requests", "FRONTEND",          "OPEN"],
-    ["app1",         "disabled-server",   "MAINT"],
-    ["app1",         "app1host2",         "no check"],
-    ["app1",         "app1host1",         "no check"],
-    ["app1",         "BACKEND",           "UP"],
-    ["app2",         "disabled-server",   "MAINT"],
-    ["app2",         "app2host1",         "no check"],
-    ["app2",         "BACKEND",           "UP"],
-    ["app3",         "disabled-server",   "MAINT"],
-    ["app3",         "app3host1",         "no check"],
-    ["app3",         "BACKEND",           "UP"],
-    ["default",      "disabled-server",   "MAINT"],
-    ["default",      "discourse",         "no check"],
-    ["default",      "BACKEND",           "UP"]
+    ["all_requests", "FRONTEND", "OPEN"],
+    ["test_example", "disabled-server", "MAINT"],
+    ["test_example", "01-ABCDEFGH0123", "no check"],
+    ["test_example", "BACKEND", "UP"],
+    ["appserver", "disabled-server", "MAINT"],
+    ["appserver", "02-ABCDEFGH0123", "no check"],
+    ["appserver", "BACKEND", "UP"],
+    ["example", "disabled-server", "MAINT"],
+    ["example", "03-ABCDEFGH0123", "no check"],
+    ["example", "BACKEND", "UP"],
   ].each do |pool_name, server, status|
-    it "#{pool_name} #{server} should have status of #{status}" do
+    it "#{server} in the pool #{pool_name} should have status of #{status}" do
       haproxy_stat(pool_name, server).should eq(status)
     end
   end

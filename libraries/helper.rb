@@ -19,17 +19,17 @@
 
 module RsHaproxy
   module Helper
-    # Gets a haproxy.cfg compatible pool name.
+    # Gets a haproxy.cfg and machine tag compatible pool name.
     #
     # @param pool_name [String] the pool name
     #
     # @return [String] the config pool name
     #
     # @example Given a pool name www.foo.com/app
-    #   this returns 'www.foo.com_app'
+    #   this returns 'www_foo_com_app'
     #
     def self.get_config_pool_name(pool_name)
-      pool_name.gsub('/', '_')
+      pool_name.gsub(/[\/.]/, '_')
     end
   end
 end
