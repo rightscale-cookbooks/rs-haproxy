@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'socket'
 
-config_file = '/etc/haproxy/haproxy.cfg'
+config_file = '/usr/local/etc/haproxy/haproxy.cfg'
 
 describe file(config_file) do
   it { should be_file }
@@ -17,33 +17,26 @@ end
 # Array of pairs is used to avoid nested hashes, or a workaround for duplicate keys in the hashes.
 describe "Verify settings in haproxy.cfg file" do
   [
-    [ "global",  "maxconn 4096" ],
-    [ "global",  "user haproxy" ],
-    [ "global",  "group haproxy" ],
-    [ "global",  "stats socket\s+/var/run/haproxy\.sock user haproxy group haproxy" ],
-    [ "defaults",  "log\s+global" ],
-    [ "defaults",  "mode\s+http" ],
-    [ "defaults",  "balance\s+roundrobin" ],
-    [ "defaults",  "stats uri /haproxy-status" ],
-    [ "defaults",  "http-check disable-on-404" ],
-    [ "backend app1",  "cookie SERVERID insert indirect nocache" ],
-    [ "backend app2",  "cookie SERVERID insert indirect nocache" ],
-    [ "backend app3",  "cookie SERVERID insert indirect nocache" ],
-    [ "backend default",  "cookie SERVERID insert indirect nocache" ],
-    [ "backend app1",  "server disabled-server 127.0.0.1:1 disabled" ],
-    [ "backend app2",  "server disabled-server 127.0.0.1:1 disabled" ],
-    [ "backend app3",  "server disabled-server 127.0.0.1:1 disabled" ],
-    [ "backend default",  "server disabled-server 127.0.0.1:1 disabled" ]
+    ["global", "maxconn 4096"],
+    ["global", "user haproxy"],
+    ["global", "group haproxy"],
+    ["global", "stats socket\s+/var/run/haproxy\.sock user haproxy group haproxy"],
+    ["defaults", "log\s+global"],
+    ["defaults", "mode\s+http"],
+    ["defaults", "balance\s+roundrobin"],
+    ["defaults", "stats uri /haproxy-status"],
+    ["defaults", "http-check disable-on-404"],
+    ["defaults", "stats auth statsuser:statspass"],
+    ["defaults", "cookie SERVERID insert indirect nocache"]
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
-        find_haproxy_setting(config_file, pair.first, pair.last).should == true
+      find_haproxy_setting(config_file, pair.first, pair.last).should == true
     end
   end
 end
 
 describe service("haproxy") do
   it { should be_enabled }
-
   it { should be_running }
 end
 
@@ -77,7 +70,7 @@ describe "Verify info setting through haproxy socket" do
 
   {
      maxconn: "4096",
-     maxsock: "8204"
+     maxsock: "8223"
   }.each do |key, val|
     it "The setting #{key} should be set to #{val}" do
       haproxy_info("#{key}").should == val
@@ -86,35 +79,20 @@ describe "Verify info setting through haproxy socket" do
 end
 
 describe 'load_balancer server tags' do
-  let(:host_name) { Socket.gethostname.split('.').first }
-  let(:tags) { MachineTag::Set.new(JSON.parse(IO.read("/vagrant/cache_dir/machine_tag_cache/#{host_name}/tags.json"))) }
+  hostname = `hostname -s`.chomp
+  tag_file = "/vagrant/cache_dir/machine_tag_cache/#{hostname}/tags.json"
 
-  it "should have a UUID of 12345UUID" do
-    tags['server:uuid'].first.value.should eq ('12345UUID')
-  end
+  describe file(tag_file) do
+    it { should be_file }
 
-  it "should be an active load balancer" do
-    tags['load_balancer:active'].first.value.should be_true
-  end
+    it "should have the load balancer server tags" do
+      tags_json = JSON.load(IO.read(tag_file))
 
-  it "should include a public IP address of 192.0.2.2" do
-    tags['server:public_ip_0'].first.value.should eq ('192.0.2.2')
-  end
-
-  it "should be be active for app1" do
-    tags['load_balancer:active_app1'].first.value.should be_true
-  end
-
-  it "should be be active for app2" do
-    tags['load_balancer:active_app2'].first.value.should be_true
-  end
-
-  it "should be be active for app3" do
-    tags['load_balancer:active_app3'].first.value.should be_true
-  end
-
-  it "should be true for active_default" do
-    tags['load_balancer:active_default'].first.value.should be_true
+      tags_json.should include("load_balancer:active=true")
+      tags_json.should include("load_balancer:active_example=true")
+      tags_json.should include("load_balancer:active_appserver=true")
+      tags_json.should include("load_balancer:active_test_example=true")
+    end
   end
 end
 
