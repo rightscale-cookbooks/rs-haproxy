@@ -2,9 +2,9 @@
 
 [![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
 
-Sets up HAProxy load balancer on a server. It also provides recipe to setup HAProxy as the front-end
-server by attaching all application servers in the same deployment as the HAProxy server to its
-back-end.
+Sets up HAProxy load balancer on a server. HAProxy can be configured to support SSL encryption.
+It also provides recipe to setup HAProxy as the front-end server by attaching all application servers
+in the same deployment as the HAProxy server to its back-end.
 
 The mechanism by which the HAProxy server identifies application servers in the same deployment is
 by using machine tags. Refer to the [rightscale_tag cookbook][RightScale Tag] for more information
@@ -25,8 +25,9 @@ on the machine tags set up on the servers in a RightScale environment.
 
 # Usage
 
-* Add the `rs-haproxy::default` recipe to your run list to install HAProxy as a package and
-set up HAProxy server.
+* Add the `rs-haproxy::default` recipe to your run list to install HAProxy and set up HAProxy server.
+Configure SSL in HAProxy by setting the `node['rs-haproxy']['ssl_cert']` attribute to a PEM formatted
+file containing the SSL certificate and credentials.
 * To attach all existing application servers in the deployment to the corresponding backend
 pools served by HAProxy, run the `rs-haproxy::frontend` recipe. This recipe finds the
 application server in the deployment by querying for the [application tags][Application Server Tags]
@@ -40,9 +41,9 @@ on the server.
 of the items in the list will be preserved when answering to requests. The last entry will
 be the default backend and will answer for all pools not listed here. The pool names can only
 have alphanumeric characters and underscores. Default: `['default']`
-* `node['rs-haproxy']['ssl_cert']` - The SSL certificate contents to set up HTTPS support in
-HAProxy. If this attribute is set to `nil`, then HAProxy will be set up without support for
-HTTPS. Default: `nil`
+* `node['rs-haproxy']['ssl_cert']` - PEM formatted file containing SSL certificates and keys for SSL
+encryption. If this attribute is set to `nil`, then HAProxy will be set up without support for
+SSL. Default: `nil`
 * `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report 
 page. Default: `/haproxy-status`
 * `node['rs-haproxy']['stats_user']` - Username for the load balancer statistics report 

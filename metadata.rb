@@ -38,7 +38,8 @@ attribute "rs-haproxy/pools",
 
 attribute "rs-haproxy/ssl_cert",
   :display_name => "HAProxy SSL Certificate",
-  :description => "SSL certificates and keys for SSL authentication.",
+  :description => "PEM formatted file containing SSL certificates and keys for SSL encryption." +
+    " Unset this input to configure HAProxy without SSL encryption.",
   :required => "optional",
   :recipes => [
     'rs-haproxy::default',
