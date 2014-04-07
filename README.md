@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
 
-Sets up HAProxy load balancer on a server. HAProxy can be configured to support SSL encryption.
-It also provides recipe to setup HAProxy as the front-end server by attaching all application servers
-in the same deployment as the HAProxy server to its back-end.
+Sets up HAProxy load balancer on a server. This cookbook also provides attributes and recipes to
+configure SSL on HAProxy and set up HAProxy as the front-end by attaching application servers to its
+back-end in a 3-tier deployment setup.
 
-The mechanism by which the HAProxy server identifies application servers in the same deployment is
-by using machine tags. Refer to the [rightscale_tag cookbook][RightScale Tag] for more information
-on the machine tags set up on the servers in a RightScale environment.
+The HAProxy server identifies application servers in the same deployment by using machine tags.
+Refer to the [rightscale_tag cookbook][RightScale Tag] for more information on the machine tags
+set up on the servers in a RightScale environment.
+
+Github Repository: https://github.com/rightscale-cookbooks/rs-haproxy
 
 [RightScale Tag]: https://github.com/rightscale-cookbooks/rightscale_tag
 
@@ -25,15 +27,24 @@ on the machine tags set up on the servers in a RightScale environment.
 
 # Usage
 
-* Add the `rs-haproxy::default` recipe to your run list to install HAProxy and set up HAProxy server.
-Configure SSL in HAProxy by setting the `node['rs-haproxy']['ssl_cert']` attribute to a PEM formatted
-file containing the SSL certificate and credentials.
-* To attach all existing application servers in the deployment to the corresponding backend
-pools served by HAProxy, run the `rs-haproxy::frontend` recipe. This recipe finds the
-application server in the deployment by querying for the [application tags][Application Server Tags]
-on the server.
+To **install and configure** HAProxy with **SSL** support
 
-[Application Server Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
+* Add the `rs-haproxy::default` recipe to your run list.
+* To enable SSL in HAProxy set the `node['rs-haproxy']['ssl_cert']` attribute to a PEM formatted
+string containing the SSL certificate and the credentials. If the `node['rs-haproxy']['ssl_cert']`
+attribute is not set HAPRoxy will be configured without SSL support.
+
+To **configure** HAProxy as the **front-end**
+
+* Add the `rs-haproxy::frontend` recipe to your run list.
+* Set the `node['rs-haproxy']['pools']` attribute to a list of pool names that the HAProxy should
+serve.
+* Ensure that the application servers to be attached to HAProxy's back-end have application names
+same as one of the pool names served by HAProxy and the servers have the required machine tags
+set up. Refer to [Application Servers][Application Servers] section in the `rightscale_tag` cookbook
+for the machine tags set on the application servers.
+
+[Application Servers]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
 
 # Attributes
 
@@ -41,7 +52,7 @@ on the server.
 of the items in the list will be preserved when answering to requests. The last entry will
 be the default backend and will answer for all pools not listed here. The pool names can only
 have alphanumeric characters and underscores. Default: `['default']`
-* `node['rs-haproxy']['ssl_cert']` - PEM formatted file containing SSL certificates and keys for SSL
+* `node['rs-haproxy']['ssl_cert']` - PEM formatted string containing SSL certificates and keys for SSL
 encryption. If this attribute is set to `nil`, then HAProxy will be set up without support for
 SSL. Default: `nil`
 * `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report 
@@ -65,8 +76,8 @@ direct traffic. Default: `roundrobin`
 Installs HAProxy 1.5 by downloading the source package and compiling it. This recipe simply sets up
 the HAProxy configuration file using the [haproxy LWRP](https://github.com/hw-cookbooks/haproxy#haproxy),
 enables, and starts the HAProxy service. If the `node['rs-haproxy']['ssl_cert']` attribute is set
-with the SSL certificate contents, then this recipe will configure HTTPS support on the HAProxy
-server.
+then this recipe will configure HTTPS support on the HAProxy server. All HTTP requests will be
+redirected to HTTPS in this scenario.
 
 ## `rs-haproxy::tags`
 
@@ -82,9 +93,25 @@ the HAProxy process.
 
 ## `rs-haproxy::frontend`
 
-Attaches all existing application servers in the deployment to the corresponding pools served by HAProxy
-server. This recipe finds the application server in the deployment by querying for the [application tags][Application Server Tags]
-on the application server.
+This recipe can be used in two different contexts.
+
+* To attach all existing application servers in the deployment to the corresponding pools served by
+the HAProxy server. This recipe finds the application server in the deployment by querying for the
+[application tags][Application Server Tags] on the application server. Only the application servers
+whose application name matches one of the pool names in HAProxy are identified and attached to the
+HAProxy server.
+* To be run as a remote recipe for attaching/detaching single application server from the HAProxy
+servers. To *attach* a single application server, the server invoking the remote recipe call should
+set `node['remote_recipe']['application_action']` attribute to `attach` and pass its application
+name, bind IP address and port, server UUID, and the virtual host name to the HAProxy server.
+To *detach* a single application server, this attribute should be set to `detach` and the invoking
+server should pass its application name and the server UUID to the HAProxy server. Refer to
+[rs_run_recipe utility][rs_run_recipe] for making remote recipe calls and passing information to the
+remote recipe.
+
+[rs_run_recipe utility]: http://support.rightscale.com/12-Guides/RightLink/02-RightLink_5.9/Using_RightLink/Command_Line_Utilities#rs_run_recipe
+[Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers
+[Application Server Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
 
 # Author
 
