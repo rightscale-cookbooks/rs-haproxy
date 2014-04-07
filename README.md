@@ -96,11 +96,11 @@ the HAProxy process.
 This recipe can be used in two different contexts.
 
 * To attach all existing application servers in the deployment to the corresponding pools served by
-the HAProxy server. This recipe finds the application server in the deployment by querying for the
+the HAProxy server. This recipe finds application servers in the deployment by querying for the
 [application tags][Application Server Tags] on the application server. Only the application servers
 whose application name matches one of the pool names in HAProxy are identified and attached to the
 HAProxy server.
-* To be run as a remote recipe for attaching/detaching single application server from the HAProxy
+* To be run as a remote recipe for attaching/detaching a single application server to/from the HAProxy
 servers. To *attach* a single application server, the server invoking the remote recipe call should
 set `node['remote_recipe']['application_action']` attribute to `attach` and pass its application
 name, bind IP address and port, server UUID, and the virtual host name to the HAProxy server.
