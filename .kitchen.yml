@@ -14,13 +14,13 @@ platforms:
   - recipe[apt]
   driver_config:
     box: opscode-ubuntu-12.04
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
-- name: centos-6.4
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
+- name: centos-6.5
   run_list:
   - recipe[yum::epel]
   driver_config:
-    box: opscode-centos-6.4
-    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
+    box: opscode-centos-6.5
+    box_url: https://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.5_chef-provisionerless.box
 
 # Tests the basic HAProxy configuration, load balancer related machine tags set on the server, and
 # the HAProxy collectd monitoring configuration. The HAProxy configuration is verified by ensuring
