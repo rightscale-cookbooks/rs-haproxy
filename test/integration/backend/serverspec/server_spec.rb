@@ -30,22 +30,19 @@ end
 def add_host
   entry_line = "192.0.2.2 www.example.com test.example.com"
 
-  if open('/etc/hosts') { |f|  f.grep(/^#{entry_line}$/).empty? }
+  if open('/etc/hosts') { |f| f.grep(/^#{entry_line}$/).empty? }
     open('/etc/hosts', 'a') { |p| p.puts "\n#{entry_line}" }
   end
 
-  return false if open('/etc/hosts') { |f|  f.grep(/^#{entry_line}$/).empty? }
+  if open('/etc/hosts') { |f| f.grep(/^#{entry_line}$/).empty? }
+    false
+  else
+    true
+  end
 
-  return true
 end
 
 config_file = '/usr/local/etc/haproxy/haproxy.cfg'
-
-describe "alter /etc/hosts" do
-  it "should add entry to /etc/hosts" do
-    add_host.should == true
-  end
-end
 
 describe service("haproxy") do
   it { should be_enabled }
@@ -69,6 +66,10 @@ describe "Verify frontend settings in haproxy.cfg file" do
 end
 
 describe "Verify backend configuration" do
+  before(:all) do
+    raise "/etc/hosts not updated correctly" unless add_host
+  end
+
   context "SSL certificate not passed to the curl call" do
     context "Connecting to port 443" do
       describe command([
