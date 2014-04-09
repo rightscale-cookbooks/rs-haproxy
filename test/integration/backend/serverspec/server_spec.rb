@@ -28,7 +28,7 @@ end
 # Helper function to add to entry to /etc/hosts.
 #
 def add_host
-  entry_line = "192.0.2.2 www.example.com"
+  entry_line = "192.0.2.2 www.example.com test.example.com"
 
   if open('/etc/hosts') { |f|  f.grep(/^#{entry_line}$/).empty? }
     open('/etc/hosts', 'a') { |p| p.puts "\n#{entry_line}" }
