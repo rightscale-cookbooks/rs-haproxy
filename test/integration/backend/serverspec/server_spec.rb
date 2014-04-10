@@ -25,6 +25,23 @@ def haproxy_stat(pxname, svname)
   return nil
 end
 
+# Helper function to add to entry to /etc/hosts.
+#
+def add_host
+  entry_line = "192.0.2.2 www.example.com test.example.com"
+
+  if open('/etc/hosts') { |f| f.grep(/^#{entry_line}$/).empty? }
+    open('/etc/hosts', 'a') { |p| p.puts "\n#{entry_line}" }
+  end
+
+  if open('/etc/hosts') { |f| f.grep(/^#{entry_line}$/).empty? }
+    false
+  else
+    true
+  end
+
+end
+
 config_file = '/usr/local/etc/haproxy/haproxy.cfg'
 
 describe service("haproxy") do
@@ -49,12 +66,15 @@ describe "Verify frontend settings in haproxy.cfg file" do
 end
 
 describe "Verify backend configuration" do
+  before(:all) do
+    raise "/etc/hosts not updated correctly" unless add_host
+  end
+
   context "SSL certificate not passed to the curl call" do
     context "Connecting to port 443" do
       describe command([
         'curl',
         '--silent',
-        '--resolve www.example.com:443:192.0.2.2',
         'https://www.example.com'
       ].join(' ')) do
         it { should return_exit_status 60 }
@@ -67,7 +87,6 @@ describe "Verify backend configuration" do
         'curl',
         '--silent',
         '--write-out "HTTP Response Code: %{http_code}\nRedirect URL: %{redirect_url}\n"',
-        '--resolve www.example.com:80:192.0.2.2',
         'http://www.example.com'
       ].join(' ')) do
         its(:stdout) do
@@ -82,7 +101,6 @@ describe "Verify backend configuration" do
     describe command([
       'curl',
       '--silent',
-      '--resolve www.example.com:443:192.0.2.2',
       '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
       'https://www.example.com'
     ].join(' ')) do
@@ -94,7 +112,6 @@ describe "Verify backend configuration" do
         describe command([
           'curl',
           '--silent',
-          '--resolve www.example.com:443:192.0.2.2',
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
           'https://www.example.com;',
@@ -106,7 +123,6 @@ describe "Verify backend configuration" do
         describe command([
           'curl',
           '--silent',
-          '--resolve www.example.com:443:192.0.2.2',
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
           'https://www.example.com/appserver/;',
@@ -118,7 +134,6 @@ describe "Verify backend configuration" do
         describe command([
           'curl',
           '--silent',
-          '--resolve test.example.com:443:192.0.2.2',
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
           'https://test.example.com;',
