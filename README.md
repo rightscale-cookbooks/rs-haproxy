@@ -10,7 +10,7 @@ The HAProxy server identifies application servers in the same deployment by usin
 Refer to the [rightscale_tag cookbook][RightScale Tag] for more information on the machine tags
 set up on the servers in a RightScale environment.
 
-Github Repository: https://github.com/rightscale-cookbooks/rs-haproxy
+Github Repository: [https://github.com/rightscale-cookbooks/rs-haproxy](https://github.com/rightscale-cookbooks/rs-haproxy)
 
 [RightScale Tag]: https://github.com/rightscale-cookbooks/rightscale_tag
 
@@ -21,6 +21,7 @@ Github Repository: https://github.com/rightscale-cookbooks/rs-haproxy
   * [haproxy](http://community.opscode.com/cookbooks/haproxy)
   * [rightscale_tag](http://community.opscode.com/cookbooks/rightscale_tag)
   * [marker](http://community.opscode.com/cookbooks/marker)
+  * [collectd](https://github.com/EfrainOlivares/chef-collectd)
 * Platform
   * Ubuntu 12.04
   * CentOS 6
