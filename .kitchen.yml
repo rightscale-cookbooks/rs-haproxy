@@ -123,7 +123,6 @@ suites:
                  b8:50:b9:af:8a:0b:7c:01:81:ed:6e:12:88:72:f6:a0:e7:d2:
                  4f:e5:f6:6b:1a:92:0c:f3:74:92:ce:8d:d5:b5:4a:bd:c8:01:
                  52:50:e0:08
-
         -----BEGIN CERTIFICATE-----
         MIIDbTCCAlWgAwIBAgIJAPcgrJV5iiEYMA0GCSqGSIb3DQEBBQUAME0xCzAJBgNV
         BAYTAkNPMQswCQYDVQQIDAJTVDELMAkGA1UEBwwCTE8xDDAKBgNVBAoMA09SRzEW
