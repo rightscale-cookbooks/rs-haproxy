@@ -2,7 +2,7 @@ site :opscode
 
 metadata
 
-cookbook 'haproxy', github: 'nitinmohan87/haproxy', branch: 'centos_support'
+cookbook 'haproxy', github: 'nitinmohan87/haproxy', branch: 'rs-fixes'
 cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
 
 group :integration do
