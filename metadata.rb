@@ -38,8 +38,7 @@ attribute "rs-haproxy/pools",
 
 attribute 'rs-haproxy/incoming_port',
   :display_name => 'HAProxy HTTP Listen Port',
-  :description => 'The port to use for the HAProxy to bind for HTTP requests.' +
-    'Default: 80',
+  :description => 'The port on which HAProxy listens for HTTP requests.',
   :required => 'optional',
   :recipes => [
     'rs-haproxy::default',
@@ -58,8 +57,7 @@ attribute "rs-haproxy/ssl_cert",
 
 attribute 'rs-haproxy/ssl_incoming_port',
   :display_name => 'HAProxy HTTPS Listen Port',
-  :description => 'The port to use for the HAProxy to bind for HTTPS requests.' +
-    'Default: 443',
+  :description => 'The port on which HAProxy listens for HTTPS requests',
   :required => 'optional',
   :recipes => [
     'rs-haproxy::default',
