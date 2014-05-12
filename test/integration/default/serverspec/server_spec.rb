@@ -40,6 +40,10 @@ describe service("haproxy") do
   it { should be_running }
 end
 
+describe port(85) do
+  it { should be_listening }
+end
+
 describe "The proper user and group should exist on the server" do
   describe user('haproxy') do
     it { should exist }

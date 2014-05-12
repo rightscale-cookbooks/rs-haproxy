@@ -49,6 +49,10 @@ describe service("haproxy") do
   it { should be_running }
 end
 
+describe port(445) do
+  it { should be_listening }
+end
+
 describe "Verify frontend settings in haproxy.cfg file" do
   [
     ["frontend all_requests", "default_backend example"],
@@ -56,7 +60,7 @@ describe "Verify frontend settings in haproxy.cfg file" do
     ["frontend all_requests", "use_backend appserver if acl_appserver"],
     ["frontend all_requests", "use_backend example if acl_example"],
     ["frontend all_requests", "bind 0.0.0.0:80"],
-    ["frontend all_requests", "bind 0.0.0.0:443 ssl crt /usr/local/etc/haproxy/ssl_cert.pem"],
+    ["frontend all_requests", "bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem"],
     ["frontend all_requests", "redirect scheme https if !{ ssl_fc }"],
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
@@ -71,11 +75,11 @@ describe "Verify backend configuration" do
   end
 
   context "SSL certificate not passed to the curl call" do
-    context "Connecting to port 443" do
+    context "Connecting to port 445" do
       describe command([
         'curl',
         '--silent',
-        'https://www.example.com'
+        'https://www.example.com:445'
       ].join(' ')) do
         it { should return_exit_status 60 }
       end
@@ -102,7 +106,7 @@ describe "Verify backend configuration" do
       'curl',
       '--silent',
       '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
-      'https://www.example.com'
+      'https://www.example.com:445'
     ].join(' ')) do
       it { should return_stdout /Basic html serving succeeded\./ }
     end
@@ -114,7 +118,7 @@ describe "Verify backend configuration" do
           '--silent',
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
-          'https://www.example.com;',
+          'https://www.example.com:445;',
           'cat /tmp/cookie'
         ].join(' ')) do
           it { should return_stdout /03-ABCDEFGH0123/ }
@@ -125,7 +129,7 @@ describe "Verify backend configuration" do
           '--silent',
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
-          'https://www.example.com/appserver/;',
+          'https://www.example.com:445/appserver/;',
           'cat /tmp/cookie'
         ].join(' ')) do
           it { should return_stdout /02-ABCDEFGH0123/ }
@@ -136,7 +140,7 @@ describe "Verify backend configuration" do
           '--silent',
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
-          'https://test.example.com;',
+          'https://test.example.com:445;',
           'cat /tmp/cookie'
         ].join(' ')) do
           it { should return_stdout /01-ABCDEFGH0123/ }
