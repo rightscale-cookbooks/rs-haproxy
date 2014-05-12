@@ -36,6 +36,9 @@ node.override['haproxy']['source']['checksum'] = 'b0978b4802a48ee60ca79c01c0b020
 Chef::Log.info "Overriding haproxy/source/use_openssl to 'true'"
 node.override['haproxy']['source']['use_openssl'] = true
 
+Chef::Log.info "Overriding haproxy/incoming_port to #{node['rs-haproxy']['incoming_port']}"
+node.override['haproxy']['incoming_port'] = node['rs-haproxy']['incoming_port']
+
 Chef::Log.info "Overriding haproxy/enable_stats_socket to 'true'..."
 node.override['haproxy']['enable_stats_socket'] = true
 
@@ -72,6 +75,9 @@ haproxy_config = Mash.new(
 
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']
+  Chef::Log.info "Overriding haproxy/ssl_incoming_port to #{node['rs-haproxy']['ssl_incoming_port']}"
+  node.override['haproxy']['ssl_incoming_port'] = node['rs-haproxy']['ssl_incoming_port']
+
   haproxy_conf_dir = ::File.join(node['haproxy']['source']['prefix'], node['haproxy']['conf_dir'])
   ssl_cert_file = ::File.join(haproxy_conf_dir, 'ssl_cert.pem')
 

@@ -36,11 +36,29 @@ attribute "rs-haproxy/pools",
     'rs-haproxy::frontend'
   ]
 
+attribute 'rs-haproxy/incoming_port',
+  :display_name => 'HAProxy HTTP Listen Port',
+  :description => 'The port on which HAProxy listens for HTTP requests.',
+  :required => 'optional',
+  :recipes => [
+    'rs-haproxy::default',
+    'rs-haproxy::frontend'
+  ]
+
 attribute "rs-haproxy/ssl_cert",
   :display_name => "HAProxy SSL Certificate",
   :description => "PEM formatted string containing SSL certificates and keys for SSL encryption." +
     " Unset this to configure HAProxy without SSL encryption.",
   :required => "optional",
+  :recipes => [
+    'rs-haproxy::default',
+    'rs-haproxy::frontend'
+  ]
+
+attribute 'rs-haproxy/ssl_incoming_port',
+  :display_name => 'HAProxy HTTPS Listen Port',
+  :description => 'The port on which HAProxy listens for HTTPS requests',
+  :required => 'optional',
   :recipes => [
     'rs-haproxy::default',
     'rs-haproxy::frontend'

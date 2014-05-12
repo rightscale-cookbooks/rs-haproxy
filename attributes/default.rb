@@ -20,6 +20,12 @@
 # The pools served by the HAProxy load balancer
 default['rs-haproxy']['pools'] = ['default']
 
+# The port on which HAProxy listens for HTTP requests
+default['rs-haproxy']['incoming_port'] = 80
+
+# The port on which HAProxy listens for HTTPS requests
+default['rs-haproxy']['ssl_incoming_port'] = 443
+
 # SSL certificate to set up HTTPS support
 default['rs-haproxy']['ssl_cert'] = nil
 

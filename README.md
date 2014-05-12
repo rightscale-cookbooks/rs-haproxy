@@ -56,6 +56,8 @@ have alphanumeric characters and underscores. Default: `['default']`
 * `node['rs-haproxy']['ssl_cert']` - PEM formatted string containing SSL certificates and keys for SSL
 encryption. If this attribute is set to `nil`, then HAProxy will be set up without support for
 SSL. Default: `nil`
+* `node['rs-haproxy']['incoming_port']` - The port on which HAProxy listens for HTTP requests. Default is `80`.
+* `node['rs-haproxy']['ssl_incoming_port']` - The port on which HAProxy listens for HTTPS requests. Default is `443`.
 * `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report 
 page. Default: `/haproxy-status`
 * `node['rs-haproxy']['stats_user']` - Username for the load balancer statistics report 
