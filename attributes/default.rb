@@ -47,3 +47,16 @@ default['rs-haproxy']['health_check_uri'] = '/'
 # Algorithm used by load balancer to direct traffic
 # Supported algorithms - "roundrobin", "leastconn", "source"
 default['rs-haproxy']['balance_algorithm'] = 'roundrobin'
+
+# HAProxy install method
+# Supported values - 'package', 'source'
+default['rs-haproxy']['install_method'] = 'source'
+
+# HAProxy source version
+default['rs-haproxy']['source']['version'] = '1.5-dev22'
+
+# HAProxy source URL
+default['rs-haproxy']['source']['url'] = 'https://servertemplate-software-sources.s3.amazonaws.com/haproxy-1.5-dev22.tar.gz'
+
+# HAProxy source SHA256 checksum
+default['rs-haproxy']['source']['checksum'] = 'b0978b4802a48ee60ca79c01c0b020c5155ac8248af65d24a248ace91b87ac2e'
