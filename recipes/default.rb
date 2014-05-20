@@ -28,7 +28,7 @@ node.override['haproxy']['install_method'] = 'source'
 Chef::Log.info "Overriding haproxy/source/version to '1.5-dev22'..."
 node.override['haproxy']['source']['version'] = '1.5-dev22'
 
-source_url = 'http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev22.tar.gz'
+source_url = 'https://servertemplate-software-sources.s3.amazonaws.com/haproxy-1.5-dev22.tar.gz'
 Chef::Log.info "Overriding haproxy/source/url to '#{source_url}'"
 node.override['haproxy']['source']['url'] = source_url
 node.override['haproxy']['source']['checksum'] = 'b0978b4802a48ee60ca79c01c0b020c5155ac8248af65d24a248ace91b87ac2e'
