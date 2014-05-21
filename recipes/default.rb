@@ -21,18 +21,20 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
+# If installing from source, update attributes accordingly.
+if node['rs-haproxy']['install_method'] == 'source'
+  Chef::Log.info "Overriding haproxy/install_method to 'source'..."
+  node.override['haproxy']['install_method'] = node['rs-haproxy']['install_method']
+
+  Chef::Log.info "Overriding haproxy/source/version to #{node['rs-haproxy']['source']['version']}"
+  node.override['haproxy']['source']['version'] = node['rs-haproxy']['source']['version']
+
+  Chef::Log.info "Overriding haproxy/source/url to #{node['rs-haproxy']['source']['url']}"
+  node.override['haproxy']['source']['url'] = node['rs-haproxy']['source']['url']
+  node.override['haproxy']['source']['checksum'] = node['rs-haproxy']['source']['checksum']
+end
+
 # Override haproxy cookbook attributes
-Chef::Log.info "Overriding haproxy/install_method to 'source'..."
-node.override['haproxy']['install_method'] = 'source'
-
-Chef::Log.info "Overriding haproxy/source/version to '1.5-dev22'..."
-node.override['haproxy']['source']['version'] = '1.5-dev22'
-
-source_url = 'http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev22.tar.gz'
-Chef::Log.info "Overriding haproxy/source/url to '#{source_url}'"
-node.override['haproxy']['source']['url'] = source_url
-node.override['haproxy']['source']['checksum'] = 'b0978b4802a48ee60ca79c01c0b020c5155ac8248af65d24a248ace91b87ac2e'
-
 Chef::Log.info "Overriding haproxy/source/use_openssl to 'true'"
 node.override['haproxy']['source']['use_openssl'] = true
 
