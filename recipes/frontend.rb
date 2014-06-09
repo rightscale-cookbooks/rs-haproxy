@@ -120,15 +120,32 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       backend_servers_list << {backend_server => backend_server_hash}
 
-      # Run remote scripts/recipe provided by application server machine tag if set
+      # Run remote scripts/recipe provided by application server machine tags if set
       remote_script_tag = app_servers[server_uuid]['tags']['application',"lb_postconnect_script_#{pool_name}"].first
       if remote_script_tag
         # Determine if remote_script is a RightScript or a Chef recipe
         if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
           # Run a remote recipe
+          command = "rs_run_recipe"
+          command << " --recipient_tags 'server:uuid=#{server_uuid}'"
+          command << " --name '#{remote_script_tag.value}'"
+          command << " --policy '#{remote_script_tag.value}'"
         else
           # Run a remote RightScript
+          command = "rs_run_right_script"
+          command << " --recipient_tags 'server:uuid=#{server_uuid}'"
+          command << " --name '#{remote_script_tag.value}'"
+          # Common inputs for Windows App servers firewall RightScript
+          command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
+          command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
+          command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
         end
+        log "Running remote script on #{server_uuid}: #{command}"
+
+        execute 'Run postconnect script on application server' do
+          command command
+        end
+
       end
 
     end
