@@ -119,6 +119,18 @@ node['rs-haproxy']['pools'].each do |pool_name|
       end
 
       backend_servers_list << {backend_server => backend_server_hash}
+
+      # Run remote scripts/recipe provided by application server machine tag if set
+      remote_script_tag = app_servers[server_uuid]['tags']['application',"lb_postconnect_script_#{pool_name}"].first
+      if remote_script_tag
+        # Determine if remote_script is a RightScript or a Chef recipe
+        if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
+          # Run a remote recipe
+        else
+          # Run a remote RightScript
+        end
+      end
+
     end
 
     # Set up ACLs based on the vhost_path information from the application servers
