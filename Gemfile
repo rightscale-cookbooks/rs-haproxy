@@ -9,4 +9,5 @@ group :integration do
   gem 'test-kitchen', '~> 1.2.1'
   gem 'kitchen-vagrant'
   gem 'strainer', '~> 3.3.0'
+  gem 'hashie', '~> 2.1.1'
 end
