@@ -120,8 +120,11 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       backend_servers_list << {backend_server => backend_server_hash}
 
-      # Run remote scripts/recipe provided by application server machine tags if set
-      remote_script_tag = app_servers[server_uuid]['tags']['application',"lb_postconnect_script_#{pool_name}"].first
+      # The machine tag "application::lb_postconnect_firewall_script_#{pool_name}" is placed on an application
+      # server and has the value of a script or recipe that should run on the application server
+      # after the load balancer adds it to its config. If the machine tag is set on the application server,
+      # send a request to run it.
+      remote_script_tag = app_servers[server_uuid]['tags']['application', "lb_postconnect_firewall_script_#{pool_name}"].first
       if remote_script_tag
         # Determine if remote_script is a RightScript or a Chef recipe
         if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
