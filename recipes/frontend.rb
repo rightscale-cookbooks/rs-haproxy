@@ -132,17 +132,16 @@ node['rs-haproxy']['pools'].each do |pool_name|
           # Value is a remote recipe
 
           # Create JSON file with expected attributes to pass to rs_run_recipe
-          json_file_content = %Q|{\n|
-          json_file_content << %Q|  "rs-simple_iptables" : {\n|
-          json_file_content << %Q|     "source_ip":"#{node['cloud']['private_ips'].first}",\n|
-          json_file_content << %Q|     "target_port":"8000"\n|
-          json_file_content << %Q|  }\n|
-          json_file_content << %Q|}\n|
           file json_file do
             owner "root"
             group "root"
             mode "0700"
-            content json_file_content
+            content ::JSON.pretty_generate({
+              'remote_recipe' => {
+                'source_ip' => node['cloud']['private_ips'].first,
+                'target_port' => '8000',
+              }
+            })
             action :create
           end
 
