@@ -126,15 +126,35 @@ node['rs-haproxy']['pools'].each do |pool_name|
       # send a request to run it.
       remote_script_tag = app_servers[server_uuid]['tags']['application', "lb_postconnect_firewall_script_#{pool_name}"].first
       if remote_script_tag
+        json_file = '/tmp/recipe_attributes.json'
         # Determine if remote_script is a RightScript or a Chef recipe
         if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
-          # Run a remote recipe
+          # Value is a remote recipe
+
+          # Create JSON file with expected attributes to pass to rs_run_recipe
+          json_file_content = %Q|{\n|
+          json_file_content << %Q|  "rs-simple_iptables" : {\n|
+          json_file_content << %Q|     "source_ip":"#{node['cloud']['private_ips'].first}"\n|
+          json_file_content << %Q|     "target_port":"8000"\n|
+          json_file_content << %Q|  }\n|
+          json_file_content << %Q|}\n|
+          file json_file do
+            owner "root"
+            group "root"
+            mode "0700"
+            content json_file_content
+            action :create
+          end
+
           command = "rs_run_recipe"
           command << " --recipient_tags 'server:uuid=#{server_uuid}'"
           command << " --name '#{remote_script_tag.value}'"
           command << " --policy '#{remote_script_tag.value}'"
+          command << " --json '#{json_file}'"
+
         else
-          # Run a remote RightScript
+          # Value is a remote RightScript
+
           command = "rs_run_right_script"
           command << " --recipient_tags 'server:uuid=#{server_uuid}'"
           command << " --name '#{remote_script_tag.value}'"
@@ -149,6 +169,9 @@ node['rs-haproxy']['pools'].each do |pool_name|
           command command
         end
 
+        file json_file do
+          action :delete
+        end
       end
 
     end
