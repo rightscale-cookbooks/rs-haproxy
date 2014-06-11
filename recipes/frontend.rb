@@ -134,7 +134,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
           # Create JSON file with expected attributes to pass to rs_run_recipe
           json_file_content = %Q|{\n|
           json_file_content << %Q|  "rs-simple_iptables" : {\n|
-          json_file_content << %Q|     "source_ip":"#{node['cloud']['private_ips'].first}"\n|
+          json_file_content << %Q|     "source_ip":"#{node['cloud']['private_ips'].first}",\n|
           json_file_content << %Q|     "target_port":"8000"\n|
           json_file_content << %Q|  }\n|
           json_file_content << %Q|}\n|
