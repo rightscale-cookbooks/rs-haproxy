@@ -119,6 +119,60 @@ node['rs-haproxy']['pools'].each do |pool_name|
       end
 
       backend_servers_list << {backend_server => backend_server_hash}
+
+      # The machine tag "application::firewall_script_#{pool_name}" is placed on an application
+      # server and has the value of a script or recipe that should run on the application server
+      # after the load balancer adds it to its config. If the machine tag is set on the application server,
+      # send a request to run it.
+      remote_script_tag = app_servers[server_uuid]['tags']['application', "firewall_script_#{pool_name}"].first
+      if remote_script_tag
+        json_file = '/tmp/recipe_attributes.json'
+        # Determine if remote_script is a RightScript or a Chef recipe
+        if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
+          # Value is a remote recipe
+
+          # Create JSON file with expected attributes to pass to rs_run_recipe
+          file json_file do
+            owner "root"
+            group "root"
+            mode "0700"
+            content ::JSON.pretty_generate({
+              'remote_recipe' => {
+                'source_ip' => node['cloud']['private_ips'].first,
+                'target_port' => '8000',
+              }
+            })
+            action :create
+          end
+
+          command = "rs_run_recipe"
+          command << " --recipient_tags 'server:uuid=#{server_uuid}'"
+          command << " --name '#{remote_script_tag.value}'"
+          command << " --policy '#{remote_script_tag.value}'"
+          command << " --json '#{json_file}'"
+
+        else
+          # Value is a remote RightScript
+
+          command = "rs_run_right_script"
+          command << " --recipient_tags 'server:uuid=#{server_uuid}'"
+          command << " --name '#{remote_script_tag.value}'"
+          # Common inputs for Windows App servers firewall RightScript
+          command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
+          command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
+          command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
+        end
+        log "Running remote script on #{server_uuid}: #{command}"
+
+        execute 'Run postconnect script on application server' do
+          command command
+        end
+
+        file json_file do
+          action :delete
+        end
+      end
+
     end
 
     # Set up ACLs based on the vhost_path information from the application servers
