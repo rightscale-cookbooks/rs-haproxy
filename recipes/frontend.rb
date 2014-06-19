@@ -161,6 +161,11 @@ node['rs-haproxy']['pools'].each do |pool_name|
           command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
           command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
           command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
+          if node['remote_recipe']['application_action'] == 'detach'
+            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
+          else
+            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:allow'"
+          end
         end
         log "Running remote script on #{server_uuid}: #{command}"
 
