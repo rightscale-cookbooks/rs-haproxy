@@ -59,6 +59,9 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
     end
   end
 
+  # Set variable to application_action to keep within scope of this recipe after remote_recipe is reset below.
+  application_action = node['remote_recipe']['application_action']
+
   # Reset the 'remote_recipe' hash in the node to nil to ensure subsequent recipe runs
   # don't use the existing values from this hash.
   node.set['remote_recipe'] = nil
@@ -161,10 +164,11 @@ node['rs-haproxy']['pools'].each do |pool_name|
           command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
           command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
           command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
-          if node['remote_recipe']['application_action'] == 'detach'
-            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
-          else
+          case application_action
+          when 'attach'
             command << " --parameter 'LB_ALLOW_DENY_ACTION=text:allow'"
+          when 'detach'
+            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
           end
         end
         log "Running remote script on #{server_uuid}: #{command}"
