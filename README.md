@@ -1,6 +1,10 @@
 # rs-haproxy cookbook
 
-[![Build Status](https://travis-ci.org/rightscale-cookbooks/rs-haproxy.png?branch=master)](https://travis-ci.org/rightscale-cookbooks/rs-haproxy)
+[![Release](https://img.shields.io/github/release/rightscale-cookbooks/rs-haproxy.svg?style=flat)][release]
+[![Build Status](https://img.shields.io/travis/rightscale-cookbooks/rs-haproxy.svg?style=flat)][travis]
+
+[release]: https://github.com/rightscale-cookbooks/rs-haproxy/releases/latest
+[travis]: https://travis-ci.org/rightscale-cookbooks/rs-haproxy
 
 Sets up HAProxy load balancer on a server. This cookbook also provides attributes and recipes to
 configure SSL on HAProxy and set up HAProxy as the front-end by attaching application servers to its
