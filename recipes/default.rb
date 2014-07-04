@@ -26,8 +26,11 @@ if node['rs-haproxy']['install_method'] == 'source'
   Chef::Log.info "Overriding haproxy/install_method to 'source'..."
   node.override['haproxy']['install_method'] = node['rs-haproxy']['install_method']
 
-  Chef::Log.info "Overriding haproxy/source/version to #{node['rs-haproxy']['source']['version']}"
-  node.override['haproxy']['source']['version'] = node['rs-haproxy']['source']['version']
+  source_version = node['rs-haproxy']['source']['version'] ||
+    node['rs-haproxy']['source']['url'].split('/').last.sub(/^haproxy-/,'').sub(/.tar.gz$|.tgz$/,'')
+
+  Chef::Log.info "Overriding haproxy/source/version to #{source_version}"
+  node.override['haproxy']['source']['version'] = source_version
 
   Chef::Log.info "Overriding haproxy/source/url to #{node['rs-haproxy']['source']['url']}"
   node.override['haproxy']['source']['url'] = node['rs-haproxy']['source']['url']
