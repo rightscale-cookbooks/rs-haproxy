@@ -136,19 +136,21 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
           # Create JSON file with expected attributes to pass to rs_run_recipe
           file json_file do
-            owner "root"
-            group "root"
-            mode "0700"
+            owner 'root'
+            group 'root'
+            mode '0700'
             content ::JSON.pretty_generate({
               'remote_recipe' => {
-                'source_ip' => node['cloud']['private_ips'].first,
-                'target_port' => '8000',
-              }
+                'lb_private_ip' => ( node['cloud']['private_ips'].first || nil ),
+                'lb_public_ip' => ( node['cloud']['public_ips'].first || nil ),
+                'pool_name' => pool_name,
+                'action' => ( application_action == 'detach' ? 'deny' : 'allow' ),
+              }.reject { |key, value| value.nil? }
             })
             action :create
           end
 
-          command = "rs_run_recipe"
+          command = 'rs_run_recipe'
           command << " --recipient_tags 'server:uuid=#{server_uuid}'"
           command << " --name '#{remote_script_tag.value}'"
           command << " --policy '#{remote_script_tag.value}'"
@@ -157,7 +159,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
         else
           # Value is a remote RightScript
 
-          command = "rs_run_right_script"
+          command = 'rs_run_right_script'
           command << " --recipient_tags 'server:uuid=#{server_uuid}'"
           command << " --name '#{remote_script_tag.value}'"
           # Common inputs for Windows App servers firewall RightScript
