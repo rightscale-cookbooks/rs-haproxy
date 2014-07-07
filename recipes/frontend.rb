@@ -140,6 +140,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
             group 'root'
             mode '0700'
             content ::JSON.pretty_generate({
+              # Hash entries with a 'nil' value will be removed by the 'reject' method.
               'remote_recipe' => {
                 'lb_private_ip' => ( node['cloud']['private_ips'].first || nil ),
                 'lb_public_ip' => ( node['cloud']['public_ips'].first || nil ),
