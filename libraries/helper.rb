@@ -31,5 +31,22 @@ module RsHaproxy
     def self.get_config_pool_name(pool_name)
       pool_name.gsub(/[\/.]/, '_')
     end
+
+    # Determine version of HAProxy from source URL filename.
+    #
+    # @param uri [String] URI/URL of HAProxy source location
+    #
+    # @return [String] version number from HAProxy filename
+    #   or nil if unable to determine version name
+    #
+    def self.get_haproxy_version(uri)
+      require 'pathname'
+      require 'uri'
+
+      filename = Pathname.new(URI.parse(uri).path).basename.to_s
+      version = filename.split('/').last.sub(/^haproxy-/,'').sub(/.tar.gz$|.tgz$/,'')
+      version =~ /^\d/ ? version : nil
+    end
+
   end
 end

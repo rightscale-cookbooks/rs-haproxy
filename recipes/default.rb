@@ -30,8 +30,8 @@ if node['rs-haproxy']['install_method'] == 'source'
   if node['rs-haproxy']['source']['version']
     source_version = node['rs-haproxy']['source']['version']
   else
-    source_version = node['rs-haproxy']['source']['url'].split('/').last.sub(/^haproxy-/,'').sub(/.tar.gz$|.tgz$/,'')
-    unless source_version =~ /^\d/
+    source_version = RsHaproxy::Helper.get_haproxy_version(node['rs-haproxy']['source']['url'])
+    unless source_version
       raise "Unable to determine version from source filename. Please set version in rs-haproxy/source/version attribute."
     end
   end
