@@ -123,7 +123,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       backend_servers_list << {backend_server => backend_server_hash}
 
-      # The machine tag "application::firewall_script_#{pool_name}" is placed on an application
+      # The machine tag "application:firewall_script_#{pool_name}" is placed on an application
       # server and has the value of a script or recipe that should run on the application server
       # after the load balancer adds it to its config. If the machine tag is set on the application server,
       # send a request to run it.
