@@ -59,6 +59,9 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
     end
   end
 
+  # Set variable to application_action to keep within scope of this recipe after remote_recipe is reset below.
+  application_action = node['remote_recipe']['application_action']
+
   # Reset the 'remote_recipe' hash in the node to nil to ensure subsequent recipe runs
   # don't use the existing values from this hash.
   node.set['remote_recipe'] = nil
@@ -120,7 +123,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       backend_servers_list << {backend_server => backend_server_hash}
 
-      # The machine tag "application::firewall_script_#{pool_name}" is placed on an application
+      # The machine tag "application:firewall_script_#{pool_name}" is placed on an application
       # server and has the value of a script or recipe that should run on the application server
       # after the load balancer adds it to its config. If the machine tag is set on the application server,
       # send a request to run it.
@@ -133,19 +136,22 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
           # Create JSON file with expected attributes to pass to rs_run_recipe
           file json_file do
-            owner "root"
-            group "root"
-            mode "0700"
+            owner 'root'
+            group 'root'
+            mode '0700'
             content ::JSON.pretty_generate({
+              # Hash entries with a 'nil' value will be removed by the 'reject' method.
               'remote_recipe' => {
-                'source_ip' => node['cloud']['private_ips'].first,
-                'target_port' => '8000',
-              }
+                'lb_private_ip' => ( node['cloud']['private_ips'].first || nil ),
+                'lb_public_ip' => ( node['cloud']['public_ips'].first || nil ),
+                'pool_name' => pool_name,
+                'action' => ( application_action == 'detach' ? 'deny' : 'allow' ),
+              }.reject { |key, value| value.nil? }
             })
             action :create
           end
 
-          command = "rs_run_recipe"
+          command = 'rs_run_recipe'
           command << " --recipient_tags 'server:uuid=#{server_uuid}'"
           command << " --name '#{remote_script_tag.value}'"
           command << " --policy '#{remote_script_tag.value}'"
@@ -154,13 +160,19 @@ node['rs-haproxy']['pools'].each do |pool_name|
         else
           # Value is a remote RightScript
 
-          command = "rs_run_right_script"
+          command = 'rs_run_right_script'
           command << " --recipient_tags 'server:uuid=#{server_uuid}'"
           command << " --name '#{remote_script_tag.value}'"
           # Common inputs for Windows App servers firewall RightScript
           command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
           command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
           command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
+          case application_action
+          when 'attach'
+            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:allow'"
+          when 'detach'
+            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
+          end
         end
         log "Running remote script on #{server_uuid}: #{command}"
 
