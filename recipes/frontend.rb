@@ -31,10 +31,10 @@ end
 app_servers = find_application_servers(node)
 app_server_pools = group_servers_by_application_name(app_servers)
 
-# If this recipe is called via the remote_recipe resource, merge the
+# If this recipe is called via the remote_recipe resource, add or remove the
 # application server information sent through the resource with the
 # application server pools hash. This is to ensure the application server
-# which made the remote recipe call is added to the list of application servers
+# which made the remote recipe call is updated in the list of application servers
 # in the deployment.
 unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
   raise "Load balancer pool name is missing in the remote recipe call!" if node['remote_recipe']['pool_name'].nil?
