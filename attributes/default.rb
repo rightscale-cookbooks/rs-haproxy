@@ -53,10 +53,11 @@ default['rs-haproxy']['balance_algorithm'] = 'roundrobin'
 default['rs-haproxy']['install_method'] = 'source'
 
 # HAProxy source version
-default['rs-haproxy']['source']['version'] = '1.5-dev22'
+# Set to nil to attempt retrieving version from rs-haproxy/source/url
+default['rs-haproxy']['source']['version'] = nil
 
 # HAProxy source URL
-default['rs-haproxy']['source']['url'] = 'https://servertemplate-software-sources.s3.amazonaws.com/haproxy-1.5-dev22.tar.gz'
+default['rs-haproxy']['source']['url'] = 'https://servertemplate-software-sources.s3.amazonaws.com/haproxy-1.5.1.tar.gz'
 
 # HAProxy source SHA256 checksum
-default['rs-haproxy']['source']['checksum'] = 'b0978b4802a48ee60ca79c01c0b020c5155ac8248af65d24a248ace91b87ac2e'
+default['rs-haproxy']['source']['checksum'] = '69b54be39247b4a7556b4a7d3bd90ffd4acf35799ffa7125bbadebab8e5df5b4'

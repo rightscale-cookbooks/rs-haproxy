@@ -26,8 +26,18 @@ if node['rs-haproxy']['install_method'] == 'source'
   Chef::Log.info "Overriding haproxy/install_method to 'source'..."
   node.override['haproxy']['install_method'] = node['rs-haproxy']['install_method']
 
-  Chef::Log.info "Overriding haproxy/source/version to #{node['rs-haproxy']['source']['version']}"
-  node.override['haproxy']['source']['version'] = node['rs-haproxy']['source']['version']
+  # If rs-haproxy/source/version attribute not set, determine version from source filename.
+  if node['rs-haproxy']['source']['version']
+    source_version = node['rs-haproxy']['source']['version']
+  else
+    source_version = RsHaproxy::Helper.get_haproxy_version(node['rs-haproxy']['source']['url'])
+    unless source_version
+      raise "Unable to determine version from source filename. Please set version in rs-haproxy/source/version attribute."
+    end
+  end
+
+  Chef::Log.info "Overriding haproxy/source/version to #{source_version}"
+  node.override['haproxy']['source']['version'] = source_version
 
   Chef::Log.info "Overriding haproxy/source/url to #{node['rs-haproxy']['source']['url']}"
   node.override['haproxy']['source']['url'] = node['rs-haproxy']['source']['url']
