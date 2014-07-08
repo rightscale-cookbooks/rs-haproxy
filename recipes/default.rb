@@ -139,12 +139,8 @@ if node['rs-haproxy']['session_stickiness']
   haproxy_config['defaults']['cookie'] = 'SERVERID insert indirect nocache'
 end
 
-# Service resource created to restart rsyslog if '/etc/rsyslog.d/10-haproxy.conf' is created.
-service 'rsyslog' do
-  service_name 'rsyslog'
-  supports :status => true, :start => true, :stop => true, :restart => true
-  action :nothing
-end
+# Confirm that rsyslog is installed.
+include_recipe 'rs-base::rsyslog'
 
 # Configure rsyslog to handle logs from haproxy.
 cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
@@ -155,7 +151,6 @@ cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
   group 'root'
   action :create
   notifies :restart, 'service[rsyslog]'
-  only_if { ::File.directory?('/etc/rsyslog.d') }
 end
 
 # Install HAProxy and setup haproxy.cnf
