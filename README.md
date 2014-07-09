@@ -116,6 +116,11 @@ server should pass its application name and the server UUID to the HAProxy serve
 [rs_run_recipe utility][rs_run_recipe] for making remote recipe calls and passing information to the
 remote recipe.
 
+## `rs-haproxy::schedule`
+
+Configure cron to periodically run `rs-haproxy::frontend` confirming that all application servers in the
+deployment are registered with HAProxy.
+
 [rs_run_recipe]: http://support.rightscale.com/12-Guides/RightLink/02-RightLink_5.9/Using_RightLink/Command_Line_Utilities#rs_run_recipe
 [Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers
 [Application Server Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
