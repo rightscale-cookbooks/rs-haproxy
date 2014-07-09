@@ -131,12 +131,26 @@ end
 
 # Enable HTTP health checks
 if node['haproxy']['httpchk']
-  haproxy_config['defaults']['option'] = "httpchk GET #{node['haproxy']['httpchk']}"
+  haproxy_config['defaults']['option'].push("httpchk GET #{node['haproxy']['httpchk']}")
   haproxy_config['defaults']['http-check'] = 'disable-on-404'
 end
 
 if node['rs-haproxy']['session_stickiness']
   haproxy_config['defaults']['cookie'] = 'SERVERID insert indirect nocache'
+end
+
+# Confirm that rsyslog is installed.
+include_recipe 'rs-base::rsyslog'
+
+# Configure rsyslog to handle logs from haproxy.
+cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
+  source 'rsyslog-10-haproxy.conf'
+  backup 0
+  mode 0644
+  owner 'root'
+  group 'root'
+  action :create
+  notifies :restart, 'service[rsyslog]'
 end
 
 # Install HAProxy and setup haproxy.cnf
