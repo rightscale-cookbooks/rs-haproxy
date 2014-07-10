@@ -17,6 +17,7 @@ recipe 'rs-haproxy::tags', 'Adds load balancer related machine tags to the load 
 recipe 'rs-haproxy::collectd', 'Configures monitoring by setting up collectd plugin for HAProxy.'
 recipe 'rs-haproxy::frontend', 'Queries for application servers in the deployment and adds them' +
  ' to the corresponding backend pools served by the load balancer.'
+recipe 'rs-haproxy::schedule', 'Configure cron to periodically run rs-haproxy::frontend.'
 
 attribute "rs-haproxy/pools",
   :display_name => "Load Balance Pools",
