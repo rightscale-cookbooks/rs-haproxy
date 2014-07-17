@@ -32,5 +32,5 @@ cron "rs-haproxy::frontend" do
   minute "*/#{interval}"
   hour '*'
   command "rs_run_recipe --policy 'rs-haproxy::frontend' --name 'rs-haproxy::frontend'"
-  action schdule_enable ? :create : :delete
+  action schedule_enable ? :create : :delete
 end
