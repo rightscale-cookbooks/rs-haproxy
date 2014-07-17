@@ -21,6 +21,9 @@ marker "recipe_start_rightscale" do
   template "rightscale_audit_entry.erb"
 end
 
+# From rs-haproxy/schedule/enable, determine if we are to enable or disable scheduling.
+schedule_enable = node['rs-haproxy']['schedule']['enable'] == true || node['rs-haproxy']['schedule']['enable'] == 'true'
+
 # Interval in minutes for scheduling frontend run.
 interval = node['rs-haproxy']['schedule']['interval']
 
@@ -29,5 +32,5 @@ cron "rs-haproxy::frontend" do
   minute "*/#{interval}"
   hour '*'
   command "rs_run_recipe --policy 'rs-haproxy::frontend' --name 'rs-haproxy::frontend'"
-  action :create
+  action schdule_enable ? :create : :delete
 end
