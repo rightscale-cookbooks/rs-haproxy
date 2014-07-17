@@ -127,3 +127,19 @@ attribute "rs-haproxy/balance_algorithm",
   :default => "roundrobin",
   :choice => ["roundrobin", "leastconn", "source"],
   :recipes => ['rs-haproxy::default']
+
+attribute "rs-haproxy/schedule/enable",
+  :display_name => 'Periodic Queries of Application Server',
+  :description => 'Enable or disable periodic queries of application servers in the deployment.'
+  :required => 'optional',
+  :choice => ['true', 'false'],
+  :default => 'true',
+  :recipes => ['rs-haproxy::schedule']
+
+attribute "rs-haproxy/schedule/interval",
+  :display_name => 'Interval for Periodic Queries',
+  :description => 'Interval in minutes to run periodic queries of application servers in the deployment.' +
+    ' Example: 15'
+  :required => 'optional',
+  :default => '15',
+  :recipes => ['rs-haproxy::schedule']

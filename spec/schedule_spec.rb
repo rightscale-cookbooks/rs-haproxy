@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe 'rs-haproxy::schedule' do
   let(:chef_run) do
     ChefSpec::Runner.new do |node|
-      node.set['rs-haproxy']['schedule_interval'] = '15'
+      node.set['rs-haproxy']['schedule']['interval'] = '15'
     end.converge(described_recipe)
   end
 

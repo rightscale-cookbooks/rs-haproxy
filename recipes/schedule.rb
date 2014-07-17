@@ -22,7 +22,7 @@ marker "recipe_start_rightscale" do
 end
 
 # Interval in minutes for scheduling frontend run.
-interval = node['rs-haproxy']['schedule_interval']
+interval = node['rs-haproxy']['schedule']['interval']
 
 # Run rs-haproxy::frontend on given interval.
 cron "rs-haproxy::frontend" do
