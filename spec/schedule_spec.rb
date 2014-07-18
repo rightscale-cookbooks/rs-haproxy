@@ -27,7 +27,7 @@ describe 'rs-haproxy::schedule' do
       end.converge(described_recipe)
     end
 
-    it 'creates a crontab entry' do
+    it 'deletes the crontab entry' do
       expect(chef_run).to delete_cron('rs-haproxy::frontend').with(
         minute: '*/15',
         hour: '*',
