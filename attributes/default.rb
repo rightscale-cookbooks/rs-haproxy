@@ -41,8 +41,11 @@ default['rs-haproxy']['stats_password'] = nil
 # Enable/Disable sticky sessions using cookie
 default['rs-haproxy']['session_stickiness'] = true
 
+# Enable/Disable periodically running rs-haproxy::frontend
+default['rs-haproxy']['schedule']['enable'] = true
+
 # Interval to periodically run rs-haproxy::frontend, in minutes
-default['rs-haproxy']['schedule_interval'] = '15'
+default['rs-haproxy']['schedule']['interval'] = '15'
 
 # URI to check server health
 default['rs-haproxy']['health_check_uri'] = '/'
