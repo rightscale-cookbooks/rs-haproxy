@@ -3,6 +3,11 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v1.1.1
+------
+
+- Enable/disable schedule to periodically run rs-haproxy::frontend.
+
 v1.1.0
 ------
 
