@@ -9,6 +9,10 @@ driver_config:
     - ["private_network", {ip: "192.0.2.2"}]
 
 platforms:
+- name: ubuntu-14.04
+  run_list: ['recipe[apt]']
+  driver_config:
+    box: opscode-ubuntu-14.04
 - name: ubuntu-12.04
   run_list:
   - recipe[apt]

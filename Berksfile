@@ -4,7 +4,7 @@ metadata
 
 cookbook 'haproxy', github: 'nitinmohan87/haproxy', branch: 'rs-fixes'
 cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
-cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base', tag: 'v1.1.0'
+cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base', tag: 'v1.1.2'
 
 group :integration do
   cookbook 'apt', '~> 2.3.0'
