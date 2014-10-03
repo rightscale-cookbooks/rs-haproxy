@@ -17,4 +17,5 @@ group :integration do
   cookbook 'fake', path: './test/cookbooks/fake'
   cookbook 'chef-sugar'
   cookbook 'hostsfile'
+  cookbook 'rhsm', '~> 1.0.0'
 end

@@ -12,3 +12,4 @@ depends 'hostsfile'
 
 recipe 'fake::default', 'Creates fake application servers to verify HAProxy backend configuration.'
 recipe 'fake::mysql_repo', 'Creates fake application servers to verify HAProxy backend configuration.'
+recipe 'fake::wget_cacert', 'If RHEL, update /etc/wgetrc to look at /etc/ssl/certs/ca-bundle.trust.crt.'
