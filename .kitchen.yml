@@ -29,11 +29,12 @@ platforms:
   driver_config:
     box: opscode-centos-7.0
 - name: rhel-6.5
-  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::mysql_repo]', 'recipe[fake::wget_cacert]']
+  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
   attributes:
     rhsm:
       username: <%= ENV['RHSM_USERNAME'] %>
       password: <%= ENV['RHSM_PASSWORD'] %>
+      additional_repos: ['rhel-6-server-optional-rpms']
   driver_config:
     box: local-rhel-6.5
     box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
