@@ -3,9 +3,6 @@ require 'pathname'
 require 'socket'
 require 'csv'
 
-include Serverspec::Helper::Exec
-include Serverspec::Helper::DetectOS
-
 # Helper function to sort through haproxy socket info.
 #
 # @param pxname [String] the first value in row we want to select.
@@ -81,7 +78,7 @@ describe "Verify backend configuration" do
         '--silent',
         'https://www.example.com:445'
       ].join(' ')) do
-        it { should return_exit_status 60 }
+        its(:exit_status) { should eq 60 }
       end
     end
 
@@ -108,7 +105,7 @@ describe "Verify backend configuration" do
       '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
       'https://www.example.com:445'
     ].join(' ')) do
-      it { should return_stdout /Basic html serving succeeded\./ }
+      its(:stdout) { should match /Basic html serving succeeded\./ }
     end
 
     context "When application servers are attached to HAProxy pools" do
@@ -121,7 +118,7 @@ describe "Verify backend configuration" do
           'https://www.example.com:445;',
           'cat /tmp/cookie'
         ].join(' ')) do
-          it { should return_stdout /03-ABCDEFGH0123/ }
+          its(:stdout) { should match /03-ABCDEFGH0123/ }
         end
 
         describe command([
@@ -132,7 +129,7 @@ describe "Verify backend configuration" do
           'https://www.example.com:445/appserver/;',
           'cat /tmp/cookie'
         ].join(' ')) do
-          it { should return_stdout /02-ABCDEFGH0123/ }
+          its(:stdout) { should match /02-ABCDEFGH0123/ }
         end
 
         describe command([
@@ -143,7 +140,7 @@ describe "Verify backend configuration" do
           'https://test.example.com:445;',
           'cat /tmp/cookie'
         ].join(' ')) do
-          it { should return_stdout /01-ABCDEFGH0123/ }
+          its(:stdout) { should match /01-ABCDEFGH0123/ }
         end
       end
     end

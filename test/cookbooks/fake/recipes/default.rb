@@ -57,6 +57,14 @@ require 'json'
   f.run_action(:create)
 end
 
+# Add hostname entry in /etc/hosts to resolve to 127.0.0.1.
+# This allows 'httpd -t' to not timeout during apache2::default.
+cmd = Mixlib::ShellOut.new('hostname')
+hostsfile_entry '127.0.0.1' do
+  hostname  cmd.run_command.stdout
+  action    :append
+end
+
 # Set up an application server in the VM to verify HAProxy backend configuration
 node.set['rs-application_php']['application_name'] = 'example'
 node.set['rs-application_php']['scm']['revision'] = 'unified_php'
