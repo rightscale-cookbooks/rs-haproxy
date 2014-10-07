@@ -29,7 +29,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-haproxy](https://
 * Platform
   * Ubuntu 12.04, 14.04
   * CentOS 6.5, 7.0
-  * RedHat 6.5, 7.0
+  * RHEL 6.5, 7.0
 
 # Usage
 
