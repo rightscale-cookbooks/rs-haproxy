@@ -23,7 +23,6 @@ include_recipe 'chef-sugar::default'
 compile_time do
   cookbook_file 'wgetrc' do
     path '/etc/wgetrc'
-    backup 5
     owner 'root'
     group 'root'
     mode 0644
