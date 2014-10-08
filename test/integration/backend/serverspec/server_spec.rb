@@ -61,7 +61,7 @@ describe "Verify frontend settings in haproxy.cfg file" do
     ["frontend all_requests", "redirect scheme https if !{ ssl_fc }"],
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
-      find_haproxy_setting(config_file, pair.first, pair.last).should == true
+      expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
     end
   end
 end
@@ -177,7 +177,7 @@ describe "Verify settings through haproxy socket" do
     ["example", "BACKEND", "UP"],
   ].each do |pool_name, server, status|
     it "#{server} in the pool #{pool_name} should have status of #{status}" do
-      haproxy_stat(pool_name, server).should eq(status)
+      expect(haproxy_stat(pool_name, server)).to eq(status)
     end
   end
 end
