@@ -6,7 +6,7 @@ driver_config:
     cpus: 2
     memory: 1024
   network:
-    - ["private_network", {ip: "192.0.2.2"}]
+    - ["private_network", {ip: "192.0.2.2", auto_config: false}]
 
 platforms:
 - name: ubuntu-14.04
