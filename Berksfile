@@ -3,7 +3,7 @@ site :opscode
 metadata
 
 cookbook 'haproxy', github: 'rightscale-cookbooks-contrib/haproxy', branch: 'rs-fixes'
-cookbook 'collectd', github: 'EfrainOlivares/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
+cookbook 'collectd', github: 'rightscale-cookbooks-contrib/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
 cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base', tag: 'v1.1.2'
 
 group :integration do
