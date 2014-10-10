@@ -11,7 +11,7 @@ group :integration do
   cookbook 'yum-epel', '~> 0.4.0'
   cookbook 'build-essential', '~> 1.4.4'
   cookbook 'mysql', github: 'rightscale-cookbooks-contrib/mysql', branch: 'COOK-2100'
-  cookbook 'rs-application_php', github: 'rightscale-cookbooks/rs-application_php', branch: 'st_14_13_acu173881_update_new_os'
+  cookbook 'rs-application_php', github: 'rightscale-cookbooks/rs-application_php'
   cookbook 'application_php', github: 'rightscale-cookbooks-contrib/application_php', branch: 'template_fix_and_application_cookbook_upgrade'
   cookbook 'curl'
   cookbook 'fake', path: './test/cookbooks/fake'
