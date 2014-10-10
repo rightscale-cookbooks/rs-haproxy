@@ -5,9 +5,6 @@ require 'csv'
 require 'json'
 require 'rubygems/dependency_installer'
 
-include Serverspec::Helper::Exec
-include Serverspec::Helper::DetectOS
-
 # Helper function to sort through the haproxy.cfg
 #
 # @param config_file [String] the name of the config file (/var/haproxy/haproxy.cfg)

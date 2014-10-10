@@ -30,7 +30,7 @@ describe "Verify settings in haproxy.cfg file" do
     ["defaults", "cookie SERVERID insert indirect nocache"]
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
-      find_haproxy_setting(config_file, pair.first, pair.last).should == true
+      expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
     end
   end
 end
@@ -77,7 +77,7 @@ describe "Verify info setting through haproxy socket" do
      maxsock: "8223"
   }.each do |key, val|
     it "The setting #{key} should be set to #{val}" do
-      haproxy_info("#{key}").should == val
+      expect(haproxy_info("#{key}")).to eq(val)
     end
   end
 end
@@ -92,10 +92,10 @@ describe 'load_balancer server tags' do
     it "should have the load balancer server tags" do
       tags_json = JSON.load(IO.read(tag_file))
 
-      tags_json.should include("load_balancer:active=true")
-      tags_json.should include("load_balancer:active_example=true")
-      tags_json.should include("load_balancer:active_appserver=true")
-      tags_json.should include("load_balancer:active_test_example=true")
+      expect(tags_json).to include("load_balancer:active=true")
+      expect(tags_json).to include("load_balancer:active_example=true")
+      expect(tags_json).to include("load_balancer:active_appserver=true")
+      expect(tags_json).to include("load_balancer:active_test_example=true")
     end
   end
 end
