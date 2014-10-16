@@ -3,6 +3,12 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v1.1.2
+------
+
+- Add testing for support of Ubuntu 14.04, CentOS 7.0, and RedHat Enterprise Linux 7.0.
+- Update the default HAProxy source version to 1.5.4.
+
 v1.1.1
 ------
 
