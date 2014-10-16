@@ -5,9 +5,5 @@ rvm:
 before_script: bundle exec berks install
 script: bundle exec strainer test --except kitchen
 notifications:
-  irc:
-    channels: ["chat.freenode.net#rightscale"]
-    use_notice: true
-    skip_join: true
   slack:
     secure: LBbaBXSsTB9a9CQ2B4+B5IW8AaMbfDgbubni2PgkHQWydn42qx/hpm8OsT2YVU6CS43tqVQ84s+lUGh4db4die/Ux7A0unnTqhSSatLp6T/vWtcigjopAEfIp+RmZ5C8hZU7onekyta+36tCRBSJRm3KrRQnkTkfA9nwpJSV/wo=
