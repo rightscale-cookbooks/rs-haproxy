@@ -57,7 +57,7 @@ describe "Verify frontend settings in haproxy.cfg file" do
     ["frontend all_requests", "use_backend appserver if acl_appserver"],
     ["frontend all_requests", "use_backend example if acl_example"],
     ["frontend all_requests", "bind 0.0.0.0:80"],
-    ["frontend all_requests", "bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem"],
+    ["frontend all_requests", "bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem no-sslv3"],
     ["frontend all_requests", "redirect scheme https if !{ ssl_fc }"],
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
@@ -142,6 +142,22 @@ describe "Verify backend configuration" do
         ].join(' ')) do
           its(:stdout) { should match /01-ABCDEFGH0123/ }
         end
+      end
+    end
+
+    # Connecting to port SSL port via SSLv3 and expect failure
+    context "Connecting to port 445 via SSLv3" do
+      describe command([
+        'curl',
+        '--silent',
+        '--show-error',
+        '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
+        '--cookie-jar /tmp/cookie',
+        '--sslv3',
+        'https://www.example.com:445'
+      ].join(' ')) do
+        its(:exit_status) { should eq 35 }
+        its(:stdout) { should match /SSL routines:SSL3_READ_BYTES:sslv3 alert handshake failure/ }
       end
     end
   end
