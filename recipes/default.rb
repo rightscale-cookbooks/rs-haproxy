@@ -107,7 +107,7 @@ if node['rs-haproxy']['ssl_cert']
   https_bind = "bind #{node['haproxy']['ssl_incoming_address']}:#{node['haproxy']['ssl_incoming_port']}"
 
   # SSL certificate configuration
-  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file}"
+  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
   haproxy_config['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
