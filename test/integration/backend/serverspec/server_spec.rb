@@ -3,6 +3,9 @@ require 'pathname'
 require 'socket'
 require 'csv'
 
+# Set backend type
+set :backend, :exec
+
 # Helper function to sort through haproxy socket info.
 #
 # @param pxname [String] the first value in row we want to select.
@@ -157,7 +160,6 @@ describe "Verify backend configuration" do
         'https://www.example.com:445'
       ].join(' ')) do
         its(:exit_status) { should eq 35 }
-        its(:stdout) { should match /SSL routines:SSL3_READ_BYTES:sslv3 alert handshake failure/ }
       end
     end
   end
