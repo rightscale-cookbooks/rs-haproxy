@@ -125,7 +125,8 @@ node['rs-haproxy']['pools'].each do |pool_name|
         'maxconn' => node['haproxy']['member_max_connections']
       }
 
-      if node['haproxy']['httpchk']
+      if node['rs-haproxy']['health_check_uri']
+        node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
         backend_server_hash['check'] = true
       end
 

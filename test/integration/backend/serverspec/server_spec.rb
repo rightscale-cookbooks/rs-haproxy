@@ -69,6 +69,22 @@ describe "Verify frontend settings in haproxy.cfg file" do
   end
 end
 
+describe "Verify backend settings in haproxy.cfg file" do
+  [
+    ["backend test_example", "server disabled-server 127.0.0.1:1 disabled"],
+    ["backend test_example", "server 01-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 01-ABCDEFGH0123"],
+    ["backend appserver", "server disabled-server 127.0.0.1:1 disabled"],
+    ["backend appserver", "server 02-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 02-ABCDEFGH0123"],
+    ["backend example", "server disabled-server 127.0.0.1:1 disabled"],
+    ["backend example", "server 03-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 03-ABCDEFGH0123"],
+  ].each do |pair|
+    it "#{pair.first} should contain #{pair.last}" do
+      expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
+    end
+  end
+end
+
+
 describe "Verify backend configuration" do
   before(:all) do
     raise "/etc/hosts not updated correctly" unless add_host
@@ -185,13 +201,13 @@ describe "Verify settings through haproxy socket" do
   [
     ["all_requests", "FRONTEND", "OPEN"],
     ["test_example", "disabled-server", "MAINT"],
-    ["test_example", "01-ABCDEFGH0123", "no check"],
+    ["test_example", "01-ABCDEFGH0123", "UP"],
     ["test_example", "BACKEND", "UP"],
     ["appserver", "disabled-server", "MAINT"],
-    ["appserver", "02-ABCDEFGH0123", "no check"],
+    ["appserver", "02-ABCDEFGH0123", "UP"],
     ["appserver", "BACKEND", "UP"],
     ["example", "disabled-server", "MAINT"],
-    ["example", "03-ABCDEFGH0123", "no check"],
+    ["example", "03-ABCDEFGH0123", "UP"],
     ["example", "BACKEND", "UP"],
   ].each do |pool_name, server, status|
     it "#{server} in the pool #{pool_name} should have status of #{status}" do
