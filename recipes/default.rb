@@ -54,7 +54,7 @@ node.override['haproxy']['incoming_port'] = node['rs-haproxy']['incoming_port']
 Chef::Log.info "Overriding haproxy/enable_stats_socket to 'true'..."
 node.override['haproxy']['enable_stats_socket'] = true
 
-Chef::Log.info "Overriding haproxy/http_chk to '#{node['rs-haproxy']['health_check_uri']}'..."
+Chef::Log.info "Overriding haproxy/httpchk to '#{node['rs-haproxy']['health_check_uri']}'..."
 node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 
 Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['balance_algorithm']}'..."
