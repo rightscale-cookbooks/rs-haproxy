@@ -84,7 +84,6 @@ describe "Verify backend settings in haproxy.cfg file" do
   end
 end
 
-
 describe "Verify backend configuration" do
   before(:all) do
     raise "/etc/hosts not updated correctly" unless add_host
@@ -171,7 +170,6 @@ describe "Verify backend configuration" do
         '--silent',
         '--show-error',
         '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
-        '--cookie-jar /tmp/cookie',
         '--sslv3',
         'https://www.example.com:445'
       ].join(' ')) do
