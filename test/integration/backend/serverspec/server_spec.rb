@@ -3,6 +3,9 @@ require 'pathname'
 require 'socket'
 require 'csv'
 
+# Set backend type
+set :backend, :exec
+
 # Helper function to sort through haproxy socket info.
 #
 # @param pxname [String] the first value in row we want to select.
@@ -57,8 +60,23 @@ describe "Verify frontend settings in haproxy.cfg file" do
     ["frontend all_requests", "use_backend appserver if acl_appserver"],
     ["frontend all_requests", "use_backend example if acl_example"],
     ["frontend all_requests", "bind 0.0.0.0:80"],
-    ["frontend all_requests", "bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem"],
+    ["frontend all_requests", "bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem no-sslv3"],
     ["frontend all_requests", "redirect scheme https if !{ ssl_fc }"],
+  ].each do |pair|
+    it "#{pair.first} should contain #{pair.last}" do
+      expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
+    end
+  end
+end
+
+describe "Verify backend settings in haproxy.cfg file" do
+  [
+    ["backend test_example", "server disabled-server 127.0.0.1:1 disabled"],
+    ["backend test_example", "server 01-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 01-ABCDEFGH0123"],
+    ["backend appserver", "server disabled-server 127.0.0.1:1 disabled"],
+    ["backend appserver", "server 02-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 02-ABCDEFGH0123"],
+    ["backend example", "server disabled-server 127.0.0.1:1 disabled"],
+    ["backend example", "server 03-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 03-ABCDEFGH0123"],
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
@@ -144,6 +162,20 @@ describe "Verify backend configuration" do
         end
       end
     end
+
+    # Connecting to port SSL port via SSLv3 and expect failure
+    context "Connecting to port 445 via SSLv3" do
+      describe command([
+        'curl',
+        '--silent',
+        '--show-error',
+        '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
+        '--sslv3',
+        'https://www.example.com:445'
+      ].join(' ')) do
+        its(:exit_status) { should eq 35 }
+      end
+    end
   end
 end
 
@@ -167,13 +199,13 @@ describe "Verify settings through haproxy socket" do
   [
     ["all_requests", "FRONTEND", "OPEN"],
     ["test_example", "disabled-server", "MAINT"],
-    ["test_example", "01-ABCDEFGH0123", "no check"],
+    ["test_example", "01-ABCDEFGH0123", "UP"],
     ["test_example", "BACKEND", "UP"],
     ["appserver", "disabled-server", "MAINT"],
-    ["appserver", "02-ABCDEFGH0123", "no check"],
+    ["appserver", "02-ABCDEFGH0123", "UP"],
     ["appserver", "BACKEND", "UP"],
     ["example", "disabled-server", "MAINT"],
-    ["example", "03-ABCDEFGH0123", "no check"],
+    ["example", "03-ABCDEFGH0123", "UP"],
     ["example", "BACKEND", "UP"],
   ].each do |pool_name, server, status|
     it "#{server} in the pool #{pool_name} should have status of #{status}" do

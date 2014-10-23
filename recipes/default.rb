@@ -54,7 +54,7 @@ node.override['haproxy']['incoming_port'] = node['rs-haproxy']['incoming_port']
 Chef::Log.info "Overriding haproxy/enable_stats_socket to 'true'..."
 node.override['haproxy']['enable_stats_socket'] = true
 
-Chef::Log.info "Overriding haproxy/http_chk to '#{node['rs-haproxy']['health_check_uri']}'..."
+Chef::Log.info "Overriding haproxy/httpchk to '#{node['rs-haproxy']['health_check_uri']}'..."
 node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 
 Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['balance_algorithm']}'..."
@@ -107,7 +107,7 @@ if node['rs-haproxy']['ssl_cert']
   https_bind = "bind #{node['haproxy']['ssl_incoming_address']}:#{node['haproxy']['ssl_incoming_port']}"
 
   # SSL certificate configuration
-  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file}"
+  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
   haproxy_config['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
