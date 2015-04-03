@@ -60,30 +60,14 @@ node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['balance_algorithm']}'..."
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['balance_algorithm']
 
-# Build the haproxy configuration sections into a hash
-haproxy_config = Mash.new(
-  'global' => {
-    'maxconn' => node['haproxy']['global_max_connections'],
-    'user' => node['haproxy']['user'],
-    'group' => node['haproxy']['group'],
-    'log' => "/dev/log syslog info",
-    'daemon' => true,
-    'quiet' => true,
-    'pidfile' => node['haproxy']['pid_file']
-  },
-  'defaults' => {
-    'log' => 'global',
-    'mode' => 'http',
-    'option' => ['httplog', 'dontlognull', 'redispatch'],
-    'balance' => node['haproxy']['balance_algorithm'],
-  },
-  'frontend' => {
-    'all_requests' => {
-      # HTTP bind address
-      "bind #{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}" => ""
-    }
+# Setting haproxy config in attributes
+node.default[:haproxy][:config][:global] = {
+  :log => "/dev/log syslog info",
+  :daemon => true,
+  :quiet => true
   }
-)
+
+node.default[:haproxy][:config][:defaults][:log] = 'global'
 
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']
