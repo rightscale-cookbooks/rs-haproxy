@@ -143,6 +143,5 @@ end
 
 # Install HAProxy and setup haproxy.cnf
 haproxy "set up haproxy.cnf" do
-  config node['haproxy']['config']
   action :create
 end
