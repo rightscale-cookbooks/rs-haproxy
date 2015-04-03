@@ -141,6 +141,8 @@ cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
   notifies :restart, 'service[rsyslog]'
 end
 
+Chef::Log.info node['haproxy']['config']
+
 # Install HAProxy and setup haproxy.cnf
 haproxy "set up haproxy.cnf" do
   action :create
