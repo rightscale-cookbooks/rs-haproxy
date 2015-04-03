@@ -119,9 +119,9 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
       backend_server_hash = {
-        'inter' => 300,
-        'rise' => 2,
-        'fall' => 3,
+        'inter' => node['rs-haproxy']['backend']['inter']
+        'rise' => node['rs-haproxy']['backend']['rise'],
+        'fall' => ['rs-haproxy']['backend']['fall'],
         'maxconn' => node['haproxy']['member_max_connections']
       }
 
