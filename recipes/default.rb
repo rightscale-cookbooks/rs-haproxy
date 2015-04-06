@@ -142,8 +142,13 @@ cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
 end
 
 Chef::Log.info node['haproxy']['config']
-
+haproxy_config = Mash.new(
+'global' => {
+  'maxconn' => node['haproxy']['global_max_connections']
+  }
+)
 # Install HAProxy and setup haproxy.cnf
 haproxy "set up haproxy.cnf" do
+  config haproxy_config
   action :create
 end
