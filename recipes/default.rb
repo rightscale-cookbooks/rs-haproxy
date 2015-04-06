@@ -61,7 +61,7 @@ Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['b
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['balance_algorithm']
 
 # Setting haproxy config in attributes
-node.default[:haproxy][:config][:global] = {
+node.default['haproxy']['config']['global'] = {
   'user' => node['haproxy']['user'],
   'group' => node['haproxy']['group'],
   'pidfile' => node['haproxy']['pid_file'],
@@ -70,11 +70,15 @@ node.default[:haproxy][:config][:global] = {
   'quiet' => true
   }
 
-node.default[:haproxy][:config][:defaults] = {
+node.default['haproxy']['config']['defaults'] = {
   'log' => 'global',
-  'mode' => 'http',
-  'option' => ['httplog', 'dontlognull', 'redispatch'],
+  'mode' => 'http'
   }
+if node.default['haproxy']['config']['defaults']['option'].nil?
+  node.default['haproxy']['config']['defaults']['option'] = ['httplog', 'dontlognull', 'redispatch']
+else
+  node.default['haproxy']['config']['defaults']['option'] += ['httplog', 'dontlognull', 'redispatch']
+end
 
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']
