@@ -77,7 +77,7 @@ node.default['haproxy']['config']['defaults'] = {
 if node['haproxy']['config']['defaults']['option'].nil?
   node.default['haproxy']['config']['defaults']['option'] = ['httplog', 'dontlognull', 'redispatch']
 else
-  node.default['haproxy']['config']['defaults']['option'] += ['httplog', 'dontlognull', 'redispatch']
+  node.default['haproxy']['config']['defaults']['option']<<['httplog', 'dontlognull', 'redispatch']
 end
 
 # Configure SSL if the SSL certificate and the keys are provided
