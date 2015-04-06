@@ -78,7 +78,7 @@ node.default['haproxy']['config']['defaults'] = {
 log node['haproxy']['config']['defaults']['option']
 option_array = ['httplog', 'dontlognull', 'redispatch']
 node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i }
-node['haproxy']['config']['defaults']['option'] = option_array
+node.default['haproxy']['config']['defaults']['option'] = option_array
 
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']

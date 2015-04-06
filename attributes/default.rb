@@ -68,6 +68,7 @@ default['rs-haproxy']['source']['url'] = 'https://servertemplate-software-source
 # HAProxy source SHA256 checksum
 default['rs-haproxy']['source']['checksum'] = '214ab89dad7e0a43cc0f1c46367ca6803cd869e1717a4fa6b99451713f91f717'
 
-node.default['rs-haproxy']['backend']['inter'] = 300
-node.default['rs-haproxy']['backend']['rise'] = 3
-node.default['rs-haproxy']['backend']['fall'] = 2
+default['rs-haproxy']['backend']['inter'] = 300
+default['rs-haproxy']['backend']['rise'] = 3
+default['rs-haproxy']['backend']['fall'] = 2
+default[:haproxy][:config][:defaults][:options] = []
