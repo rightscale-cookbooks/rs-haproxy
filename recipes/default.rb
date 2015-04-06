@@ -74,9 +74,13 @@ node.default['haproxy']['config']['defaults'] = {
   'log' => 'global',
   'mode' => 'http'
   }
+
+log node['haproxy']['config']['defaults']['option']
 if node['haproxy']['config']['defaults']['option'].nil?
+  log "option array is nil"
   node.default['haproxy']['config']['defaults']['option'] = ['httplog', 'dontlognull', 'redispatch']
 else
+  log "option array is not nil"
   node.default['haproxy']['config']['defaults']['option']<<['httplog', 'dontlognull', 'redispatch']
 end
 
