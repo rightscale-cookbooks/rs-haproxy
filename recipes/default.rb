@@ -74,7 +74,7 @@ node.default['haproxy']['config']['defaults'] = {
   'log' => 'global',
   'mode' => 'http'
   }
-if node.default['haproxy']['config']['defaults']['option'].nil?
+if node['haproxy']['config']['defaults']['option'].nil?
   node.default['haproxy']['config']['defaults']['option'] = ['httplog', 'dontlognull', 'redispatch']
 else
   node.default['haproxy']['config']['defaults']['option'] += ['httplog', 'dontlognull', 'redispatch']
