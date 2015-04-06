@@ -62,6 +62,9 @@ node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['balance_algo
 
 # Setting haproxy config in attributes
 node.default[:haproxy][:config][:global] = {
+  'user' => node['haproxy']['user'],
+  'group' => node['haproxy']['group'],
+  'pidfile' => node['haproxy']['pidfile'],
   'log' => "/dev/log syslog info",
   'daemon' => true,
   'quiet' => true
