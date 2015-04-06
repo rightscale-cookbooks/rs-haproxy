@@ -71,4 +71,4 @@ default['rs-haproxy']['source']['checksum'] = '214ab89dad7e0a43cc0f1c46367ca6803
 default['rs-haproxy']['backend']['inter'] = 300
 default['rs-haproxy']['backend']['rise'] = 3
 default['rs-haproxy']['backend']['fall'] = 2
-default[:haproxy][:config][:defaults][:options] = []
+#default[:haproxy][:config][:defaults][:options] = []
