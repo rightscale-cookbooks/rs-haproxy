@@ -102,7 +102,7 @@ if node['rs-haproxy']['ssl_cert']
   https_bind = "bind #{node['haproxy']['ssl_incoming_address']}:#{node['haproxy']['ssl_incoming_port']}"
 
   # SSL certificate configuration
-  node.default[:haproxy][:config]['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
+  node.default['haproxy']['config']['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
  node.default['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
@@ -110,28 +110,28 @@ end
 
 # Set up haproxy socket
 if node['haproxy']['enable_stats_socket']
-  node.default[:haproxy][:config]['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" +
+  node.default['haproxy']['config']['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" +
     " user #{node['haproxy']['stats_socket_user']}" +
     " group #{node['haproxy']['stats_socket_group']}"
 end
 
 # Set up statistics URI
 if node['rs-haproxy']['stats_uri']
-  node.default[:haproxy][:config]['defaults']['stats'] = {'uri' => node['rs-haproxy']['stats_uri']}
+  node.default['haproxy']['config']['defaults']['stats'] = {'uri' => node['rs-haproxy']['stats_uri']}
 
   if node['rs-haproxy']['stats_user'] && node['rs-haproxy']['stats_password']
-    node.default[:haproxy][:config]['defaults']['stats']['auth'] = "#{node['rs-haproxy']['stats_user']}:#{node['rs-haproxy']['stats_password']}"
+    node.default['haproxy']['config']['defaults']['stats']['auth'] = "#{node['rs-haproxy']['stats_user']}:#{node['rs-haproxy']['stats_password']}"
   end
 end
 
 # Enable HTTP health checks
 if node['haproxy']['httpchk']
-  node.default[:haproxy][:config]['defaults']['option'].push("httpchk GET #{node['haproxy']['httpchk']}")
-  node.default[:haproxy][:config]['defaults']['http-check'] = 'disable-on-404'
+  node.default['haproxy']['config']['defaults']['option'].push("httpchk GET #{node['haproxy']['httpchk']}")
+  node.default['haproxy']['config']['defaults']['http-check'] = 'disable-on-404'
 end
 
 if node['rs-haproxy']['session_stickiness']
-  node.default[:haproxy][:config]['defaults']['cookie'] = 'SERVERID insert indirect nocache'
+  node.default['haproxy']['config']['defaults']['cookie'] = 'SERVERID insert indirect nocache'
 end
 
 # Confirm that rsyslog is installed.
