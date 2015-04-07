@@ -150,18 +150,18 @@ attribute "rs-haproxy/backend/fall",
 <count> consecutive unsuccessful health checks. This value defaults to 3 if
 unspecified. See also the "check", "inter" and "rise" parameters.',
   :required => 'optional',
-  :default => 2
+  :default => '2'
 
 attribute "rs-haproxy/backend/rise",
   :display_name => "backend rise",
   :description => 'The "rise" parameter states that a server will be considered as operational
 after <count> consecutive successful health checks. This value defaults to 2',
   :required => "optional",
-  :default => 3
+  :default => '3'
 
 attribute "rs-haproxy/backend/inter",
   :display_name => "backend inter",
   :description => 'The "inter" parameter sets the interval between two consecutive health checks
 to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.',
   :required => "optional",
-  :default => 300
+  :default => '300'
