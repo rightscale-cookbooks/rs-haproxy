@@ -67,8 +67,7 @@ node.default['haproxy']['config']['global'] = {
   'pidfile' => node['haproxy']['pid_file'],
   'log' => "/dev/log syslog info",
   'daemon' => true,
-  'quiet' => true,
-  'nbproc' => node['cpu']['total']
+  'quiet' => true
   }
 
 node.default['haproxy']['config']['defaults'] = {
