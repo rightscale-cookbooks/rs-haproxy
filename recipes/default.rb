@@ -148,6 +148,15 @@ cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
   notifies :restart, 'service[rsyslog]'
 end
 
+cookbook_file '/etc/logrotate.d/logrotate' do
+  source 'logrotate-haproxy.conf'
+  backup 0
+  mode 0644
+  owner 'root'
+  group 'root'
+  action :create
+end
+
 Chef::Log.info node['haproxy']['config']
 haproxy_config = Mash.new(
 'global' => {
