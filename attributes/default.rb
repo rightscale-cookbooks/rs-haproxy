@@ -63,7 +63,18 @@ default['rs-haproxy']['install_method'] = 'source'
 default['rs-haproxy']['source']['version'] = nil
 
 # HAProxy source URL
-default['rs-haproxy']['source']['url'] = 'https://servertemplate-software-sources.s3.amazonaws.com/haproxy-1.5.6.tar.gz'
+default['rs-haproxy']['source']['url'] = 'http://ps-cf.rightscale.com/haproxy/haproxy-1.5.12.tar.gz'
 
 # HAProxy source SHA256 checksum
-default['rs-haproxy']['source']['checksum'] = '214ab89dad7e0a43cc0f1c46367ca6803cd869e1717a4fa6b99451713f91f717'
+default['rs-haproxy']['source']['checksum'] = '6648dd7d6b958d83dd7101eab5792178212a66c884bec0ebcd8abc39df83bb78'
+
+default['rs-haproxy']['backend']['inter'] = 300
+default['rs-haproxy']['backend']['rise'] = 3
+default['rs-haproxy']['backend']['fall'] = 2
+default['haproxy']['config']['defaults']['options'] = []
+default['haproxy']['source']['prefix'] = '/usr/local'
+default['haproxy']['source']['target_os'] = 'linux2628'
+default['haproxy']['source']['target_cpu'] = 'x86_64'
+default['haproxy']['source']['use_pcre'] = true
+default['haproxy']['source']['use_openssl'] = true
+default['haproxy']['source']['use_zlib'] = true

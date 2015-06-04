@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.1.3'
+version          '1.1.4'
 
 depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
@@ -143,3 +143,25 @@ attribute "rs-haproxy/schedule/interval",
   :required => 'optional',
   :default => '15',
   :recipes => ['rs-haproxy::schedule']
+
+attribute "rs-haproxy/backend/fall",
+  :display_name => "backend fall",
+  :description => 'The "fall" parameter states that a server will be considered as dead after
+<count> consecutive unsuccessful health checks. This value defaults to 3 if
+unspecified. See also the "check", "inter" and "rise" parameters.',
+  :required => 'optional',
+  :default => '2'
+
+attribute "rs-haproxy/backend/rise",
+  :display_name => "backend rise",
+  :description => 'The "rise" parameter states that a server will be considered as operational
+after <count> consecutive successful health checks. This value defaults to 2',
+  :required => "optional",
+  :default => '3'
+
+attribute "rs-haproxy/backend/inter",
+  :display_name => "backend inter",
+  :description => 'The "inter" parameter sets the interval between two consecutive health checks
+to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.',
+  :required => "optional",
+  :default => '300'
