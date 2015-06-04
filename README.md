@@ -77,11 +77,11 @@ check the health of a server. Default: `/`
 * `node['rs-haproxy']['balance_algorithm']` - The algorithm that the load balancer will use to
 direct traffic. Default: `roundrobin`
 * `node['rs-haproxy']['backend']['inter']` - The "inter" parameter sets the interval between
-two consecutive health checks to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.
+two consecutive health checks to <delay> milliseconds. Default: `300`
 * `node['rs-haproxy']['backend']['rise']` - The "rise" parameter states that a server will be considered
- as operational after <count> consecutive successful health checks. This value defaults to 2
+ as operational after <count> consecutive successful health checks. Default: `3`
 * `node['rs-haproxy']['backend']['fall']` - 'The "fall" parameter states that a server will be considered
-as dead after <count> consecutive unsuccessful health checks. This value defaults to 3 if unspecified.
+as dead after <count> consecutive unsuccessful health checks. Default: `2`
 
 # Recipes
 
