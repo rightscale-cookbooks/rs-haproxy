@@ -84,7 +84,7 @@ end
 node.default['haproxy']['config']['frontend'] = {}
 node.default['haproxy']['config']['frontend']['all_requests'] ||= {}
 node.default['haproxy']['config']['frontend']['all_requests']['default_backend'] = node['rs-haproxy']['pools'].last
-node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}
+node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
 node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node['rs-haproxy']['maxconn']
 
 # Initialize backend section which will be generated in the haproxy.cfg
