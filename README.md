@@ -82,6 +82,7 @@ two consecutive health checks to <delay> milliseconds. Default: `300`
  as operational after <count> consecutive successful health checks. Default: `3`
 * `node['rs-haproxy']['backend']['fall']` - 'The "fall" parameter states that a server will be considered
 as dead after <count> consecutive unsuccessful health checks. Default: `2`
+* `node['rs-haproxy']['maxconn']` - 'Fix the maximum number of concurrent connections on a frontend'. Default: `4096`
 
 # Recipes
 

@@ -165,3 +165,9 @@ attribute "rs-haproxy/backend/inter",
 to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.',
   :required => "optional",
   :default => '300'
+
+attribute "rs-haproxy/maxconn",
+  :display_name => "max connections for haproxy",
+  :description = "max connections for haproxy",
+  :required => "optional",
+  :default => '4096'
