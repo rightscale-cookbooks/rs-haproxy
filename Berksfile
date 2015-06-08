@@ -18,4 +18,5 @@ group :integration do
   cookbook 'chef-sugar'
   cookbook 'hostsfile'
   cookbook 'rhsm', '~> 1.0.0'
+  cookbook 'swap', '= 0.3.5'
 end

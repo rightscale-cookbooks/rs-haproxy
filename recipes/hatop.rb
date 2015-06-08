@@ -22,4 +22,6 @@ bash "extract and install" do
     install -m 644 man/hatop.1 /usr/local/share/man/man1
     gzip /usr/local/share/man/man1/hatop.1
   EOF
+  creates '/usr/local/bin/hatop'
+  action :run
 end
