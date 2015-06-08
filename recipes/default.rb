@@ -74,7 +74,7 @@ node.default['haproxy']['config']['defaults']['log'] = 'global'
 node.default['haproxy']['config']['defaults']['mode'] = 'http'
 node.default['haproxy']['config']['defaults']['balance'] = 'roundrobin'
 
-log node['haproxy']['config']['defaults']['option']
+Chef::Log.info node['haproxy']['config']['defaults']['option']
 option_array = ['httplog', 'dontlognull', 'redispatch']
 node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i } unless node['haproxy']['config']['defaults']['option'].nil?
 node.default['haproxy']['config']['defaults']['option'] = option_array

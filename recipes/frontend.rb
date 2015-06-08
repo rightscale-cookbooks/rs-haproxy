@@ -37,7 +37,7 @@ app_servers = find_application_servers(node)
 # retrieving machine tags, the current config with existing application servers will continue
 # to function as expected.
 if app_servers.empty?
-  log 'No application servers found. No changes will be made.'
+  Chef::Log.info 'No application servers found. No changes will be made.'
   return
 end
 
@@ -190,7 +190,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
             command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
           end
         end
-        log "Running remote script on #{server_uuid}: #{command}"
+        Chef::Log.info "Running remote script on #{server_uuid}: #{command}"
 
         execute 'Run postconnect script on application server' do
           command command
