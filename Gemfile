@@ -12,7 +12,7 @@ group :integration do
   gem 'travis-lint'
   gem 'chefspec', '~> 3.4.0'
   gem 'test-kitchen', '~> 1.2.1'
-  gem 'kitchen-vagrant'
+  gem 'kitchen-vagrant', '0.15.0'
   gem 'strainer', '~> 3.3.0'
   gem 'rspec-expectations', '~> 2.14.0'
 end
