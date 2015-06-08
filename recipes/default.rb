@@ -79,6 +79,9 @@ option_array = ['httplog', 'dontlognull', 'redispatch']
 node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i } unless node['haproxy']['config']['defaults']['option'].nil?
 node.default['haproxy']['config']['defaults']['option'] = option_array
 
+Chef::Log.info "creating base connection"
+node.default['haproxy']['config']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
+
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']
   Chef::Log.info "Overriding haproxy/ssl_incoming_port to #{node['rs-haproxy']['ssl_incoming_port']}"
