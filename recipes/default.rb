@@ -72,6 +72,7 @@ node.default['haproxy']['config']['global'] = {
 
 node.default['haproxy']['config']['defaults']['log'] = 'global'
 node.default['haproxy']['config']['defaults']['mode'] = 'http'
+node.default['haproxy']['config']['defaults']['balance'] = 'roundrobin'
 
 log node['haproxy']['config']['defaults']['option']
 option_array = ['httplog', 'dontlognull', 'redispatch']
