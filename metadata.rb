@@ -10,7 +10,7 @@ depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.3'
-depends 'rs-base', '~> 1.1.3'
+depends 'rs-base', '~> 1.1.2'
 
 recipe 'rs-haproxy::default', 'Installs HAProxy and sets up monitoring for the HAProxy process.'
 recipe 'rs-haproxy::tags', 'Adds load balancer related machine tags to the load balancer server.'
@@ -168,6 +168,6 @@ to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.',
 
 attribute "rs-haproxy/maxconn",
   :display_name => "max connections for haproxy",
-  :description = "max connections for haproxy",
+  :description => "max connections for haproxy",
   :required => "optional",
   :default => '4096'
