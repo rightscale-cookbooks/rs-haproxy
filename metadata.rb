@@ -18,6 +18,7 @@ recipe 'rs-haproxy::collectd', 'Configures monitoring by setting up collectd plu
 recipe 'rs-haproxy::frontend', 'Queries for application servers in the deployment and adds them' +
  ' to the corresponding backend pools served by the load balancer.'
 recipe 'rs-haproxy::schedule', 'Configure cron to periodically run rs-haproxy::frontend.'
+recipe 'rs-haproxy::hatop', 'installs hatop on the server'
 
 attribute "rs-haproxy/pools",
   :display_name => "Load Balance Pools",

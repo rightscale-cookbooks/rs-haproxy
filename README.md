@@ -129,6 +129,10 @@ remote recipe.
 Configure cron to periodically run `rs-haproxy::frontend` confirming that all application servers in the
 deployment are registered with HAProxy.
 
+## `rs-haproxy::hatop`
+
+Downloads and installs hatop on the haproxy server, will install python also as it is a requirement
+
 [rs_run_recipe]: http://support.rightscale.com/12-Guides/RightLink/02-RightLink_5.9/Using_RightLink/Command_Line_Utilities#rs_run_recipe
 [Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers
 [Application Server Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#application-servers
