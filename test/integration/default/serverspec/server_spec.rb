@@ -74,7 +74,7 @@ describe "Verify info setting through haproxy socket" do
 
   {
      maxconn: "4106",
-     maxsock: "8423"
+     maxsock: "8243"
   }.each do |key, val|
     it "The setting #{key} should be set to #{val}" do
       expect(haproxy_info("#{key}")).to eq(val)
