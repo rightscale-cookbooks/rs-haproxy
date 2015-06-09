@@ -12,9 +12,7 @@ remote_file "#{Chef::Config[:file_cache_path]}/hatop-0.7.7.tar.gz" do
   group "root"
   mode "0644"
   action :create
-  not_if do
-    File.exists?("#{Chef::Config[:file_cache_path]}/hatop-0.7.7.tar.gz")
-  end
+  not_if { File.exists?("#{Chef::Config[:file_cache_path]}/hatop-0.7.7.tar.gz") }
 end
 
 bash "extract and install" do
