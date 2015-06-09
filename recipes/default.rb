@@ -70,10 +70,8 @@ node.default['haproxy']['config']['global'] = {
   'quiet' => true
   }
 
-node.default['haproxy']['config']['defaults'] = {
-  'log' => 'global',
-  'mode' => 'http'
-  }
+node.default['haproxy']['config']['defaults']['log'] = 'global'
+node.default['haproxy']['config']['defaults']['mode'] = 'http'
 
 log node['haproxy']['config']['defaults']['option']
 option_array = ['httplog', 'dontlognull', 'redispatch']

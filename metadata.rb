@@ -4,13 +4,13 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.1.4'
+version          '1.1.5'
 
 depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.0.3'
-depends 'rs-base', '~> 1.1.3'
+depends 'rs-base', '~> 1.1.2'
 
 recipe 'rs-haproxy::default', 'Installs HAProxy and sets up monitoring for the HAProxy process.'
 recipe 'rs-haproxy::tags', 'Adds load balancer related machine tags to the load balancer server.'
