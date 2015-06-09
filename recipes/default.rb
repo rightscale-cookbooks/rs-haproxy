@@ -80,7 +80,7 @@ node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i } unl
 node.default['haproxy']['config']['defaults']['option'] = option_array
 
 Chef::Log.info "creating base connection"
-node.default['haproxy']['config']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
+node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
 
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']
