@@ -27,7 +27,10 @@ describe "Verify settings in haproxy.cfg file" do
     ["defaults", "stats uri /haproxy-status"],
     ["defaults", "http-check disable-on-404"],
     ["defaults", "stats auth statsuser:statspass"],
-    ["defaults", "cookie SERVERID insert indirect nocache"]
+    ["defaults", "cookie SERVERID insert indirect nocache"],
+    ["defaults", "timeout client 10s"],
+    ["defaults", "timeout server 10s"],
+    ["defaults", "timeout connect 10s"]
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
