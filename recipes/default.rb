@@ -72,8 +72,9 @@ node.default['haproxy']['config']['global'] = {
 
 node.default['haproxy']['config']['defaults']['log'] = 'global'
 node.default['haproxy']['config']['defaults']['mode'] = 'http'
+node.default['haproxy']['config']['defaults']['balance'] = 'roundrobin'
 
-log node['haproxy']['config']['defaults']['option']
+Chef::Log.info node['haproxy']['config']['defaults']['option']
 option_array = ['httplog', 'dontlognull', 'redispatch']
 node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i } unless node['haproxy']['config']['defaults']['option'].nil?
 node.default['haproxy']['config']['defaults']['option'] = option_array
@@ -158,9 +159,10 @@ end
 Chef::Log.info node['haproxy']['config']
 haproxy_config = Mash.new(
 'global' => {
-  'maxconn' => node['haproxy']['global_max_connections']
+  'maxconn' => node['rs-haproxy']['maxconn']
   }
 )
+
 # Install HAProxy and setup haproxy.cnf
 haproxy "set up haproxy.cnf" do
   config haproxy_config

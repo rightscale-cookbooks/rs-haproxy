@@ -68,9 +68,14 @@ default['rs-haproxy']['source']['url'] = 'http://ps-cf.rightscale.com/haproxy/ha
 # HAProxy source SHA256 checksum
 default['rs-haproxy']['source']['checksum'] = '6648dd7d6b958d83dd7101eab5792178212a66c884bec0ebcd8abc39df83bb78'
 
+# HAProxy backend checks
 default['rs-haproxy']['backend']['inter'] = 300
 default['rs-haproxy']['backend']['rise'] = 3
 default['rs-haproxy']['backend']['fall'] = 2
+
+# HAProxy default maxconn
+default['rs-haproxy']['maxconn'] = 4096
+
 default['haproxy']['config']['defaults']['options'] = []
 default['haproxy']['source']['prefix'] = '/usr/local'
 default['haproxy']['source']['target_os'] = 'linux2628'
