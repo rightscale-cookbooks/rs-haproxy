@@ -15,4 +15,5 @@ group :integration do
   gem 'kitchen-vagrant', '0.15.0'
   gem 'strainer', '~> 3.3.0'
   gem 'rspec-expectations', '~> 2.14.0'
+  gem 'coveralls', require: false
 end
