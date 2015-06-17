@@ -20,7 +20,7 @@ describe 'rs-haproxy::collectd' do
       expect(chef_run).to install_package('socat')
     end
 
-    it '# Put the haproxy collectd plugin script into the collectd lib directory' do
+    it 'Put the haproxy collectd plugin script into the collectd lib directory' do
       expect(chef_run).to create_cookbook_file("#{chef_run.node['collectd']['plugin_dir']}/haproxy")
       expect(chef_run).to create_cookbook_file('/usr/share/collectd/haproxy.db')
     end
