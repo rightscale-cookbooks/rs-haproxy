@@ -17,4 +17,5 @@ group :integration do
   gem 'rspec-expectations', '~> 2.14.0'
   gem 'coveralls', require: false
   gem 'machine_tag'
+  gem 'chef-rewind'
 end
