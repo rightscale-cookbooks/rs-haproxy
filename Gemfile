@@ -16,4 +16,5 @@ group :integration do
   gem 'strainer', '~> 3.3.0'
   gem 'rspec-expectations', '~> 2.14.0'
   gem 'coveralls', require: false
+  gem 'machine_tag'
 end
