@@ -179,7 +179,7 @@ attribute "haproxy/member_max_connections",
   :required => "optional",
   :default => '100'
   
-attribute "haproxy/config/defaults/options/http-check expect",
+attribute "haproxy/config/defaults/http-check expect",
   :display_name => "http-check expect",
   :description => "http-check expect",
   :required => "optional",
