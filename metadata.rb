@@ -175,6 +175,6 @@ attribute "rs-haproxy/maxconn",
 
 attribute "haproxy/member_max_connections",
   :dispay_name => "member_max_connections",
-  :desciption => "member_max_connections"
-  :required => "optional"
+  :desciption => "member_max_connections",
+  :required => "optional",
   :default => '100'
