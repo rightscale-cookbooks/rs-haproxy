@@ -46,7 +46,18 @@ end
 log "Setting up monitoring for HAProxy..."
 
 # Install socat package which is required by the haproxy collectd script
-package 'socat'
+apt_package 'socat' do
+  options "--assume-no"
+  action :install
+  only_if {node[:platform_family]=='debian'}
+end
+
+yum_package 'socat' do
+  options "--assume-no"
+  action :install
+  only_if {node[:platform_family]=='rhel'}
+end
+
 
 # Put the haproxy collectd plugin script into the collectd lib directory
 cookbook_file "#{node['collectd']['plugin_dir']}/haproxy" do
