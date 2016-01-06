@@ -35,6 +35,10 @@ end
 
 include_recipe 'collectd::default'
 
+rewind "package[collectd]" do
+  action :nothing
+  only_if {::File.exists?("/etc/collect.d/collectd.conf")}
+end
 # collectd::default recipe attempts to delete collectd plugins that were not
 # created during the same runlist as this recipe. Some common plugins are installed
 # as a part of base install which runs in a different runlist. This resource
