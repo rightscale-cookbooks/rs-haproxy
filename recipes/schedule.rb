@@ -27,10 +27,32 @@ schedule_enable = node['rs-haproxy']['schedule']['enable'] == true || node['rs-h
 # Interval in minutes for scheduling frontend run.
 interval = node['rs-haproxy']['schedule']['interval']
 
+chef_dir='/home/rightscale/.chef'
+chef_file = "#{chef_dir}/chef.json"
+chef_json={}
+
+# read the existing chef.json file 
+# get it's content then change the runlist
+# and write it back to the file
+ruby_block "read chef json" do
+  block do
+    if File.exists?(chef_file)
+      file = File.read(chef_file)
+      chef_json.merge!(JSON.parse(file))
+      # delete attributes
+      chef_json.delete("remote_recipe") 
+      chef_json.delete('rs-haproxy')
+      chef_json.merge!("run_list"=>["recipe[rs-haproxy::frontend]"])
+      File.write(chef_file, ::JSON.pretty_generate(chef_json))
+    end
+  end
+end
+
 # Run rs-haproxy::frontend on given interval.
 cron "rs-haproxy::frontend" do
+  user 'rightscale'
   minute "*/#{interval}"
   hour '*'
-  command "rs_run_recipe --policy 'rs-haproxy::frontend' --name 'rs-haproxy::frontend'"
+  command "sudo chef-client --json-attributes #{chef_file} --config #{chef_dir}/client.rb"
   action schedule_enable ? :create : :delete
 end
