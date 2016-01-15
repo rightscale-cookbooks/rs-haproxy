@@ -53,13 +53,13 @@ log "Setting up monitoring for HAProxy..."
 apt_package 'socat' do
   options "--assume-no"
   action :install
-  only_if {node[:platform_family]=='debian'}
+  only_if {node["platform_family"]=='debian'}
 end
 
 yum_package 'socat' do
   options "--assume-no"
   action :install
-  only_if {node[:platform_family]=='rhel'}
+  only_if {node["platform_family"]=='rhel'}
 end
 
 
