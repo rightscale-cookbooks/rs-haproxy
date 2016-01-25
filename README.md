@@ -76,6 +76,13 @@ to (via a cookie). Default: `true`.
 check the health of a server. Default: `/`
 * `node['rs-haproxy']['balance_algorithm']` - The algorithm that the load balancer will use to
 direct traffic. Default: `roundrobin`
+* `node['rs-haproxy']['backend']['inter']` - The "inter" parameter sets the interval between
+two consecutive health checks to <delay> milliseconds. Default: `300`
+* `node['rs-haproxy']['backend']['rise']` - The "rise" parameter states that a server will be considered
+ as operational after <count> consecutive successful health checks. Default: `3`
+* `node['rs-haproxy']['backend']['fall']` - 'The "fall" parameter states that a server will be considered
+as dead after <count> consecutive unsuccessful health checks. Default: `2`
+* `node['rs-haproxy']['maxconn']` - 'Fix the maximum number of concurrent connections on a frontend'. Default: `4096`
 
 # Recipes
 
@@ -121,6 +128,10 @@ remote recipe.
 
 Configure cron to periodically run `rs-haproxy::frontend` confirming that all application servers in the
 deployment are registered with HAProxy.
+
+## `rs-haproxy::hatop`
+
+Downloads and installs hatop on the haproxy server, will install python also as it is a requirement
 
 [rs_run_recipe]: http://support.rightscale.com/12-Guides/RightLink/02-RightLink_5.9/Using_RightLink/Command_Line_Utilities#rs_run_recipe
 [Load Balancer Tags]: https://github.com/rightscale-cookbooks/rightscale_tag#load-balancer-servers

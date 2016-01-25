@@ -37,7 +37,7 @@ app_servers = find_application_servers(node)
 # retrieving machine tags, the current config with existing application servers will continue
 # to function as expected.
 if app_servers.empty?
-  log 'No application servers found. No changes will be made.'
+  Chef::Log.info 'No application servers found. No changes will be made.'
   return
 end
 
@@ -77,16 +77,18 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
 
   # Reset the 'remote_recipe' hash in the node to nil to ensure subsequent recipe runs
   # don't use the existing values from this hash.
-  node.set['remote_recipe'] = nil
+  node.default['remote_recipe'] = nil
 end
 
 # Initialize frontend section which will be generated in the haproxy.cfg
-node.set['haproxy']['config']['frontend'] = {}
-node.set['haproxy']['config']['frontend']['all_requests'] ||= {}
-node.set['haproxy']['config']['frontend']['all_requests']['default_backend'] = node['rs-haproxy']['pools'].last
+node.default['haproxy']['config']['frontend'] = {}
+node.default['haproxy']['config']['frontend']['all_requests'] ||= {}
+node.default['haproxy']['config']['frontend']['all_requests']['default_backend'] = node['rs-haproxy']['pools'].last
+node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
+node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node['rs-haproxy']['maxconn']
 
 # Initialize backend section which will be generated in the haproxy.cfg
-node.set['haproxy']['config']['backend'] = {}
+node.default['haproxy']['config']['backend'] = {}
 
 # Iterate through each application server pool served by the HAProxy server and set up the
 # ACLs in the frontend section and the corresponding backed sections
@@ -119,9 +121,9 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
       backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
       backend_server_hash = {
-        'inter' => 300,
-        'rise' => 2,
-        'fall' => 3,
+        'inter' => node['rs-haproxy']['backend']['inter'],
+        'rise' => node['rs-haproxy']['backend']['rise'],
+        'fall' => node['rs-haproxy']['backend']['fall'],
         'maxconn' => node['haproxy']['member_max_connections']
       }
 
@@ -188,7 +190,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
             command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
           end
         end
-        log "Running remote script on #{server_uuid}: #{command}"
+        Chef::Log.info "Running remote script on #{server_uuid}: #{command}"
 
         execute 'Run postconnect script on application server' do
           command command
@@ -203,16 +205,16 @@ node['rs-haproxy']['pools'].each do |pool_name|
 
     # Set up ACLs based on the vhost_path information from the application servers
     acl_name = "acl_#{pool_name}"
-    node.set['haproxy']['config']['frontend']['all_requests']['acl'] ||= {}
-    node.set['haproxy']['config']['frontend']['all_requests']['acl'][acl_name] = acl_setting
-    node.set['haproxy']['config']['frontend']['all_requests']['use_backend'] ||= {}
-    node.set['haproxy']['config']['frontend']['all_requests']['use_backend'][pool_name] = "if #{acl_name}"
+    node.default['haproxy']['config']['frontend']['all_requests']['acl'] ||= {}
+    node.default['haproxy']['config']['frontend']['all_requests']['acl'][acl_name] = acl_setting
+    node.default['haproxy']['config']['frontend']['all_requests']['use_backend'] ||= {}
+    node.default['haproxy']['config']['frontend']['all_requests']['use_backend'][pool_name] = "if #{acl_name}"
   end
 
   # Set up backend section for each application server pool served by HAProxy
-  node.set['haproxy']['config']['backend'][pool_name] = {}
-  node.set['haproxy']['config']['backend'][pool_name]['server'] ||= []
-  node.set['haproxy']['config']['backend'][pool_name]['server'] = backend_servers_list
+  node.default['haproxy']['config']['backend'][pool_name] = {}
+  node.default['haproxy']['config']['backend'][pool_name]['server'] ||= []
+  node.default['haproxy']['config']['backend'][pool_name]['server'] = backend_servers_list
 end
 
 include_recipe 'rs-haproxy::default'
