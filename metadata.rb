@@ -185,3 +185,4 @@ attribute "haproxy/config/defaults/http-check expect",
   :required => "optional",
   :choice => ['rstatus 20*', 'rstatus 30*|20*','rstatus 401|30*|20*' ],
   :default => 'rstatus 20*'
+  
