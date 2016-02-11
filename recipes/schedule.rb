@@ -27,10 +27,12 @@ schedule_enable = node['rs-haproxy']['schedule']['enable'] == true || node['rs-h
 # Interval in minutes for scheduling frontend run.
 interval = node['rs-haproxy']['schedule']['interval']
 
+
 # Run rs-haproxy::frontend on given interval.
 cron "rs-haproxy::frontend" do
+  user 'rightscale'
   minute "*/#{interval}"
   hour '*'
-  command "rs_run_recipe --policy 'rs-haproxy::frontend' --name 'rs-haproxy::frontend'"
+  command "sudo rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
   action schedule_enable ? :create : :delete
 end
