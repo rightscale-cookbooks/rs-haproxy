@@ -31,7 +31,7 @@ describe 'rs-haproxy::schedule' do
       expect(chef_run).to delete_cron('rs-haproxy::frontend').with(
         minute: '*/15',
         hour: '*',
-        command: "rs_run_recipe --policy 'rs-haproxy::frontend' --name 'rs-haproxy::frontend'"
+        command: "sudo rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
       )
     end
   end
