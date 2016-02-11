@@ -10,7 +10,7 @@ depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
 depends 'collectd', '~> 1.1.0'
 depends 'rightscale_tag', '~> 1.1.0'
-depends 'rs-base', '~> 1.1.6'
+depends 'rs-base', '~> 1.2.0'
 depends 'rsc_remote_recipe', '~> 10.0.0'
 
 recipe 'rs-haproxy::default', 'Installs HAProxy and sets up monitoring for the HAProxy process.'
@@ -19,6 +19,7 @@ recipe 'rs-haproxy::collectd', 'Configures monitoring by setting up collectd plu
 recipe 'rs-haproxy::frontend', 'Queries for application servers in the deployment and adds them' +
  ' to the corresponding backend pools served by the load balancer.'
 recipe 'rs-haproxy::schedule', 'Configure cron to periodically run rs-haproxy::frontend.'
+recipe 'rs-haproxy::hatop', 'installs hatop on the server'
 
 attribute "rs-haproxy/pools",
   :display_name => "Load Balance Pools",
@@ -144,3 +145,31 @@ attribute "rs-haproxy/schedule/interval",
   :required => 'optional',
   :default => '15',
   :recipes => ['rs-haproxy::schedule']
+
+attribute "rs-haproxy/backend/fall",
+  :display_name => "backend fall",
+  :description => 'The "fall" parameter states that a server will be considered as dead after
+<count> consecutive unsuccessful health checks. This value defaults to 3 if
+unspecified. See also the "check", "inter" and "rise" parameters.',
+  :required => 'optional',
+  :default => '2'
+
+attribute "rs-haproxy/backend/rise",
+  :display_name => "backend rise",
+  :description => 'The "rise" parameter states that a server will be considered as operational
+after <count> consecutive successful health checks. This value defaults to 2',
+  :required => "optional",
+  :default => '3'
+
+attribute "rs-haproxy/backend/inter",
+  :display_name => "backend inter",
+  :description => 'The "inter" parameter sets the interval between two consecutive health checks
+to <delay> milliseconds. If left unspecified, the delay defaults to 2000 ms.',
+  :required => "optional",
+  :default => '300'
+
+attribute "rs-haproxy/maxconn",
+  :display_name => "max connections for haproxy",
+  :description => "max connections for haproxy",
+  :required => "optional",
+  :default => '4096'

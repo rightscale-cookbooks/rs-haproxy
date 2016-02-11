@@ -11,3 +11,17 @@ cookbook 'rsc_remote_recipe', github:'rightscale-services-cookbooks/rsc_remote_r
 
 
 
+group :integration do
+  cookbook 'apt', '~> 2.6.0'
+  cookbook 'yum-epel', '~> 0.4.0'
+  cookbook 'build-essential', '~> 1.4.4'
+  cookbook 'mysql', github: 'rightscale-cookbooks-contrib/mysql', branch: 'COOK-2100'
+  cookbook 'rs-application_php', github: 'rightscale-cookbooks/rs-application_php'
+  cookbook 'application_php', github: 'rightscale-cookbooks-contrib/application_php', branch: 'template_fix_and_application_cookbook_upgrade'
+  cookbook 'curl'
+  cookbook 'fake', path: './test/cookbooks/fake'
+  cookbook 'chef-sugar'
+  cookbook 'hostsfile'
+  cookbook 'rhsm', '~> 1.0.0'
+  cookbook 'swap', '= 0.3.5'
+end

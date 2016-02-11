@@ -60,30 +60,27 @@ node.override['haproxy']['httpchk'] = node['rs-haproxy']['health_check_uri']
 Chef::Log.info "Overriding haproxy/balance_algorithm to '#{node['rs-haproxy']['balance_algorithm']}'..."
 node.override['haproxy']['balance_algorithm'] = node['rs-haproxy']['balance_algorithm']
 
-# Build the haproxy configuration sections into a hash
-haproxy_config = Mash.new(
-  'global' => {
-    'maxconn' => node['haproxy']['global_max_connections'],
-    'user' => node['haproxy']['user'],
-    'group' => node['haproxy']['group'],
-    'log' => "/dev/log syslog info",
-    'daemon' => true,
-    'quiet' => true,
-    'pidfile' => node['haproxy']['pid_file']
-  },
-  'defaults' => {
-    'log' => 'global',
-    'mode' => 'http',
-    'option' => ['httplog', 'dontlognull', 'redispatch'],
-    'balance' => node['haproxy']['balance_algorithm'],
-  },
-  'frontend' => {
-    'all_requests' => {
-      # HTTP bind address
-      "bind #{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}" => ""
-    }
+# Setting haproxy config in attributes
+node.default['haproxy']['config']['global'] = {
+  'user' => node['haproxy']['user'],
+  'group' => node['haproxy']['group'],
+  'pidfile' => node['haproxy']['pid_file'],
+  'log' => "/dev/log syslog info",
+  'daemon' => true,
+  'quiet' => true
   }
-)
+
+node.default['haproxy']['config']['defaults']['log'] = 'global'
+node.default['haproxy']['config']['defaults']['mode'] = 'http'
+node.default['haproxy']['config']['defaults']['balance'] = 'roundrobin'
+
+Chef::Log.info node['haproxy']['config']['defaults']['option']
+option_array = ['httplog', 'dontlognull', 'redispatch']
+node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i } unless node['haproxy']['config']['defaults']['option'].nil?
+node.default['haproxy']['config']['defaults']['option'] = option_array
+
+Chef::Log.info "creating base connection"
+node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
 
 # Configure SSL if the SSL certificate and the keys are provided
 if node['rs-haproxy']['ssl_cert']
@@ -107,36 +104,36 @@ if node['rs-haproxy']['ssl_cert']
   https_bind = "bind #{node['haproxy']['ssl_incoming_address']}:#{node['haproxy']['ssl_incoming_port']}"
 
   # SSL certificate configuration
-  haproxy_config['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
+  node.default['haproxy']['config']['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
-  haproxy_config['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
+ node.default['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
 end
 
 # Set up haproxy socket
 if node['haproxy']['enable_stats_socket']
-  haproxy_config['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" +
+  node.default['haproxy']['config']['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" +
     " user #{node['haproxy']['stats_socket_user']}" +
     " group #{node['haproxy']['stats_socket_group']}"
 end
 
 # Set up statistics URI
 if node['rs-haproxy']['stats_uri']
-  haproxy_config['defaults']['stats'] = {'uri' => node['rs-haproxy']['stats_uri']}
+  node.default['haproxy']['config']['defaults']['stats'] = {'uri' => node['rs-haproxy']['stats_uri']}
 
   if node['rs-haproxy']['stats_user'] && node['rs-haproxy']['stats_password']
-    haproxy_config['defaults']['stats']['auth'] = "#{node['rs-haproxy']['stats_user']}:#{node['rs-haproxy']['stats_password']}"
+    node.default['haproxy']['config']['defaults']['stats']['auth'] = "#{node['rs-haproxy']['stats_user']}:#{node['rs-haproxy']['stats_password']}"
   end
 end
 
 # Enable HTTP health checks
 if node['haproxy']['httpchk']
-  haproxy_config['defaults']['option'].push("httpchk GET #{node['haproxy']['httpchk']}")
-  haproxy_config['defaults']['http-check'] = 'disable-on-404'
+  node.default['haproxy']['config']['defaults']['option'].push("httpchk GET #{node['haproxy']['httpchk']}")
+  node.default['haproxy']['config']['defaults']['http-check'] = 'disable-on-404'
 end
 
 if node['rs-haproxy']['session_stickiness']
-  haproxy_config['defaults']['cookie'] = 'SERVERID insert indirect nocache'
+  node.default['haproxy']['config']['defaults']['cookie'] = 'SERVERID insert indirect nocache'
 end
 
 # Confirm that rsyslog is installed.
@@ -152,6 +149,22 @@ cookbook_file '/etc/rsyslog.d/10-haproxy.conf' do
   action :create
   notifies :restart, 'service[rsyslog]'
 end
+
+cookbook_file '/etc/logrotate.d/logrotate' do
+  source 'logrotate-haproxy.conf'
+  backup 0
+  mode 0644
+  owner 'root'
+  group 'root'
+  action :create
+end
+
+Chef::Log.info node['haproxy']['config']
+haproxy_config = Mash.new(
+'global' => {
+  'maxconn' => (node['rs-haproxy']['maxconn'].to_i+10)
+  }
+)
 
 # Install HAProxy and setup haproxy.cnf
 haproxy "set up haproxy.cnf" do
