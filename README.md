@@ -21,6 +21,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-haproxy](https://
 # Requirements
 
 * Chef 11 or higher
+* Requires [RightLink 10](http://docs.rightscale.com/rl10/) See cookbook version 1.1.3 for RightLink 6 support
 * Cookbook requirements
   * [haproxy](http://community.opscode.com/cookbooks/haproxy)
   * [rightscale_tag](http://community.opscode.com/cookbooks/rightscale_tag)
