@@ -191,5 +191,5 @@ attribute "rs-haproxy/force_ssl_redirect",
   :description => "Redirect all HTTP traffic to HTTPS when SSL is handled by haproxy.",
   :required => "optional",
   :choice => ["true", "false"],
-  :default => ["false"]   
+  :default => "false"   
   
