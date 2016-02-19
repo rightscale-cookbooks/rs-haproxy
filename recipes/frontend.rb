@@ -90,6 +90,7 @@ node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node[
 # https://cbonte.github.io/haproxy-dconv/configuration-1.5.html#check-ssl
 if node['rs-haproxy']['force_ssl_redirect']
   node.default['haproxy']['config']['redirect']['scheme'] = 'https if !{ ssl_fc }'
+end
 #node.default['haproxy']['config']['redirect']['scheme'] = 'https if !{ ssl_fc }' if node['rs-haproxy']['force_ssl_redirect'] == true
 
 
