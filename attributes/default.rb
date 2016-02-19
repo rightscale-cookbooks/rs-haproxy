@@ -79,6 +79,10 @@ default['rs-haproxy']['maxconn'] = 4096
 # HAproxy default member_max_connections
 default['haproxy']['member_max_connections'] = 100
 
+# HAproxy Redirect all HTTP traffic to HTTPS when SSL is handled by haproxy.
+# https://cbonte.github.io/haproxy-dconv/configuration-1.5.html#check-ssl
+default['rs-haproxy']['redirect'] = []
+
 default['haproxy']['config']['defaults']['options'] = []
 default['haproxy']['source']['prefix'] = '/usr/local'
 default['haproxy']['source']['target_os'] = 'linux2628'
