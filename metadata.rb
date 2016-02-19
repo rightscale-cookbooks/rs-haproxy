@@ -186,9 +186,10 @@ attribute "haproxy/config/defaults/http-check expect",
   :choice => ['rstatus 20*', 'rstatus 30*|20*','rstatus 401|30*|20*' ],
   :default => 'rstatus 20*'
   
-attribute "rs-haproxy/redirect",
+attribute "rs-haproxy/force_ssl_redirect",
   :display_name => "redirect scheme",
   :description => "Redirect all HTTP traffic to HTTPS when SSL is handled by haproxy.",
   :required => "optional",
-  :choice => ['[]','scheme https if !{ ssl_fc }'],
-  :default => '[]'
+  :choice => ["true", "false"],
+  :default => "false"   
+  
