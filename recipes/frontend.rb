@@ -86,6 +86,10 @@ node.default['haproxy']['config']['frontend']['all_requests'] ||= {}
 node.default['haproxy']['config']['frontend']['all_requests']['default_backend'] = node['rs-haproxy']['pools'].last
 node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
 node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node['rs-haproxy']['maxconn']
+# HAproxy Redirect all HTTP traffic to HTTPS when SSL is handled by haproxy.
+# https://cbonte.github.io/haproxy-dconv/configuration-1.5.html#check-ssl
+node.default['haproxy']['config']['redirect']['scheme'] = 'https if !{ ssl_fc }' if node['rs-haproxy']['force_ssl_redirect'] == true
+
 
 # Initialize backend section which will be generated in the haproxy.cfg
 node.default['haproxy']['config']['backend'] = {}
