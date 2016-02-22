@@ -192,8 +192,3 @@ attribute "rs-haproxy/force_ssl_redirect",
   :required => "optional",
   :choice => ['true', 'false'],
   :default => 'false'
-  
-  #:choice => ["true", "false"],
-  #:default => "false"
-#  :choice => ['true', 'false'],
-#  :default => 'false'
