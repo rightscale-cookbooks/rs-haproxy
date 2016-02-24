@@ -192,3 +192,10 @@ attribute "rs-haproxy/force_ssl_redirect",
   :required => "optional",
   :choice => ["true", "false"],
   :default => "false"
+  
+attribute "rs-haproxy/acl_list_for_https_exclusion",
+  :display_name => "redirect scheme",
+  :description => "Paths to exclude from force ssl. e.g.:  /web.*  /web2/test1.*  The .* required to get everything afterwards.  Please do NOT put a command between the paths",
+  :required => "optional",
+  :type => 'string'
+  :default => ""
