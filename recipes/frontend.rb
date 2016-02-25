@@ -96,10 +96,10 @@ if node['rs-haproxy']['force_ssl_redirect'] == 'true'
   node.default['haproxy']['config']['frontend']['all_requests']['acl']['no_https_rules'] = "#{acl_exclusion_list}"
   Chef::Log.info "SSL REDIRECT FALSE"
   # Code below is the exclusion rule for pages that do NOT require force ssl
-  #node.default['haproxy']['config']['frontend']['all_requests']['redirect']['scheme']['http'] = 'code 301 if no_https_rules { ssl_fc }'
+  node.default['haproxy']['config']['frontend']['all_requests']['redirect']['scheme']['http'] = 'if no_https_rules { ssl_fc }'
   # Code below is to force ssl redirect
   Chef::Log.info "SSL REDIRECT TRUE"
-  node.default['haproxy']['config']['frontend']['all_requests']['redirect']['scheme']['https'] = 'code 301 if !{ ssl_fc } !no_https_rules'
+  node.default['haproxy']['config']['frontend']['all_requests']['redirect']['scheme']['https'] = 'if !{ ssl_fc } !no_https_rules'
 end
 
 # Initialize backend section which will be generated in the haproxy.cfg
