@@ -57,7 +57,7 @@ apt_package 'socat' do
 end
 
 yum_package 'socat' do
-  options "--assume-no"
+  options "--assumeno"
   action :install
   only_if {node["platform_family"]=='rhel'}
 end
