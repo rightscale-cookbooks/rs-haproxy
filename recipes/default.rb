@@ -70,6 +70,17 @@ node.default['haproxy']['config']['global'] = {
   'quiet' => true
   }
 
+if node['rs-haproxy']['force_ssl_ciphers'] == 'true'
+  Chef::Log.info "building  cipher list when force ssl ciphers is turned on"
+  # building the ssl cipher list when force ssl ciphers is true
+  ssl_bind_ciphers = "path_reg -i #{node['rs-haproxy']['ssl_bind_ciphers']}"
+  node.default['haproxy']['config']['global']['ssl-default-bind-ciphers'] = "#{ssl_bind_ciphers}"
+  # Code below is the exclusion rule for pages that do NOT require force ssl
+end
+
+
+
+
 node.default['haproxy']['config']['defaults']['log'] = 'global'
 node.default['haproxy']['config']['defaults']['mode'] = 'http'
 node.default['haproxy']['config']['defaults']['balance'] = 'roundrobin'

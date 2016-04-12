@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.1.10'
+version          '1.1.11'
 
 depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
@@ -196,5 +196,19 @@ attribute "rs-haproxy/force_ssl_redirect",
 attribute "rs-haproxy/acl_list_for_https_exclusion",
   :display_name => "acl list for https exclusion from force_ssl_redirect",
   :description => "Paths to exclude from force ssl. e.g.:  /web.*  /web2/test1.*  The .* required to get everything afterwards.  Please do NOT put a command between the paths",
+  :required => "optional",
+  :default => ''
+
+attribute "rs-haproxy/force_ssl_cipher_list",
+  :display_name => "SSL Ciphers",
+  :description => "Use the value from ssl_bind_ciphers if true",
+  :required => "optional",
+  :choice => ["true", "false"],
+  :default => "false"
+
+
+attribute "rs-haproxy/ssl_bind_ciphers",
+  :display_name => "ciphers that are used by haproxy for ssl",
+  :description => "Ciphers that are used by HAPROXY for SSL e.g.: kEECDH+aRSA+AES:kRSA+AES:+AES256:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL!DSS",
   :required => "optional",
   :default => ''
