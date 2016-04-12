@@ -210,5 +210,5 @@ attribute "rs-haproxy/force_ssl_cipher_list",
 attribute "rs-haproxy/ssl_bind_ciphers",
   :display_name => "ciphers that are used by haproxy for ssl",
   :description => "Ciphers that are used by HAPROXY for SSL e.g.: kEECDH+aRSA+AES:kRSA+AES:+AES256:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL!DSS",
-  :required => "optional",
+  :choice => ["kEECDH+aRSA+AES:kRSA+AES:+AES256:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL!DSS"],
   :default => ''
