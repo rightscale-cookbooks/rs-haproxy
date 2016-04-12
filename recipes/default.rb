@@ -70,7 +70,7 @@ node.default['haproxy']['config']['global'] = {
   'quiet' => true
   }
 
-if node['rs-haproxy']['force_ssl_ciphers'] == 'true'
+if node['rs-haproxy']['force_ssl_cipher_list'] == 'true'
   Chef::Log.info "building  cipher list when force ssl ciphers is turned on"
   # building the ssl cipher list when force ssl ciphers is true
   ssl_bind_ciphers = "path_reg -i #{node['rs-haproxy']['ssl_bind_ciphers']}"
