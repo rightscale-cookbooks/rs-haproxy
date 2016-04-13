@@ -4,7 +4,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '1.1.13'
+version          '1.1.14'
 
 depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
@@ -210,5 +210,5 @@ attribute "rs-haproxy/force_ssl_cipher_list",
 attribute "rs-haproxy/ssl_bind_ciphers",
   :display_name => "ciphers that are used by haproxy for ssl",
   :description => "Ciphers that are used by HAPROXY for SSL e.g.: kEECDH+aRSA+AES:kRSA+AES:+AES256:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL!DSS",
-  :choice => ["kEECDH+aRSA+AES:kRSA+AES:+AES256:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL!DSS"],
+  :choice => ["kEECDH+aRSA+AES:kRSA+AES:+AES256:DES-CBC3-SHA:!kEDH:!LOW:!EXP:!MD5:!aNULL:!eNULL!DSS"],
   :default => ''
