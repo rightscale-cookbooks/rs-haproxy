@@ -3,6 +3,9 @@ source 'https://rubygems.org'
 gem 'berkshelf'
 gem 'thor-foodcritic'
 gem 'thor-scmversion'
+gem 'rack', '= 1.6.4'
+gem 'json', '~> 1.8', '>= 1.8.3'
+gem 'buff-ignore', '= 1.1.1'
 
 group :integration do
 # Prior to 0.1.6, libyaml is vulnerable to a heap overflow exploit from malicious YAML payloads.
