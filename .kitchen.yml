@@ -11,6 +11,11 @@ driver_config:
 platforms:
 - name: ubuntu-14.04
   run_list: ['recipe[apt]']
+  attributes:
+    build_essential:
+      compiletime: "true"
+    build-essential:
+      compile_time: "true"
   driver_config:
     box: opscode-ubuntu-14.04
 - name: ubuntu-12.04
