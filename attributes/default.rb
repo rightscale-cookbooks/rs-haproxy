@@ -83,3 +83,5 @@ default['haproxy']['source']['target_cpu'] = 'x86_64'
 default['haproxy']['source']['use_pcre'] = true
 default['haproxy']['source']['use_openssl'] = true
 default['haproxy']['source']['use_zlib'] = true
+default['build_essential']['compiletime']= true
+default['build-essential']['compile_time']= true
