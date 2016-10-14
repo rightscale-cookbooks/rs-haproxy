@@ -3,6 +3,24 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v1.2.2
+------
+- Add support for Rightlink 10.5.3
+- Replace crontab user 'rightscale' with 'root'.
+- pin version of aws, ohai, logrotate to retain chef 11 support
+- use rightscale_tag v1.2.1
+
+v1.2.1
+------
+- Updated to use machine_tag-1.2.1
+- Tag Scope limited to operational instances
+- Tag Scope limited to cloud of instance making call
+
+v1.2.0
+------
+- Add support for RightLink 10
+- Remove Support for RightLink 6
+
 v1.1.3
 ------
 

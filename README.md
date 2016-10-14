@@ -20,7 +20,7 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-haproxy](https://
 
 # Requirements
 
-* Chef 11 or higher
+* Chef 11
 * Requires [RightLink 10](http://docs.rightscale.com/rl10/) See cookbook version 1.1.3 for RightLink 6 support
 * Cookbook requirements
   * [haproxy](http://community.opscode.com/cookbooks/haproxy)
@@ -64,9 +64,9 @@ encryption. If this attribute is set to `nil`, then HAProxy will be set up witho
 SSL. Default: `nil`
 * `node['rs-haproxy']['incoming_port']` - The port on which HAProxy listens for HTTP requests. Default is `80`.
 * `node['rs-haproxy']['ssl_incoming_port']` - The port on which HAProxy listens for HTTPS requests. Default is `443`.
-* `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report 
+* `node['rs-haproxy']['stats_uri']` - The URI for the load balancer statistics report
 page. Default: `/haproxy-status`
-* `node['rs-haproxy']['stats_user']` - Username for the load balancer statistics report 
+* `node['rs-haproxy']['stats_user']` - Username for the load balancer statistics report
 page. Default: `nil`
 * `node['rs-haproxy']['stats_password']` - Password for the load balancer statistics
 report page. Default: `nil`

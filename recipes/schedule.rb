@@ -30,9 +30,8 @@ interval = node['rs-haproxy']['schedule']['interval']
 
 # Run rs-haproxy::frontend on given interval.
 cron "rs-haproxy::frontend" do
-  user 'rightscale'
   minute "*/#{interval}"
   hour '*'
-  command "sudo rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
+  command "rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
   action schedule_enable ? :create : :delete
 end

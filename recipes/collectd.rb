@@ -35,9 +35,8 @@ end
 
 include_recipe 'collectd::default'
 
-rewind "package[collectd]" do
-  action :nothing
-  only_if {::File.exists?("/etc/collect.d/collectd.conf")}
+unwind "package[collectd]" do
+ only_if {::File.exists?("/etc/collect.d/collectd.conf")}
 end
 # collectd::default recipe attempts to delete collectd plugins that were not
 # created during the same runlist as this recipe. Some common plugins are installed
@@ -57,7 +56,6 @@ apt_package 'socat' do
 end
 
 yum_package 'socat' do
-  options "--assumeno"
   action :install
   only_if {node["platform_family"]=='rhel'}
 end
