@@ -2,12 +2,8 @@ language: ruby
 rvm:
 - 2.0.0
 - 1.9.3
-before_install:
-- gem install bundler -v 1.11.2
-install:
-  - bundle install --jobs=3 --retry=3
-before_script: bundle exec rake setup_test_environment
-script: bundle exec rake except_kitchen
+before_script: bundle exec berks install
+script: bundle exec strainer test --except kitchen
 notifications:
   slack:
     secure: Su5sQKTBozuHjSvsw7AQNnKDRpQRM2v2w5zBKec2cGk44f2B/FIOZ3qzRJrRL1IbDmIZkDZroXPcqnbLc1KpC58w/S2hektuHHd3AshOq+bjalWFd8Lhm6Q2w3Eo9fdV52u2nNfoEC6+cPA+WN0wEO1rLHNxwlDWw4jHDddVVJQ=
