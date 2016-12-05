@@ -5,6 +5,8 @@ license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '2.0.0'
+issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
+source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 
 depends 'marker', '~> 1.0.1'
 depends 'haproxy', '~> 1.6.0'
