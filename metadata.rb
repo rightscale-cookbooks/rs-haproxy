@@ -9,9 +9,9 @@ issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 
 depends 'marker', '~> 1.0.1'
-depends 'haproxy', '~> 1.6.0'
-depends 'collectd', '~> 1.1.0'
-depends 'rightscale_tag', '~> 1.2.1'
+depends 'haproxy', '~> 2.0.0'
+depends 'collectd', '~> 2.2.2'
+depends 'rightscale_tag', '~> 2.0.0'
 depends 'rs-base', '~> 1.4.0'
 depends 'rsc_remote_recipe', '~> 10.0.0'
 
