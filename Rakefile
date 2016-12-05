@@ -26,7 +26,7 @@ end
 
 desc "runs foodcritic"
 task :foodcritic do
-  cmd = "bundle exec foodcritic --epic-fail any --tags ~FC009 --tags ~FC064 --tags ~FC065 #{directory}"
+  cmd = "bundle exec foodcritic --epic-fail any #{directory}"
   puts cmd
   system(cmd)
 end
