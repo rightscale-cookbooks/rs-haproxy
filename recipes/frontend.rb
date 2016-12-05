@@ -92,8 +92,7 @@ node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node[
 if node['rs-haproxy']['force_ssl_redirect'] == 'true'
   Chef::Log.info "building acl_list_for_https_exclusion when force ssl is turned on"
   # building the exclusion list on what pages are excluded from force ssl
-  acl_exclusion_list = "path_reg -i #{node['rs-haproxy']['acl_list_for_https_exclusion']}"
-  node.default['haproxy']['config']['frontend']['all_requests']['acl']['no_https_rules'] = "#{acl_exclusion_list}"
+  node.default['haproxy']['config']['frontend']['all_requests']['acl']['no_https_rules'] = "path_reg -i #{node['rs-haproxy']['acl_list_for_https_exclusion']}"
   # Code below is the exclusion rule for pages that do NOT require force ssl
   node.default['haproxy']['config']['frontend']['all_requests']['redirect']['scheme']['http'] =  'code 301 if no_https_rules { ssl_fc }'
   # Code below is to force ssl redirect
