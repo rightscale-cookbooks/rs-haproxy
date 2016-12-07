@@ -50,7 +50,7 @@ def haproxy_info(regex_setting)
   haproxy_show_info.each do |line|
     if line =~ /#{regex_setting}/i
       return line.match(/#{regex_setting}:\s+(.*)/i).captures[0]
-      end
+    end
   end
 
   nil

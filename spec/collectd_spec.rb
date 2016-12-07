@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'rs-haproxy::collectd' do
   let(:chef_run) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
       node.set['rightscale']['instance_uuid'] = 'abcd1234'
     end.converge(described_recipe)
   end

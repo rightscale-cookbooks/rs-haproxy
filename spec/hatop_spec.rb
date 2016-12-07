@@ -2,7 +2,7 @@ require_relative 'spec_helper'
 
 describe 'rs-haproxy::hatop' do
   let(:chef_run) do
-    ChefSpec::Runner.new do |node|
+    ChefSpec::SoloRunner.new do |node|
     end.converge(described_recipe)
   end
 

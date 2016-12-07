@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe 'rs-haproxy::default' do
   context 'main haproxy without ssl' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
       end.converge(described_recipe)
     end
 
@@ -34,12 +34,12 @@ describe 'rs-haproxy::default' do
 
   context 'ssl is enabled' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
         node.set['rs-haproxy']['ssl_cert'] = 'certdata'
       end.converge(described_recipe)
     end
-    let (:haproxy_conf_dir) { ::File.join(chef_run.node['haproxy']['source']['prefix'], chef_run.node['haproxy']['conf_dir']) }
-    let (:ssl_cert_file) { ::File.join(haproxy_conf_dir, 'ssl_cert.pem') }
+    let(:haproxy_conf_dir) { ::File.join(chef_run.node['haproxy']['source']['prefix'], chef_run.node['haproxy']['conf_dir']) }
+    let(:ssl_cert_file) { ::File.join(haproxy_conf_dir, 'ssl_cert.pem') }
 
     it 'creates cert dir' do
       expect(chef_run).to create_directory(haproxy_conf_dir)

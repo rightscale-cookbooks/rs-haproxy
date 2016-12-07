@@ -108,8 +108,8 @@ describe 'Verify backend configuration' do
         'http://www.example.com'
       ].join(' ')) do
         its(:stdout) do
-          should match /HTTP Response Code: 302/
-          should match /Redirect URL: https:\/\/www.example.com\//
+          should match(/HTTP Response Code: 302/)
+          should match(%r{Redirect URL: https:\/\/www.example.com\/})
         end
       end
     end
@@ -122,7 +122,7 @@ describe 'Verify backend configuration' do
       '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
       'https://www.example.com:445'
     ].join(' ')) do
-      its(:stdout) { should match /Basic html serving succeeded\./ }
+      its(:stdout) { should match(/Basic html serving succeeded\./) }
     end
 
     context 'When application servers are attached to HAProxy pools' do
@@ -135,7 +135,7 @@ describe 'Verify backend configuration' do
           'https://www.example.com:445;',
           'cat /tmp/cookie'
         ].join(' ')) do
-          its(:stdout) { should match /03-ABCDEFGH0123/ }
+          its(:stdout) { should match(/03-ABCDEFGH0123/) }
         end
 
         describe command([
@@ -146,7 +146,7 @@ describe 'Verify backend configuration' do
           'https://www.example.com:445/appserver/;',
           'cat /tmp/cookie'
         ].join(' ')) do
-          its(:stdout) { should match /02-ABCDEFGH0123/ }
+          its(:stdout) { should match(/02-ABCDEFGH0123/) }
         end
 
         describe command([
@@ -157,7 +157,7 @@ describe 'Verify backend configuration' do
           'https://test.example.com:445;',
           'cat /tmp/cookie'
         ].join(' ')) do
-          its(:stdout) { should match /01-ABCDEFGH0123/ }
+          its(:stdout) { should match(/01-ABCDEFGH0123/) }
         end
       end
     end
