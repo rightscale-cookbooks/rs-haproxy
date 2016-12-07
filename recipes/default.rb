@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
 # If installing from source, update attributes accordingly.
@@ -32,7 +32,7 @@ if node['rs-haproxy']['install_method'] == 'source'
   else
     source_version = RsHaproxy::Helper.get_haproxy_version(node['rs-haproxy']['source']['url'])
     unless source_version
-      raise "Unable to determine version from source filename. Please set version in rs-haproxy/source/version attribute."
+      raise 'Unable to determine version from source filename. Please set version in rs-haproxy/source/version attribute.'
     end
   end
 
@@ -65,21 +65,21 @@ node.default['haproxy']['config']['global'] = {
   'user' => node['haproxy']['user'],
   'group' => node['haproxy']['group'],
   'pidfile' => node['haproxy']['pid_file'],
-  'log' => "/dev/log syslog info",
+  'log' => '/dev/log syslog info',
   'daemon' => true,
   'quiet' => true
-  }
+}
 
 node.default['haproxy']['config']['defaults']['log'] = 'global'
 node.default['haproxy']['config']['defaults']['mode'] = 'http'
 node.default['haproxy']['config']['defaults']['balance'] = 'roundrobin'
 
 Chef::Log.info node['haproxy']['config']['defaults']['option']
-option_array = ['httplog', 'dontlognull', 'redispatch']
-node['haproxy']['config']['defaults']['option'].each { |i| option_array<<i } unless node['haproxy']['config']['defaults']['option'].nil?
+option_array = %w(httplog dontlognull redispatch)
+node['haproxy']['config']['defaults']['option'].each { |i| option_array << i } unless node['haproxy']['config']['defaults']['option'].nil?
 node.default['haproxy']['config']['defaults']['option'] = option_array
 
-Chef::Log.info "creating base connection"
+Chef::Log.info 'creating base connection'
 node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
 
 # Configure SSL if the SSL certificate and the keys are provided
@@ -107,19 +107,19 @@ if node['rs-haproxy']['ssl_cert']
   node.default['haproxy']['config']['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
- node.default['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
+  node.default['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
 end
 
 # Set up haproxy socket
 if node['haproxy']['enable_stats_socket']
-  node.default['haproxy']['config']['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" +
-    " user #{node['haproxy']['stats_socket_user']}" +
-    " group #{node['haproxy']['stats_socket_group']}"
+  node.default['haproxy']['config']['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" \
+                                                         " user #{node['haproxy']['stats_socket_user']}" \
+                                                         " group #{node['haproxy']['stats_socket_group']}"
 end
 
 # Set up statistics URI
 if node['rs-haproxy']['stats_uri']
-  node.default['haproxy']['config']['defaults']['stats'] = {'uri' => node['rs-haproxy']['stats_uri']}
+  node.default['haproxy']['config']['defaults']['stats'] = { 'uri' => node['rs-haproxy']['stats_uri'] }
 
   if node['rs-haproxy']['stats_user'] && node['rs-haproxy']['stats_password']
     node.default['haproxy']['config']['defaults']['stats']['auth'] = "#{node['rs-haproxy']['stats_user']}:#{node['rs-haproxy']['stats_password']}"
@@ -161,13 +161,13 @@ end
 
 Chef::Log.info node['haproxy']['config']
 haproxy_config = Mash.new(
-'global' => {
-  'maxconn' => (node['rs-haproxy']['maxconn'].to_i+10)
+  'global' => {
+    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10)
   }
 )
 
 # Install HAProxy and setup haproxy.cnf
-haproxy "set up haproxy.cnf" do
+haproxy 'set up haproxy.cnf' do
   config haproxy_config
   action :create
 end

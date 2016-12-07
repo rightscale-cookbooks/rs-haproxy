@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 
 describe 'rs-haproxy::schedule' do
-
   context 'rs-haproxy/schedule/enable is true' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
@@ -35,5 +34,4 @@ describe 'rs-haproxy::schedule' do
       )
     end
   end
-
 end

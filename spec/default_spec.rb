@@ -1,7 +1,6 @@
 require_relative 'spec_helper'
 
 describe 'rs-haproxy::default' do
-
   context 'main haproxy without ssl' do
     let(:chef_run) do
       ChefSpec::Runner.new do |node|
@@ -14,24 +13,23 @@ describe 'rs-haproxy::default' do
 
     it 'creates rsyslog configuration' do
       expect(chef_run).to create_cookbook_file('/etc/rsyslog.d/10-haproxy.conf').with(
-          source: 'rsyslog-10-haproxy.conf',
-          backup: 0,
-          mode: 0644,
-          owner: 'root',
-          group: 'root'
+        source: 'rsyslog-10-haproxy.conf',
+        backup: 0,
+        mode: 0644,
+        owner: 'root',
+        group: 'root'
       )
     end
 
     it 'creates logrotate file' do
       expect(chef_run).to create_cookbook_file('/etc/logrotate.d/logrotate').with(
-          source: 'logrotate-haproxy.conf',
-          backup: 0,
-          mode: 0644,
-          owner: 'root',
-          group: 'root'
+        source: 'logrotate-haproxy.conf',
+        backup: 0,
+        mode: 0644,
+        owner: 'root',
+        group: 'root'
       )
     end
-
   end
 
   context 'ssl is enabled' do
@@ -53,7 +51,5 @@ describe 'rs-haproxy::default' do
         mode: 0600
       )
     end
-
   end
-
 end

@@ -14,21 +14,21 @@ set :backend, :exec
 #
 def haproxy_stat(pxname, svname)
   csv_content = haproxy_show_stat
-  index  = csv_content[0].index("status")
+  index = csv_content[0].index('status')
 
   csv_content.each do |line|
-    if line[0] =~ /#{pxname}/i and line[1] =~ /#{svname}/
-     return line[index].strip()
+    if line[0] =~ /#{pxname}/i && line[1] =~ /#{svname}/
+      return line[index].strip
     end
   end
 
-  return nil
+  nil
 end
 
 # Helper function to add to entry to /etc/hosts.
 #
 def add_host
-  entry_line = "192.0.2.2 www.example.com test.example.com"
+  entry_line = '192.0.2.2 www.example.com test.example.com'
 
   if open('/etc/hosts') { |f| f.grep(/^#{entry_line}$/).empty? }
     open('/etc/hosts', 'a') { |p| p.puts "\n#{entry_line}" }
@@ -39,12 +39,11 @@ def add_host
   else
     true
   end
-
 end
 
 config_file = '/usr/local/etc/haproxy/haproxy.cfg'
 
-describe service("haproxy") do
+describe service('haproxy') do
   it { should be_enabled }
   it { should be_running }
 end
@@ -53,15 +52,15 @@ describe port(445) do
   it { should be_listening }
 end
 
-describe "Verify frontend settings in haproxy.cfg file" do
+describe 'Verify frontend settings in haproxy.cfg file' do
   [
-    ["frontend all_requests", "default_backend example"],
-    ["frontend all_requests", "use_backend test_example if acl_test_example"],
-    ["frontend all_requests", "use_backend appserver if acl_appserver"],
-    ["frontend all_requests", "use_backend example if acl_example"],
-    ["frontend all_requests", "bind 0.0.0.0:80"],
-    ["frontend all_requests", "bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem no-sslv3"],
-    ["frontend all_requests", "redirect scheme https if !{ ssl_fc }"],
+    ['frontend all_requests', 'default_backend example'],
+    ['frontend all_requests', 'use_backend test_example if acl_test_example'],
+    ['frontend all_requests', 'use_backend appserver if acl_appserver'],
+    ['frontend all_requests', 'use_backend example if acl_example'],
+    ['frontend all_requests', 'bind 0.0.0.0:80'],
+    ['frontend all_requests', 'bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem no-sslv3'],
+    ['frontend all_requests', 'redirect scheme https if !{ ssl_fc }']
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
@@ -69,14 +68,14 @@ describe "Verify frontend settings in haproxy.cfg file" do
   end
 end
 
-describe "Verify backend settings in haproxy.cfg file" do
+describe 'Verify backend settings in haproxy.cfg file' do
   [
-    ["backend test_example", "server disabled-server 127.0.0.1:1 disabled"],
-    ["backend test_example", "server 01-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 01-ABCDEFGH0123"],
-    ["backend appserver", "server disabled-server 127.0.0.1:1 disabled"],
-    ["backend appserver", "server 02-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 02-ABCDEFGH0123"],
-    ["backend example", "server disabled-server 127.0.0.1:1 disabled"],
-    ["backend example", "server 03-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 03-ABCDEFGH0123"],
+    ['backend test_example', 'server disabled-server 127.0.0.1:1 disabled'],
+    ['backend test_example', 'server 01-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 01-ABCDEFGH0123'],
+    ['backend appserver', 'server disabled-server 127.0.0.1:1 disabled'],
+    ['backend appserver', 'server 02-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 02-ABCDEFGH0123'],
+    ['backend example', 'server disabled-server 127.0.0.1:1 disabled'],
+    ['backend example', 'server 03-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 03-ABCDEFGH0123']
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
@@ -84,13 +83,13 @@ describe "Verify backend settings in haproxy.cfg file" do
   end
 end
 
-describe "Verify backend configuration" do
+describe 'Verify backend configuration' do
   before(:all) do
-    raise "/etc/hosts not updated correctly" unless add_host
+    raise '/etc/hosts not updated correctly' unless add_host
   end
 
-  context "SSL certificate not passed to the curl call" do
-    context "Connecting to port 445" do
+  context 'SSL certificate not passed to the curl call' do
+    context 'Connecting to port 445' do
       describe command([
         'curl',
         '--silent',
@@ -101,7 +100,7 @@ describe "Verify backend configuration" do
     end
 
     # Connecting to port 80 should redirect to HTTPS
-    context "Connecting to port 80" do
+    context 'Connecting to port 80' do
       describe command([
         'curl',
         '--silent',
@@ -116,7 +115,7 @@ describe "Verify backend configuration" do
     end
   end
 
-  context "SSL certificate passed to the curl call" do
+  context 'SSL certificate passed to the curl call' do
     describe command([
       'curl',
       '--silent',
@@ -126,8 +125,8 @@ describe "Verify backend configuration" do
       its(:stdout) { should match /Basic html serving succeeded\./ }
     end
 
-    context "When application servers are attached to HAProxy pools" do
-      describe "Verify if HAProxy serves pages from all application servers" do
+    context 'When application servers are attached to HAProxy pools' do
+      describe 'Verify if HAProxy serves pages from all application servers' do
         describe command([
           'curl',
           '--silent',
@@ -164,7 +163,7 @@ describe "Verify backend configuration" do
     end
 
     # Connecting to port SSL port via SSLv3 and expect failure
-    context "Connecting to port 445 via SSLv3" do
+    context 'Connecting to port 445 via SSLv3' do
       describe command([
         'curl',
         '--silent',
@@ -179,8 +178,7 @@ describe "Verify backend configuration" do
   end
 end
 
-describe "Verify settings through haproxy socket" do
-
+describe 'Verify settings through haproxy socket' do
   # This function reads the haproxy socket.  It parses through the info section
   # and puts the data into a csv format.  The row is selected by providing the
   # first two values in the row.  The column is selected by name.
@@ -197,16 +195,16 @@ describe "Verify settings through haproxy socket" do
   end
 
   [
-    ["all_requests", "FRONTEND", "OPEN"],
-    ["test_example", "disabled-server", "MAINT"],
-    ["test_example", "01-ABCDEFGH0123", "UP"],
-    ["test_example", "BACKEND", "UP"],
-    ["appserver", "disabled-server", "MAINT"],
-    ["appserver", "02-ABCDEFGH0123", "UP"],
-    ["appserver", "BACKEND", "UP"],
-    ["example", "disabled-server", "MAINT"],
-    ["example", "03-ABCDEFGH0123", "UP"],
-    ["example", "BACKEND", "UP"],
+    %w(all_requests FRONTEND OPEN),
+    ['test_example', 'disabled-server', 'MAINT'],
+    ['test_example', '01-ABCDEFGH0123', 'UP'],
+    %w(test_example BACKEND UP),
+    ['appserver', 'disabled-server', 'MAINT'],
+    ['appserver', '02-ABCDEFGH0123', 'UP'],
+    %w(appserver BACKEND UP),
+    ['example', 'disabled-server', 'MAINT'],
+    ['example', '03-ABCDEFGH0123', 'UP'],
+    %w(example BACKEND UP)
   ].each do |pool_name, server, status|
     it "#{server} in the pool #{pool_name} should have status of #{status}" do
       expect(haproxy_stat(pool_name, server)).to eq(status)

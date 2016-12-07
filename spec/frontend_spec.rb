@@ -14,5 +14,4 @@ describe 'rs-haproxy::frontend' do
       expect(chef_run).to include_recipe('rightscale_tag::default')
     end
   end
-
 end

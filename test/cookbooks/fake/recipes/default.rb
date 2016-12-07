@@ -29,15 +29,14 @@ require 'json'
 # backend configuration by checking if it serves pages from the correct application server
 # based on the request URL.
 [
-  ["01-ABCDEFGH0123", "test_example", "test.example.com"],
-  ["02-ABCDEFGH0123", "appserver", "/appserver"],
-  ["03-ABCDEFGH0123", "example", "example.com"]
+  ['01-ABCDEFGH0123', 'test_example', 'test.example.com'],
+  ['02-ABCDEFGH0123', 'appserver', '/appserver'],
+  ['03-ABCDEFGH0123', 'example', 'example.com']
 ].each do |server_uuid, app_name, vhost|
-
   # Fake machine_tags to be set in the VM to simulate 2-tier deployment
   tags = [
     "server:uuid=#{server_uuid}",
-    "application:active=true",
+    'application:active=true',
     "application:active_#{app_name}=true",
     "application:bind_ip_address_#{app_name}=192.0.2.2",
     "application:bind_port_#{app_name}=8080",
