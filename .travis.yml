@@ -5,9 +5,9 @@ before_install:
 - curl -L https://www.getchef.com/chef/install.sh | sudo bash -s -- -P chefdk -v 1.0.3
 - gem install bundler -v 1.11.2
 install:
-  - chef exec bundle install --jobs=3 --retry=3
+- chef exec bundle install --jobs=3 --retry=3
 before_script: chef exec bundle exec rake setup_test_environment
 script: chef exec bundle exec rake except_kitchen
 notifications:
   slack:
-    secure: r1q5cfMiRowYnEPv3qUoBWHWQsSYwFk93/HUjhCP4QCS9lYxTQ/mko60MRrgfGh95T7DwXqrTkpPJrOMUWPPpBvZHwkgEc/nM63Z5diYh1HEj7FhsH2ybReiMfxwQNuPesZr2ObGLt9u4qjgSSyb082ANgAdfGTBrtvByDbBP00=
+    secure: 08H9qR4Q4uUldZQulAutUwkkX7gwr/6XgKzy3QfkPKW/amSqOb7LYHg7ki9BR7oCUoi+4VC/eFUBrqQIk4VDGT4epbWmS7C6qVD1S3+koCHeXmTkJR6/FRp2JukrUBD2qvYcoWFfbaecW0pNnWYMRJ/OJW3MLv4sKS9SJcRG4Iw=
