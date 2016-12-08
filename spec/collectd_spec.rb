@@ -14,9 +14,8 @@ describe 'rs-haproxy::collectd' do
     end
 
     it 'includes collectd default recipe' do
-      ::File.stub(:exist?).and_return(true)
-      #::File.stub(:read).and_return('RS_RLL_PORT=12345'.to_json)
-      allow(::File).to receive(:read) { 'RS_RLL_PORT=12345' }
+      ::File.stub(:exist?).with('/var/run/rightlink/secret').and_return(true)
+      ::File.stub(:read).with('/var/run/rightlink/secret').and_return('RS_RLL_PORT=12345')
       expect(chef_run).to include_recipe('collectd::default')
     end
 
