@@ -35,7 +35,7 @@ unless node['collectd']['service']['configuration']['types_d_b'].include?('/usr/
   node.override['collectd']['service']['configuration']['types_d_b'] = [node['collectd']['service']['configuration']['types_d_b'], '/usr/share/collectd/haproxy.db']
 end
 
-include_recipe 'collectd::default'
+include_recipe 'rs-base::collectd'
 
 # unwind 'package[collectd]' do
 #   only_if { ::File.exist?('/etc/collect.d/collectd.conf') }

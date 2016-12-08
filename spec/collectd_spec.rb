@@ -4,6 +4,7 @@ describe 'rs-haproxy::collectd' do
   let(:chef_run) do
     ChefSpec::SoloRunner.new do |node|
       node.set['rightscale']['instance_uuid'] = 'abcd1234'
+      node.set['rs-base']['collectd_server'] = 'tss-4.rightscale.com'
     end.converge(described_recipe)
   end
 
@@ -13,6 +14,9 @@ describe 'rs-haproxy::collectd' do
     end
 
     it 'includes collectd default recipe' do
+      ::File.stub(:exist?).and_return(true)
+      #::File.stub(:read).and_return('RS_RLL_PORT=12345'.to_json)
+      allow(::File).to receive(:read) { 'RS_RLL_PORT=12345' }
       expect(chef_run).to include_recipe('collectd::default')
     end
 
