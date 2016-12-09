@@ -21,9 +21,10 @@ marker 'recipe_start_rightscale' do
   template 'rightscale_audit_entry.erb'
 end
 
-chef_gem 'chef-rewind' do
-  action :install
-end
+raise 'This script is only compatible with rs-base::monitoring_collectd' if node['rs-base']['monitoring_type'] != 'collectd'
+# chef_gem 'chef-rewind' do
+#  action :install
+# end
 # require 'chef/rewind'
 
 if node['rightscale'] && node['rightscale']['instance_uuid']
@@ -35,7 +36,7 @@ unless node['collectd']['service']['configuration']['types_d_b'].include?('/usr/
   node.override['collectd']['service']['configuration']['types_d_b'] = [node['collectd']['service']['configuration']['types_d_b'], '/usr/share/collectd/haproxy.db']
 end
 
-include_recipe 'rs-base::collectd'
+include_recipe 'rs-base::monitoring_collectd'
 
 # unwind 'package[collectd]' do
 #   only_if { ::File.exist?('/etc/collect.d/collectd.conf') }

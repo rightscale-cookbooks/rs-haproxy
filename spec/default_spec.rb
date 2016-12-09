@@ -30,6 +30,9 @@ describe 'rs-haproxy::default' do
         group: 'root'
       )
     end
+    it 'creates the haproxy config' do
+      expect(chef_run).to create_haproxy('set up haproxy.cnf')
+    end
   end
 
   context 'ssl is enabled' do

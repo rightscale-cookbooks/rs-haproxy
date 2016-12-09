@@ -23,7 +23,7 @@ end
 
 include_recipe 'rightscale_tag::default'
 
-log 'Setting load balancer tags...'
+Chef::Log.info 'Setting load balancer tags...'
 node['rs-haproxy']['pools'].each do |pool_name|
   # Set up load balancer tags for the pool
   rightscale_tag_load_balancer RsHaproxy::Helper.get_config_pool_name(pool_name) do
