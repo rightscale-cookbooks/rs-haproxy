@@ -1,12 +1,14 @@
 ---
 driver_plugin: vagrant
 driver_config:
-  require_chef_omnibus: '11.6'
+  require_chef_omnibus: '12.16'
   customize:
-    cpus: 2
-    memory: 1024
+    cpus: 1
+    memory: 512
   network:
     - ["private_network", {ip: "192.0.2.2", netmask: "255.255.255.255"}]
+provisioner:
+  name: chef_zero
 
 platforms:
 - name: ubuntu-14.04
@@ -18,10 +20,10 @@ platforms:
   - recipe[apt]
   driver_config:
     box: opscode-ubuntu-12.04
-- name: centos-6.5
+- name: centos-6.8
   run_list: ['recipe[yum-epel]']
   driver_config:
-    box: opscode-centos-6.5
+    box: opscode-centos-6.8
 - name: centos-7.0
   run_list: ['recipe[yum-epel]', 'recipe[fake::mysql_repo]']
   driver_config:
