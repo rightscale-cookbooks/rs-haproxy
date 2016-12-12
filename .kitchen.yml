@@ -66,6 +66,8 @@ suites:
     cloud:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-haproxy:
       pools: ['test_example', 'appserver', 'example']
       incoming_port: 85
