@@ -5,8 +5,10 @@ driver_config:
   customize:
     cpus: 1
     memory: 512
-  network:
-    - ["private_network", {ip: "192.0.2.2", netmask: "255.255.255.255"}]
+  ssh:
+    insert_key: false
+#  network:
+#    - ["private_network", {ip: "192.0.2.2", netmask: "255.255.255.255"}]
 provisioner:
   name: chef_zero
 
@@ -14,20 +16,20 @@ platforms:
 - name: ubuntu-14.04
   run_list: ['recipe[apt]']
   driver_config:
-    box: opscode-ubuntu-14.04
+    box: bento/ubuntu-14.04
 - name: ubuntu-12.04
   run_list:
   - recipe[apt]
   driver_config:
-    box: opscode-ubuntu-12.04
-- name: centos-6.5
+    box: bento/ubuntu-12.04
+- name: centos-6.8
   run_list: ['recipe[fake::create_secrets]','recipe[yum-epel]']
   driver_config:
-    box: opscode-centos-6.5
+    box: bento/centos-6.8 
 - name: centos-7.0
   run_list: ['recipe[yum-epel]', 'recipe[fake::mysql_repo]']
   driver_config:
-    box: opscode-centos-7.0
+    box: bento/centos-7.0
 - name: rhel-6.5
   run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
   attributes:
