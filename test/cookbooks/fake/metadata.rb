@@ -9,6 +9,7 @@ depends 'rs-haproxy'
 depends 'rs-application_php'
 depends 'chef-sugar'
 depends 'hostsfile'
+depends 'curl'
 
 recipe 'fake::default', 'Creates fake application servers to verify HAProxy backend configuration.'
 recipe 'fake::mysql_repo', 'Creates fake application servers to verify HAProxy backend configuration.'
