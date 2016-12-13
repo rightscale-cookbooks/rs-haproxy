@@ -64,7 +64,9 @@ describe 'Verify info setting through haproxy socket' do
       socket_info = []
       UNIXSocket.open('/var/run/haproxy.sock') do |socket|
         socket.puts('show info')
-        socket_info.push(line) while line == socket.gets
+        while line = socket.gets do
+          socket_info.push(line)
+        end
       end
       return socket_info
     rescue Errno::EPIPE
