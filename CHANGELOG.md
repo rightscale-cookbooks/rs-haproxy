@@ -3,6 +3,11 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.0.0
+------
+- Remove support for Chef 11
+- Add support for Chef 12
+
 v1.2.2
 ------
 - Add support for Rightlink 10.5.3
