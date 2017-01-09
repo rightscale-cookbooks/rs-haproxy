@@ -4,10 +4,10 @@ metadata
 
 cookbook 'haproxy', github: 'rightscale-cookbooks-contrib/haproxy', branch: 'rs-fixes'
 cookbook 'collectd', github: 'rightscale-cookbooks-contrib/chef-collectd', branch: 'generalize_install_for_both_centos_and_ubuntu'
-cookbook 'rs-base', github:'rightscale-cookbooks/rs-base'
-cookbook 'rightscale_tag', github:'rightscale-cookbooks/rightscale_tag'
-cookbook 'machine_tag', github:'rightscale-cookbooks/machine_tag'
-cookbook 'rsc_remote_recipe', github:'rightscale-services-cookbooks/rsc_remote_recipe'
+cookbook 'rs-base', github:'rightscale-cookbooks/rs-base', tag: 'v1.4.1'
+cookbook 'rightscale_tag', github:'rightscale-cookbooks/rightscale_tag', tag: 'v1.2.2'
+cookbook 'machine_tag', github:'rightscale-cookbooks/machine_tag', tag: 'v1.2.2'
+cookbook 'rsc_remote_recipe', github:'rightscale-services-cookbooks/rsc_remote_recipe', tag: 'v10.0.1'
 cookbook 'iptables', '~> 1.1.0' # keep for compatiblity with chef 11, can remove with chef 12
 cookbook 'logrotate','1.9.2' # keep for compatiblity with chef 11, can remove with chef 12
 cookbook 'aws','3.4.1' # keep for compatiblity with chef 11, can remove with chef 12
