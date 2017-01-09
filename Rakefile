@@ -40,7 +40,7 @@ task :verify_version do
     @new_version
   end
 
-  if `git rev-parse --abbrev-ref HEAD`.strip != 'master'
+  if `git rev-parse --abbrev-ref HEAD`.strip != ('master' && 'HEAD')
     old_version = old_version?.tr('\'', '')
     new_version = new_version?.tr('\'', '')
     puts "Verifying Metdata Version - Old:#{old_version}, New:#{new_version}"
@@ -91,6 +91,13 @@ end
 desc 'runs testkitchen'
 task :kitchen do
   cmd = 'chef exec kitchen test --concurrency=2'
+  puts cmd
+  sh(cmd)
+end
+
+desc 'clean up test files'
+task :clean do
+  cmd = 'rm -fr berks-cookbooks knife.rb'
   puts cmd
   sh(cmd)
 end
