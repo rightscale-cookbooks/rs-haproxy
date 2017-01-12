@@ -20,15 +20,4 @@
 include_recipe 'chef-sugar::default'
 
 # Install MySQL Yum Repository
-
-compile_time do
-  remote_file '/tmp/mysql-community-release-el7-5.noarch.rpm' do
-    source 'http://dev.mysql.com/get/mysql-community-release-el7-5.noarch.rpm'
-    checksum '0592c33a41310f4bd91cf200824db1c52fe59f0545e1e4646b86d774237d34b7'
-  end
-
-  rpm_package 'mysql repository' do
-    source '/tmp/mysql-community-release-el7-5.noarch.rpm'
-    action :install
-  end
-end
+include_recipe 'yum-mysql-community::mysql57'
