@@ -15,7 +15,7 @@ provisioner:
   always_update_cookbooks: true
 platforms:
 - name: ubuntu-14.04
-  run_list: [
+  run_list:
   - recipe[apt]
   driver_config:
     box: bento/ubuntu-14.04
