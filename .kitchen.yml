@@ -15,7 +15,8 @@ provisioner:
   always_update_cookbooks: true
 platforms:
 - name: ubuntu-14.04
-  run_list: ['recipe[apt]']
+  run_list: [
+  - recipe[apt]
   driver_config:
     box: bento/ubuntu-14.04
 - name: ubuntu-12.04
@@ -31,26 +32,26 @@ platforms:
   run_list: ['recipe[yum-epel]', 'recipe[fake::mysql_repo]']
   driver_config:
     box: bento/centos-7.0
-- name: rhel-6.5
-  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
-  attributes:
-    rhsm:
-      username: <%= ENV['RHSM_USERNAME'] %>
-      password: <%= ENV['RHSM_PASSWORD'] %>
-      additional_repos: ['rhel-6-server-optional-rpms']
-  driver_config:
-    box: local-rhel-6.5
-    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
-- name: rhel-7.0
-  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::mysql_repo]', 'recipe[fake::wget_cacert]']
-  attributes:
-    rhsm:
-      username: <%= ENV['RHSM_USERNAME'] %>
-      password: <%= ENV['RHSM_PASSWORD'] %>
-      additional_repos: ['rhel-7-server-optional-rpms']
-  driver_config:
-    box: local-rhel-7.0
-    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
+#- name: rhel-6.5
+#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
+#  attributes:
+#    rhsm:
+#      username: <%= ENV['RHSM_USERNAME'] %>
+#      password: <%= ENV['RHSM_PASSWORD'] %>
+#      additional_repos: ['rhel-6-server-optional-rpms']
+#  driver_config:
+#    box: local-rhel-6.5
+#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
+#- name: rhel-7.0
+#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::mysql_repo]', 'recipe[fake::wget_cacert]']
+#  attributes:
+#    rhsm:
+#      username: <%= ENV['RHSM_USERNAME'] %>
+#      password: <%= ENV['RHSM_PASSWORD'] %>
+#      additional_repos: ['rhel-7-server-optional-rpms']
+#  driver_config:
+#    box: local-rhel-7.0
+#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
 
 # Tests the basic HAProxy configuration, load balancer related machine tags set on the server, and
 # the HAProxy collectd monitoring configuration. The HAProxy configuration is verified by ensuring
