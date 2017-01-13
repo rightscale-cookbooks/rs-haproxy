@@ -5,10 +5,13 @@ DEPENDENCIES
     branch: chef-12-migration
   fake
     path: test/cookbooks/fake
+  haproxy
+    git: https://github.com/rightscale-cookbooks-contrib/haproxy.git
+    revision: 595922cd6af4d332cacfca6054d44f7922c386a2
+    branch: rs-develop
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: 2ec231fc5123f0413d166b498728a59d0f89a031
-    branch: berks-lock-update
+    revision: 2cf4d496223986fdb13af29a7d3434ed7fbda82e
   marker
     git: https://github.com/rightscale-cookbooks/marker.git
     revision: 058e70879408fceceb628c600d487b1ddfa06cdb
@@ -66,9 +69,10 @@ GRAPH
     build-essential (>= 0.0.0)
     dmg (>= 0.0.0)
     yum-epel (>= 0.0.0)
-  haproxy (2.0.2)
+  haproxy (2.0.3)
     build-essential (>= 0.0.0)
     cpu (>= 0.2.0)
+    poise-service (>= 0.0.0)
   hostsfile (2.4.5)
   iis (5.0.5)
     windows (>= 1.34.6)
