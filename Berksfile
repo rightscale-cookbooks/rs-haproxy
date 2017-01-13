@@ -7,6 +7,7 @@ cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base'
 cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag'
 cookbook 'machine_tag', github: 'rightscale-cookbooks/machine_tag'
 cookbook 'rsc_remote_recipe', github: 'rightscale-services-cookbooks/rsc_remote_recipe'
+cookbook 'haproxy', github: 'rightscale-cookbooks-contrib/haproxy', branch: 'rs-develop'
 
 group :integration do
   cookbook 'rs-application_php', github: 'rightscale-cookbooks/rs-application_php'
