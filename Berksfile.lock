@@ -7,8 +7,8 @@ DEPENDENCIES
     path: test/cookbooks/fake
   haproxy
     git: https://github.com/rightscale-cookbooks-contrib/haproxy.git
-    revision: 595922cd6af4d332cacfca6054d44f7922c386a2
-    branch: rs-develop
+    revision: e40cb7ee26c77f07f9d2a0b5a5da153c5547f981
+    branch: centos-7-support
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
     revision: 2cf4d496223986fdb13af29a7d3434ed7fbda82e
@@ -55,7 +55,7 @@ GRAPH
   curl (2.0.3)
   database (6.1.1)
     postgresql (>= 1.0.0)
-  dmg (3.0.0)
+  dmg (3.1.0)
   ephemeral_lvm (2.0.0)
     lvm (~> 3.1)
   fake (0.1.0)
@@ -65,7 +65,7 @@ GRAPH
     rs-application_php (>= 0.0.0)
     rs-haproxy (>= 0.0.0)
     yum-mysql-community (>= 0.0.0)
-  git (5.0.1)
+  git (5.0.2)
     build-essential (>= 0.0.0)
     dmg (>= 0.0.0)
     yum-epel (>= 0.0.0)
@@ -85,8 +85,8 @@ GRAPH
     yum (>= 0.0.0)
     yum-epel (>= 0.0.0)
   marker (2.0.0)
-  mingw (1.2.4)
-    compat_resource (>= 0.0.0)
+  mingw (1.2.5)
+    compat_resource (>= 12.16.3)
     seven_zip (>= 0.0.0)
   mysql (8.2.0)
   mysql2_chef_gem (1.1.0)
@@ -96,7 +96,7 @@ GRAPH
   ntp (3.3.1)
   ohai (4.2.3)
     compat_resource (>= 12.14.7)
-  openssl (6.0.0)
+  openssl (6.1.0)
   php (2.2.0)
     build-essential (>= 0.0.0)
     iis (>= 0.0.0)
@@ -156,7 +156,7 @@ GRAPH
   swap (0.3.8)
   windows (2.1.1)
     ohai (>= 4.0.0)
-  xml (3.1.0)
+  xml (3.1.1)
     build-essential (>= 0.0.0)
   yum (4.1.0)
   yum-epel (2.1.1)

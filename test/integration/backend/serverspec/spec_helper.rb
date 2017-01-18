@@ -21,7 +21,9 @@ require 'machine_tag'
 # return true if found, false otherwise.
 #
 def find_haproxy_setting(config_file, regex_group, regex_setting)
+  raise "file missing" unless ::File.exist?(config_file)
   hapcfg = IO.readlines(config_file)
+  # puts hapcfg.length
   hapcfg.reject! { |line| line =~ /^#/ || line =~ /^\s*#/ || line =~ /^\s*$/ }
 
   begin_non_white_space = /^\S/
@@ -37,7 +39,7 @@ def find_haproxy_setting(config_file, regex_group, regex_setting)
       return true
     end
   end
-
+  
   false
 end
 

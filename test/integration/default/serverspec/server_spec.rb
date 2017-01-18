@@ -1,7 +1,8 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 require 'socket'
 
-config_file = '/usr/local/etc/haproxy/haproxy.cfg'
+config_file = '/usr/local/etc/haproxy/haproxy.cfg' if ::File.exist?('/usr/local/etc/haproxy/haproxy.cfg')
+config_file = '/etc/haproxy/haproxy.cfg' if ::File.exist?('/etc/haproxy/haproxy.cfg')
 
 describe file(config_file) do
   it { should be_file }

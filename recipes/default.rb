@@ -107,7 +107,7 @@ if node['rs-haproxy']['ssl_cert']
   node.default['haproxy']['config']['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
-  node.default['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
+  node.default['haproxy']['config']['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
 end
 
 # Set up haproxy socket
