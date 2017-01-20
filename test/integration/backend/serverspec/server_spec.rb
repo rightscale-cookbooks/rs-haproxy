@@ -5,9 +5,9 @@ require 'csv'
 begin
   require 'ohai'
 rescue LoadError
-    require 'rubygems/dependency_installer'
-    Gem::DependencyInstaller.new.install('ohai')
-    require 'ohai'
+  require 'rubygems/dependency_installer'
+  Gem::DependencyInstaller.new.install('ohai')
+  require 'ohai'
 end
 # Set backend type
 set :backend, :exec
