@@ -107,7 +107,7 @@ if node['rs-haproxy']['ssl_cert']
   node.default['haproxy']['config']['frontend']['all_requests'][https_bind] = "ssl crt #{ssl_cert_file} no-sslv3"
 
   # Redirect all HTTP requests to HTTPS
-  node.default['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
+  node.default['haproxy']['config']['frontend']['all_requests']['redirect'] = 'scheme https if !{ ssl_fc }'
 end
 
 # Set up haproxy socket
@@ -136,6 +136,24 @@ if node['rs-haproxy']['session_stickiness']
   node.default['haproxy']['config']['defaults']['cookie'] = 'SERVERID insert indirect nocache'
 end
 
+Chef::Log.info node['haproxy']['config']
+haproxy_config = Mash.new(
+  'global' => {
+    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10)
+  }
+)
+
+# Install HAProxy and setup haproxy.cnf
+haproxy 'set up haproxy.cnf' do
+  config haproxy_config
+  action :create
+  notifies :restart, 'service[haproxy]', :delayed
+end
+
+service 'haproxy' do
+  action :nothing
+end
+
 # Confirm that rsyslog is installed.
 include_recipe 'rs-base::rsyslog'
 
@@ -156,18 +174,5 @@ cookbook_file '/etc/logrotate.d/haproxy' do
   mode 0644
   owner 'root'
   group 'root'
-  action :create
-end
-
-Chef::Log.info node['haproxy']['config']
-haproxy_config = Mash.new(
-  'global' => {
-    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10)
-  }
-)
-
-# Install HAProxy and setup haproxy.cnf
-haproxy 'set up haproxy.cnf' do
-  config haproxy_config
   action :create
 end

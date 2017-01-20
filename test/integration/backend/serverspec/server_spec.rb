@@ -1,10 +1,23 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 require 'pathname'
 require 'socket'
 require 'csv'
-
+begin
+  require 'ohai'
+rescue LoadError
+  require 'rubygems/dependency_installer'
+  Gem::DependencyInstaller.new.install('ohai')
+  require 'ohai'
+end
 # Set backend type
 set :backend, :exec
+
+def ipaddress?
+  ohai = Ohai::System.new
+  ohai.all_plugins
+  @node = ohai
+  @node['ipaddress']
+end
 
 # Helper function to sort through haproxy socket info.
 #
@@ -28,7 +41,7 @@ end
 # Helper function to add to entry to /etc/hosts.
 #
 def add_host
-  entry_line = '192.0.2.2 www.example.com test.example.com'
+  entry_line = "#{ipaddress?} www.example.com test.example.com"
 
   if open('/etc/hosts') { |f| f.grep(/^#{entry_line}$/).empty? }
     open('/etc/hosts', 'a') { |p| p.puts "\n#{entry_line}" }
@@ -41,7 +54,13 @@ def add_host
   end
 end
 
-config_file = '/usr/local/etc/haproxy/haproxy.cfg'
+config_file = '/usr/local/etc/haproxy/haproxy.cfg' if ::File.exist?('/usr/local/etc/haproxy/haproxy.cfg')
+config_file = '/etc/haproxy/haproxy.cfg' if ::File.exist?('/etc/haproxy/haproxy.cfg')
+
+describe file(config_file) do
+  it { should exist }
+  it { should be_file }
+end
 
 describe service('haproxy') do
   it { should be_enabled }
@@ -62,8 +81,10 @@ describe 'Verify frontend settings in haproxy.cfg file' do
     ['frontend all_requests', 'bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem no-sslv3'],
     ['frontend all_requests', 'redirect scheme https if !{ ssl_fc }']
   ].each do |pair|
-    it "#{pair.first} should contain #{pair.last}" do
-      expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
+    frontend = pair.first
+    backend = pair.last
+    it "#{frontend} should contain #{backend}" do
+      expect(find_haproxy_setting(config_file, frontend, backend)).to eq(true)
     end
   end
 end
@@ -71,11 +92,11 @@ end
 describe 'Verify backend settings in haproxy.cfg file' do
   [
     ['backend test_example', 'server disabled-server 127.0.0.1:1 disabled'],
-    ['backend test_example', 'server 01-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 01-ABCDEFGH0123'],
+    ['backend test_example', "server 01-ABCDEFGH0123 #{ipaddress?}:8080 inter 300 rise 3 fall 2 maxconn 100 check cookie 01-ABCDEFGH0123"],
     ['backend appserver', 'server disabled-server 127.0.0.1:1 disabled'],
-    ['backend appserver', 'server 02-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 02-ABCDEFGH0123'],
+    ['backend appserver', "server 02-ABCDEFGH0123 #{ipaddress?}:8080 inter 300 rise 3 fall 2 maxconn 100 check cookie 02-ABCDEFGH0123"],
     ['backend example', 'server disabled-server 127.0.0.1:1 disabled'],
-    ['backend example', 'server 03-ABCDEFGH0123 192.0.2.2:8080 inter 300 rise 2 fall 3 maxconn 100 check cookie 03-ABCDEFGH0123']
+    ['backend example', "server 03-ABCDEFGH0123 #{ipaddress?}:8080 inter 300 rise 3 fall 2 maxconn 100 check cookie 03-ABCDEFGH0123"]
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
