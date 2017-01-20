@@ -147,6 +147,11 @@ haproxy_config = Mash.new(
 haproxy 'set up haproxy.cnf' do
   config haproxy_config
   action :create
+  notifies :restart, 'service[haproxy]', :delayed
+end
+
+service 'haproxy' do
+  action :nothing
 end
 
 # Confirm that rsyslog is installed.

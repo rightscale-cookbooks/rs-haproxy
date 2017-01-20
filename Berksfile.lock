@@ -7,7 +7,7 @@ DEPENDENCIES
     path: test/cookbooks/fake
   haproxy
     git: https://github.com/rightscale-cookbooks-contrib/haproxy.git
-    revision: e40cb7ee26c77f07f9d2a0b5a5da153c5547f981
+    revision: d000890cefdec3da84e6e1ca4338b6e516d88890
     branch: centos-7-support
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
@@ -96,7 +96,7 @@ GRAPH
   ntp (3.3.1)
   ohai (4.2.3)
     compat_resource (>= 12.14.7)
-  openssl (6.1.0)
+  openssl (6.1.1)
   php (2.2.0)
     build-essential (>= 0.0.0)
     iis (>= 0.0.0)
