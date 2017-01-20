@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
 include_recipe 'rightscale_tag::default'
@@ -50,10 +50,10 @@ app_server_pools = group_servers_by_application_name(app_servers)
 # which made the remote recipe call is updated in the list of application servers
 # in the deployment.
 unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
-  raise "Load balancer pool name is missing in the remote recipe call!" if node['remote_recipe']['pool_name'].nil?
+  raise 'Load balancer pool name is missing in the remote recipe call!' if node['remote_recipe']['pool_name'].nil?
   remote_server_pool = node['remote_recipe']['pool_name']
 
-  raise "Instance UUID of the remote server is missing!" if node['remote_recipe']['application_server_id'].nil?
+  raise 'Instance UUID of the remote server is missing!' if node['remote_recipe']['application_server_id'].nil?
   remote_server_uuid = node['remote_recipe']['application_server_id']
 
   case node['remote_recipe']['application_action']
@@ -98,7 +98,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
   if node['rs-haproxy']['session_stickiness']
     # When cookie is enabled the haproxy.cnf should have this dummy server
     # entry for the haproxy to start without any errors
-    backend_servers_list << {'disabled-server 127.0.0.1:1' => {'disabled' => true}}
+    backend_servers_list << { 'disabled-server 127.0.0.1:1' => { 'disabled' => true } }
   end
 
   # If there exists application servers with application name same as pool name add those
@@ -107,17 +107,17 @@ node['rs-haproxy']['pools'].each do |pool_name|
   unless app_server_pools[pool_name].nil?
     acl_setting = ''
     app_server_pools[pool_name].each do |server_uuid, server_hash|
-      if server_hash['vhost_path'].include?('/')
-        # If vhost_path contains a '/' then the ACL should match the path in the request URI.
-        # e.g., if the request URI is www.example.com/index then the ACL will match '/index'
-        acl_setting = "path_dom -i #{server_hash['vhost_path']}"
-      else
-        # Else the ACL should match the domain name of the request URI.
-        # e.g., if the request URI is http://test.example.com then the ACL will
-        # match 'test.example.com' and if the request URI is http://example.com
-        # then the ACL will match 'example.com'
-        acl_setting = "hdr_dom(host) -i -m dom #{server_hash['vhost_path']}"
-      end
+      acl_setting = if server_hash['vhost_path'].include?('/')
+                      # If vhost_path contains a '/' then the ACL should match the path in the request URI.
+                      # e.g., if the request URI is www.example.com/index then the ACL will match '/index'
+                      "path_dom -i #{server_hash['vhost_path']}"
+                    else
+                      # Else the ACL should match the domain name of the request URI.
+                      # e.g., if the request URI is http://test.example.com then the ACL will
+                      # match 'test.example.com' and if the request URI is http://example.com
+                      # then the ACL will match 'example.com'
+                      "hdr_dom(host) -i -m dom #{server_hash['vhost_path']}"
+                    end
 
       backend_server = "#{server_uuid} #{server_hash['bind_ip_address']}:#{server_hash['bind_port']}"
       backend_server_hash = {
@@ -137,70 +137,66 @@ node['rs-haproxy']['pools'].each do |pool_name|
         backend_server_hash['cookie'] = backend_server.split(' ').first
       end
 
-      backend_servers_list << {backend_server => backend_server_hash}
+      backend_servers_list << { backend_server => backend_server_hash }
 
       # The machine tag "application:firewall_script_#{pool_name}" is placed on an application
       # server and has the value of a script or recipe that should run on the application server
       # after the load balancer adds it to its config. If the machine tag is set on the application server,
       # send a request to run it.
       remote_script_tag = app_servers[server_uuid]['tags']['application', "firewall_script_#{pool_name}"].first
-      if remote_script_tag
-        json_file = '/tmp/recipe_attributes.json'
-        # Determine if remote_script is a RightScript or a Chef recipe
-        if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
-          # Value is a remote recipe
+      next unless remote_script_tag
+      json_file = '/tmp/recipe_attributes.json'
+      # Determine if remote_script is a RightScript or a Chef recipe
+      if remote_script_tag.value =~ /^[\w-]+::[\w-]+$/
+        # Value is a remote recipe
 
-          # Create JSON file with expected attributes to pass to rs_run_recipe
-          file json_file do
-            owner 'root'
-            group 'root'
-            mode '0700'
-            content ::JSON.pretty_generate({
-              # Hash entries with a 'nil' value will be removed by the 'reject' method.
-              'remote_recipe' => {
-                'lb_private_ip' => ( node['cloud']['private_ips'].first || nil ),
-                'lb_public_ip' => ( node['cloud']['public_ips'].first || nil ),
-                'pool_name' => pool_name,
-                'action' => ( application_action == 'detach' ? 'deny' : 'allow' ),
-              }.reject { |key, value| value.nil? }
-            })
-            action :create
-          end
-
-          command = 'rs_run_recipe'
-          command << " --recipient_tags 'server:uuid=#{server_uuid}'"
-          command << " --name '#{remote_script_tag.value}'"
-          command << " --policy '#{remote_script_tag.value}'"
-          command << " --json '#{json_file}'"
-
-        else
-          # Value is a remote RightScript
-
-          command = 'rs_run_right_script'
-          command << " --recipient_tags 'server:uuid=#{server_uuid}'"
-          command << " --name '#{remote_script_tag.value}'"
-          # Common inputs for Windows App servers firewall RightScript
-          command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
-          command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
-          command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
-          case application_action
-          when 'attach'
-            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:allow'"
-          when 'detach'
-            command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
-          end
-        end
-        Chef::Log.info "Running remote script on #{server_uuid}: #{command}"
-
-        execute 'Run postconnect script on application server' do
-          command command
-        end
-
+        # Create JSON file with expected attributes to pass to rs_run_recipe
         file json_file do
-          action :delete
+          owner 'root'
+          group 'root'
+          mode '0700'
+          content ::JSON.pretty_generate( # Hash entries with a 'nil' value will be removed by the 'reject' method.
+            'remote_recipe' => {
+              'lb_private_ip' => (node['cloud']['private_ips'].first || nil),
+              'lb_public_ip' => (node['cloud']['public_ips'].first || nil),
+              'pool_name' => pool_name,
+              'action' => (application_action == 'detach' ? 'deny' : 'allow')
+            }.reject { |_key, value| value.nil? })
+          action :create
+        end
+
+        command = 'rs_run_recipe'
+        command << " --recipient_tags 'server:uuid=#{server_uuid}'"
+        command << " --name '#{remote_script_tag.value}'"
+        command << " --policy '#{remote_script_tag.value}'"
+        command << " --json '#{json_file}'"
+
+      else
+        # Value is a remote RightScript
+
+        command = 'rs_run_right_script'
+        command << " --recipient_tags 'server:uuid=#{server_uuid}'"
+        command << " --name '#{remote_script_tag.value}'"
+        # Common inputs for Windows App servers firewall RightScript
+        command << " --parameter 'LB_ALLOW_DENY_PRIVATE_IP=text:#{node['cloud']['private_ips'].first}'" if node['cloud']['private_ips']
+        command << " --parameter 'LB_ALLOW_DENY_PUBLIC_IP=text:#{node['cloud']['public_ips'].first}'" if node['cloud']['public_ips']
+        command << " --parameter 'LB_ALLOW_DENY_POOL_NAME=text:#{pool_name}'"
+        case application_action
+        when 'attach'
+          command << " --parameter 'LB_ALLOW_DENY_ACTION=text:allow'"
+        when 'detach'
+          command << " --parameter 'LB_ALLOW_DENY_ACTION=text:deny'"
         end
       end
+      Chef::Log.info "Running remote script on #{server_uuid}: #{command}"
 
+      execute 'Run postconnect script on application server' do
+        command command
+      end
+
+      file json_file do
+        action :delete
+      end
     end
 
     # Set up ACLs based on the vhost_path information from the application servers

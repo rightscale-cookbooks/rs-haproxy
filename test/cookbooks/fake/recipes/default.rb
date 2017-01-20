@@ -22,24 +22,23 @@ package 'socat'
 
 require 'json'
 
-# Create 3 fake application servers that binds to 192.0.2.2:8080. Have 1 application server
+# Create 3 fake application servers that binds to #{node['ipaddress']}:8080. Have 1 application server
 # serve for URL requests 'www.example.com', 1 server to serve URL requests '*/appserver',
 # and the other server to serve URL requests 'test.example.com'. All the application servers
 # will be serving the same application set up later in the recipe. We can verify HAProxy
 # backend configuration by checking if it serves pages from the correct application server
 # based on the request URL.
 [
-  ["01-ABCDEFGH0123", "test_example", "test.example.com"],
-  ["02-ABCDEFGH0123", "appserver", "/appserver"],
-  ["03-ABCDEFGH0123", "example", "example.com"]
+  ['01-ABCDEFGH0123', 'test_example', 'test.example.com'],
+  ['02-ABCDEFGH0123', 'appserver', '/appserver'],
+  ['03-ABCDEFGH0123', 'example', 'example.com']
 ].each do |server_uuid, app_name, vhost|
-
   # Fake machine_tags to be set in the VM to simulate 2-tier deployment
   tags = [
     "server:uuid=#{server_uuid}",
-    "application:active=true",
+    'application:active=true',
     "application:active_#{app_name}=true",
-    "application:bind_ip_address_#{app_name}=192.0.2.2",
+    "application:bind_ip_address_#{app_name}=#{node['ipaddress']}",
     "application:bind_port_#{app_name}=8080",
     "application:vhost_path_#{app_name}=#{vhost}"
   ]

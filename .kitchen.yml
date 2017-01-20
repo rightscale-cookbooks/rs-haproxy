@@ -1,51 +1,57 @@
 ---
-driver_plugin: vagrant
+driver:
+  name: vagrant
 driver_config:
-  require_chef_omnibus: '11.6'
+  require_chef_omnibus: '12.16'
   customize:
-    cpus: 2
-    memory: 1024
+    cpus: 1
+    memory: 512
+  ssh:
+    insert_key: false
   network:
-    - ["private_network", {ip: "192.0.2.2", netmask: "255.255.255.255"}]
-
+    - ['private_network', { ip: '192.0.2.2' }]
+provisioner:
+  name: chef_zero
+  always_update_cookbooks: true
 platforms:
 - name: ubuntu-14.04
-  run_list: ['recipe[apt]']
+  run_list:
+  - recipe[apt]
   driver_config:
-    box: opscode-ubuntu-14.04
+    box: bento/ubuntu-14.04
 - name: ubuntu-12.04
   run_list:
   - recipe[apt]
   driver_config:
-    box: opscode-ubuntu-12.04
-- name: centos-6.5
-  run_list: ['recipe[yum-epel]']
+    box: bento/ubuntu-12.04
+- name: centos-6.8
+  run_list: ['recipe[fake::create_secrets]','recipe[yum-epel]']
   driver_config:
-    box: opscode-centos-6.5
-- name: centos-7.0
+    box: bento/centos-6.8 
+- name: centos-7.2
   run_list: ['recipe[yum-epel]', 'recipe[fake::mysql_repo]']
   driver_config:
-    box: opscode-centos-7.0
-- name: rhel-6.5
-  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
-  attributes:
-    rhsm:
-      username: <%= ENV['RHSM_USERNAME'] %>
-      password: <%= ENV['RHSM_PASSWORD'] %>
-      additional_repos: ['rhel-6-server-optional-rpms']
-  driver_config:
-    box: local-rhel-6.5
-    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
-- name: rhel-7.0
-  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::mysql_repo]', 'recipe[fake::wget_cacert]']
-  attributes:
-    rhsm:
-      username: <%= ENV['RHSM_USERNAME'] %>
-      password: <%= ENV['RHSM_PASSWORD'] %>
-      additional_repos: ['rhel-7-server-optional-rpms']
-  driver_config:
-    box: local-rhel-7.0
-    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
+    box: bento/centos-7.2
+#- name: rhel-6.5
+#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
+#  attributes:
+#    rhsm:
+#      username: <%= ENV['RHSM_USERNAME'] %>
+#      password: <%= ENV['RHSM_PASSWORD'] %>
+#      additional_repos: ['rhel-6-server-optional-rpms']
+#  driver_config:
+#    box: local-rhel-6.5
+#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
+#- name: rhel-7.0
+#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::mysql_repo]', 'recipe[fake::wget_cacert]']
+#  attributes:
+#    rhsm:
+#      username: <%= ENV['RHSM_USERNAME'] %>
+#      password: <%= ENV['RHSM_PASSWORD'] %>
+#      additional_repos: ['rhel-7-server-optional-rpms']
+#  driver_config:
+#    box: local-rhel-7.0
+#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
 
 # Tests the basic HAProxy configuration, load balancer related machine tags set on the server, and
 # the HAProxy collectd monitoring configuration. The HAProxy configuration is verified by ensuring
@@ -54,15 +60,20 @@ platforms:
 suites:
 - name: default
   run_list:
+  - recipe[fake::create_secrets]
   - recipe[rs-haproxy::default]
   - recipe[rs-haproxy::tags]
   - recipe[rs-haproxy::collectd]
   attributes:
+    apt:
+      compile_time_update: true
     rightscale:
       instance_uuid: '01-ABCDEFGH0123'
     cloud:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
     rs-haproxy:
       pools: ['test_example', 'appserver', 'example']
       incoming_port: 85
@@ -81,6 +92,8 @@ suites:
   - recipe[fake::default]
   - recipe[rs-haproxy::frontend]
   attributes:
+    apt:
+      compile_time_update: true
     cloud:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']

@@ -3,11 +3,11 @@
 # Library:: helper
 #
 # Copyright (C) 2014 RightScale, Inc.
-#·
+#
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-#·
+#
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
@@ -29,7 +29,7 @@ module RsHaproxy
     #   this returns 'www_foo_com_app'
     #
     def self.get_config_pool_name(pool_name)
-      pool_name.gsub(/[\/.]/, '_')
+      pool_name.gsub(%r{[\/.]}, '_')
     end
 
     # Determine version of HAProxy from source URL filename.
@@ -44,9 +44,8 @@ module RsHaproxy
       require 'uri'
 
       filename = Pathname.new(URI.parse(uri).path).basename.to_s
-      version = filename.split('/').last.sub(/^haproxy-/,'').sub(/.tar.gz$|.tgz$/,'')
+      version = filename.split('/').last.sub(/^haproxy-/, '').sub(/.tar.gz$|.tgz$/, '')
       version =~ /^\d/ ? version : nil
     end
-
   end
 end
