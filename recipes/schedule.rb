@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-marker "recipe_start_rightscale" do
-  template "rightscale_audit_entry.erb"
+marker 'recipe_start_rightscale' do
+  template 'rightscale_audit_entry.erb'
 end
 
 # From rs-haproxy/schedule/enable, determine if we are to enable or disable scheduling.
@@ -27,9 +27,8 @@ schedule_enable = node['rs-haproxy']['schedule']['enable'] == true || node['rs-h
 # Interval in minutes for scheduling frontend run.
 interval = node['rs-haproxy']['schedule']['interval']
 
-
 # Run rs-haproxy::frontend on given interval.
-cron "rs-haproxy::frontend" do
+cron 'rs-haproxy::frontend' do
   minute "*/#{interval}"
   hour '*'
   command "rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"

@@ -20,25 +20,27 @@ require 'machine_tag'
 # @param regex_setting [String] is a string used as a regex to match setting underl group
 # return true if found, false otherwise.
 #
-def find_haproxy_setting(config_file,  regex_group, regex_setting)
-  hapcfg = IO.readlines( config_file )
-  hapcfg.reject! { |line|  line =~ /^#/ || line =~ /^\s*#/  || line =~ /^\s*$/ }
+def find_haproxy_setting(config_file, regex_group, regex_setting)
+  raise 'file missing' unless ::File.exist?(config_file)
+  hapcfg = IO.readlines(config_file)
+  # puts hapcfg.length
+  hapcfg.reject! { |line| line =~ /^#/ || line =~ /^\s*#/ || line =~ /^\s*$/ }
 
   begin_non_white_space = /^\S/
   in_group = false
 
   hapcfg.each do |line|
-    if in_group == false and line =~ begin_non_white_space and line =~ /#{regex_group}/
-       in_group = true
-       next
-    elsif in_group == true and line =~ begin_non_white_space
-       in_group = false
-    elsif in_group == true and line =~ /#{regex_setting}/
-        return true
+    if in_group == false && line =~ begin_non_white_space && line =~ /#{regex_group}/
+      in_group = true
+      next
+    elsif in_group == true && line =~ begin_non_white_space
+      in_group = false
+    elsif in_group == true && line =~ /#{regex_setting}/
+      return true
     end
   end
 
-  return false
+  false
 end
 
 # Helper function to sort through haproxy socket info.
@@ -46,13 +48,12 @@ end
 # @param regex_setting [String] is the setting we want to look the value for.
 # returns the value of the parameter
 
-def haproxy_info( regex_setting )
-
+def haproxy_info(regex_setting)
   haproxy_show_info.each do |line|
     if line =~ /#{regex_setting}/i
       return line.match(/#{regex_setting}:\s+(.*)/i).captures[0]
-      end
     end
+  end
 
-  return nil
+  nil
 end

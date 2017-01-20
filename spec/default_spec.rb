@@ -1,10 +1,9 @@
 require_relative 'spec_helper'
 
 describe 'rs-haproxy::default' do
-
   context 'main haproxy without ssl' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
       end.converge(described_recipe)
     end
 
@@ -14,34 +13,36 @@ describe 'rs-haproxy::default' do
 
     it 'creates rsyslog configuration' do
       expect(chef_run).to create_cookbook_file('/etc/rsyslog.d/10-haproxy.conf').with(
-          source: 'rsyslog-10-haproxy.conf',
-          backup: 0,
-          mode: 0644,
-          owner: 'root',
-          group: 'root'
+        source: 'rsyslog-10-haproxy.conf',
+        backup: 0,
+        mode: 0644,
+        owner: 'root',
+        group: 'root'
       )
     end
 
     it 'creates logrotate file' do
       expect(chef_run).to create_cookbook_file('/etc/logrotate.d/haproxy').with(
-          source: 'logrotate-haproxy.conf',
-          backup: 0,
-          mode: 0644,
-          owner: 'root',
-          group: 'root'
+        source: 'logrotate-haproxy.conf',
+        backup: 0,
+        mode: 0644,
+        owner: 'root',
+        group: 'root'
       )
     end
-
+    it 'creates the haproxy config' do
+      expect(chef_run).to create_haproxy('set up haproxy.cnf')
+    end
   end
 
   context 'ssl is enabled' do
     let(:chef_run) do
-      ChefSpec::Runner.new do |node|
+      ChefSpec::SoloRunner.new do |node|
         node.set['rs-haproxy']['ssl_cert'] = 'certdata'
       end.converge(described_recipe)
     end
-    let (:haproxy_conf_dir) { ::File.join(chef_run.node['haproxy']['source']['prefix'], chef_run.node['haproxy']['conf_dir']) }
-    let (:ssl_cert_file) { ::File.join(haproxy_conf_dir, 'ssl_cert.pem') }
+    let(:haproxy_conf_dir) { ::File.join(chef_run.node['haproxy']['source']['prefix'], chef_run.node['haproxy']['conf_dir']) }
+    let(:ssl_cert_file) { ::File.join(haproxy_conf_dir, 'ssl_cert.pem') }
 
     it 'creates cert dir' do
       expect(chef_run).to create_directory(haproxy_conf_dir)
@@ -53,7 +54,5 @@ describe 'rs-haproxy::default' do
         mode: 0600
       )
     end
-
   end
-
 end
