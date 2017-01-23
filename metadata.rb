@@ -7,6 +7,7 @@ long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
 version          '2.0.0'
 issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
+chef_version '>= 12.0' if respond_to?(:chef_version)
 
 depends 'marker'
 depends 'haproxy'
