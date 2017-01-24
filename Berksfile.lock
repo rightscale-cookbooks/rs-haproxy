@@ -5,10 +5,6 @@ DEPENDENCIES
     branch: chef-12-migration
   fake
     path: test/cookbooks/fake
-  haproxy
-    git: https://github.com/rightscale-cookbooks-contrib/haproxy.git
-    revision: d000890cefdec3da84e6e1ca4338b6e516d88890
-    branch: centos-7-support
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
     revision: 581dd0b7ddf2e65939527bb5e6c6c47788d1bf33
@@ -17,13 +13,13 @@ DEPENDENCIES
     revision: 058e70879408fceceb628c600d487b1ddfa06cdb
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
-    revision: d012cd3486fd9fc4efbf5200885bad521301c4b9
+    revision: 69b6eeded9d0587ab39e85aaa2270028764db5d4
   rs-application_php
     git: https://github.com/rightscale-cookbooks/rs-application_php.git
-    revision: 2ab19575a3f89e65d414e8d4a55a7570507484a8
+    revision: ce3075ca04b26fe80f030eef68ffa062cd278f00
   rs-base
     git: https://github.com/rightscale-cookbooks/rs-base.git
-    revision: 6dae6b0ce17455210576ca8175f3ad9590547d22
+    revision: 501761b8977004bee8d38c10b42434c37362d6cb
   rs-haproxy
     path: .
     metadata: true
@@ -69,13 +65,14 @@ GRAPH
     build-essential (>= 0.0.0)
     dmg (>= 0.0.0)
     yum-epel (>= 0.0.0)
-  haproxy (2.0.3)
+  haproxy (3.0.0)
     build-essential (>= 0.0.0)
     cpu (>= 0.2.0)
     poise-service (>= 0.0.0)
   hostsfile (2.4.5)
   iis (5.0.5)
     windows (>= 1.34.6)
+  limits (1.0.0)
   lvm (3.1.0)
   machine_tag (2.0.1)
     apt (>= 0.0.0)
@@ -133,20 +130,22 @@ GRAPH
     collectd (~> 2.2.2)
     collectd_plugins (~> 2.1.3)
     ephemeral_lvm (= 2.0.0)
-    machine_tag (~> 2.0.0)
+    machine_tag (~> 2.0)
     marker (>= 0.0.0)
     ntp (>= 0.0.0)
-    rightscale_tag (~> 2.0.0)
+    rightscale_tag (~> 2.0)
     rsyslog (>= 0.0.0)
     swap (>= 0.0.0)
     yum-epel (>= 0.0.0)
   rs-haproxy (2.0.0)
     collectd (>= 0.0.0)
     haproxy (>= 0.0.0)
+    limits (>= 0.0.0)
     marker (>= 0.0.0)
     rightscale_tag (>= 0.0.0)
     rs-base (>= 0.0.0)
     rsc_remote_recipe (>= 0.0.0)
+    sysctl (>= 0.0.0)
   rsc_remote_recipe (10.1.0)
     build-essential (>= 0.0.0)
   rsyslog (5.1.0)
@@ -154,6 +153,8 @@ GRAPH
   seven_zip (2.0.2)
     windows (>= 1.2.2)
   swap (0.3.8)
+  sysctl (0.8.1)
+    ohai (>= 4.0)
   windows (2.1.1)
     ohai (>= 4.0.0)
   xml (3.1.1)
