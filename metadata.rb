@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 name             'rs-haproxy'
 maintainer       'RightScale, Inc.'
 maintainer_email 'cookbooks@rightscale.com'

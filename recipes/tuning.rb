@@ -4,14 +4,14 @@ include_recipe 'sysctl::default'
 set_limit '*' do
   type 'soft'
   item 'nofile'
-  value 200000
+  value 200_000
   use_system true
 end
 
 set_limit '*' do
   type 'soft'
   item 'nofile'
-  value 200000
+  value 200_000
   use_system true
 end
 
