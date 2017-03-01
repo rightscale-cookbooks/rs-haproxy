@@ -3,6 +3,13 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.0.1
+------
+- pinning haproxy to ~> 3.0
+- removing fork haproxy in favor of supermarket version
+- updating berksfile.lock for latest supermarket package
+- fixing stats socket for haproxy 3.0
+
 v2.0.0
 ------
 - Remove support for Chef 11
