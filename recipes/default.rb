@@ -113,8 +113,8 @@ end
 # Set up haproxy socket
 if node['haproxy']['enable_stats_socket']
   node.default['haproxy']['config']['global']['stats'] = "socket #{node['haproxy']['stats_socket_path']}" \
-                                                         " user #{node['haproxy']['stats_socket_user']}" \
-                                                         " group #{node['haproxy']['stats_socket_group']}"
+                                                         " user #{node['haproxy']['stats_socket']['user']}" \
+                                                         " group #{node['haproxy']['stats_socket']['group']}"
 end
 
 # Set up statistics URI
