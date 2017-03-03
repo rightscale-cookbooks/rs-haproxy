@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require_relative 'spec_helper'
 require 'socket'
 
@@ -31,7 +32,7 @@ describe 'Verify settings in haproxy.cfg file' do
     ['defaults', 'cookie SERVERID insert indirect nocache'],
     ['defaults', 'timeout client 10s'],
     ['defaults', 'timeout server 10s'],
-    ['defaults', 'timeout connect 10s']
+    ['defaults', 'timeout connect 10s'],
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
@@ -77,7 +78,7 @@ describe 'Verify info setting through haproxy socket' do
 
   {
     maxconn: '4106',
-    maxsock: '8243'
+    maxsock: '8243',
   }.each do |key, val|
     it "The setting #{key} should be set to #{val}" do
       expect(haproxy_info(key.to_s)).to eq(val)

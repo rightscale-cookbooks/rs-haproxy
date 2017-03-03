@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: fake
 # Recipe:: default
@@ -31,7 +32,7 @@ require 'json'
 [
   ['01-ABCDEFGH0123', 'test_example', 'test.example.com'],
   ['02-ABCDEFGH0123', 'appserver', '/appserver'],
-  ['03-ABCDEFGH0123', 'example', 'example.com']
+  ['03-ABCDEFGH0123', 'example', 'example.com'],
 ].each do |server_uuid, app_name, vhost|
   # Fake machine_tags to be set in the VM to simulate 2-tier deployment
   tags = [
@@ -40,7 +41,7 @@ require 'json'
     "application:active_#{app_name}=true",
     "application:bind_ip_address_#{app_name}=#{node['ipaddress']}",
     "application:bind_port_#{app_name}=8080",
-    "application:vhost_path_#{app_name}=#{vhost}"
+    "application:vhost_path_#{app_name}=#{vhost}",
   ]
 
   r = directory "/vagrant/cache_dir/machine_tag_cache/#{server_uuid}" do

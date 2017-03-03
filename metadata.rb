@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 name             'rs-haproxy'
 maintainer       'RightScale, Inc.'
 maintainer_email 'cookbooks@rightscale.com'
@@ -38,7 +39,7 @@ attribute 'rs-haproxy/pools',
   recipes: [
     'rs-haproxy::default',
     'rs-haproxy::tags',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/incoming_port',
@@ -47,7 +48,7 @@ attribute 'rs-haproxy/incoming_port',
   required: 'optional',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/ssl_cert',
@@ -57,7 +58,7 @@ attribute 'rs-haproxy/ssl_cert',
   required: 'optional',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/ssl_incoming_port',
@@ -66,7 +67,7 @@ attribute 'rs-haproxy/ssl_incoming_port',
   required: 'optional',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/stats_uri',
@@ -105,7 +106,7 @@ attribute 'rs-haproxy/session_stickiness',
   default: 'true',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/health_check_uri',
