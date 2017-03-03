@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
@@ -75,7 +76,7 @@ Vagrant.configure('2') do |config|
 
     chef.run_list = [
       'recipe[apt]',
-      'recipe[rs-haproxy::default]'
+      'recipe[rs-haproxy::default]',
     ]
   end
 end

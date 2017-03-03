@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Attribute:: default
@@ -33,10 +34,10 @@ default['rs-haproxy']['ssl_cert'] = nil
 default['rs-haproxy']['stats_uri'] = '/haproxy-status'
 
 # Username to access HAProxy statistics
-default['rs-haproxy']['stats_user'] = nil
+default['rs-haproxy']['stats']['user'] = nil
 
 # Password to access HAProxy statistics
-default['rs-haproxy']['stats_password'] = nil
+default['rs-haproxy']['stats']['password'] = nil
 
 # Enable/Disable sticky sessions using cookie
 default['rs-haproxy']['session_stickiness'] = true

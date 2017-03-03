@@ -78,8 +78,9 @@ suites:
       pools: ['test_example', 'appserver', 'example']
       incoming_port: 85
       stats_uri: '/haproxy-status'
-      stats_user: 'statsuser'
-      stats_password: 'statspass'
+      stats:
+        user: 'statsuser'
+        password: 'statspass'
       health_check_uri: '/'
       session_stickiness: true
 

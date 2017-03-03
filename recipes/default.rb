@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Recipe:: default
@@ -67,7 +68,7 @@ node.default['haproxy']['config']['global'] = {
   'pidfile' => node['haproxy']['pid_file'],
   'log' => '/dev/log syslog info',
   'daemon' => true,
-  'quiet' => true
+  'quiet' => true,
 }
 
 node.default['haproxy']['config']['defaults']['log'] = 'global'
@@ -139,7 +140,7 @@ end
 Chef::Log.info node['haproxy']['config']
 haproxy_config = Mash.new(
   'global' => {
-    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10)
+    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10),
   }
 )
 
