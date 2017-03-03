@@ -3,6 +3,12 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.0.2
+------
+- updating attributes/default.rb, and .kitchen.yml to match default.rb
+- removing marker
+- updating to chefdk - 1.2.22
+
 v2.0.1
 ------
 - pinning haproxy to ~> 3.0
