@@ -18,10 +18,6 @@
 # limitations under the License.
 #
 
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
-
 raise 'This script is only compatible with rs-base::monitoring_collectd' if node['rs-base']['monitoring_type'] != 'collectd'
 # chef_gem 'chef-rewind' do
 #  action :install
