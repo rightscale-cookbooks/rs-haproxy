@@ -7,7 +7,7 @@ DEPENDENCIES
     path: test/cookbooks/fake
   machine_tag
     git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: 2954aa02807a7e3346a63d77dc1849ea91cc2c2e
+    revision: 3494342b55d8bf7107bf005ec869e07388f0a162
     branch: docker
   marker
     git: https://github.com/rightscale-cookbooks/marker.git
