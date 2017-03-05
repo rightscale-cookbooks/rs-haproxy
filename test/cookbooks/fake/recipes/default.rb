@@ -19,6 +19,7 @@
 #
 
 include_recipe 'curl'
+include_recipe 'yum-epel' if node['platform_family'] == 'rhel'
 package 'socat'
 
 require 'json'

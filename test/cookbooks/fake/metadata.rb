@@ -11,6 +11,7 @@ depends 'rs-application_php'
 depends 'chef-sugar'
 depends 'hostsfile'
 depends 'curl'
+depends 'yum-epel'
 depends 'yum-mysql-community'
 
 recipe 'fake::default', 'Creates fake application servers to verify HAProxy backend configuration.'
