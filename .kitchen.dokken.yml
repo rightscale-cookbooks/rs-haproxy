@@ -1,0 +1,242 @@
+driver:
+  name: dokken
+  privileged: true # because Docker and SystemD/Upstart
+  chef_version: 12.16.42
+
+transport:
+  name: dokken
+
+provisioner:
+  name: dokken
+
+verifier:
+  name: inspec
+
+platforms:
+- name: debian-8
+  driver:
+    image: debian:8
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: centos-6
+  driver:
+    image: centos:6
+    platform: rhel
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum -y install which initscripts net-tools wget
+
+- name: centos-7
+  driver:
+    image: centos:7
+    platform: rhel
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install lsof which systemd-sysv initscripts wget net-tools
+
+- name: fedora-latest
+  driver:
+    image: fedora:latest
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN dnf -y install yum which systemd-sysv initscripts wget net-tools
+
+- name: ubuntu-12.04
+  driver:
+    image: ubuntu-upstart:12.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: ubuntu-14.04
+  driver:
+    image: ubuntu-upstart:14.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: ubuntu-16.04
+  driver:
+    image: ubuntu:16.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: opensuse-13.2
+  driver:
+    image: opensuse:13.2
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN zypper --non-interactive install aaa_base perl-Getopt-Long-Descriptive which net-tools
+
+- name: opensuse-leap
+  driver:
+    image: opensuse:leap
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN zypper --non-interactive install aaa_base perl-Getopt-Long-Descriptive which hostname
+# Tests the basic HAProxy configuration, load balancer related machine tags set on the server, and
+# the HAProxy collectd monitoring configuration. The HAProxy configuration is verified by ensuring
+# the HAProxy parameters in the haproxy.cfg file are set up as expected.
+#
+suites:
+- name: default
+  run_list:
+  - recipe[fake::create_secrets]
+  - recipe[rs-haproxy::default]
+  - recipe[rs-haproxy::tags]
+  - recipe[rs-haproxy::collectd]
+  attributes:
+    apt:
+      compile_time_update: true
+    rightscale:
+      instance_uuid: '01-ABCDEFGH0123'
+    cloud:
+      provider: 'vagrant'
+      public_ips: ['192.0.2.2']
+    rs-base:
+      collectd_server: 'tss-4.rightscale.com'
+    rs-haproxy:
+      pools: ['test_example', 'appserver', 'example']
+      incoming_port: 85
+      stats_uri: '/haproxy-status'
+      stats:
+        user: 'statsuser'
+        password: 'statspass'
+      health_check_uri: '/'
+      session_stickiness: true
+
+# Tests the HAProxy frontend and backend configuration and SSL by setting up fake application servers
+# and attaching them to HAProxy. The tests verify that the application servers are attached to the
+# appropriate backend pools served by HAProxy.
+#
+- name: backend
+  run_list:
+  - recipe[fake::default]
+  - recipe[rs-haproxy::frontend]
+  attributes:
+    apt:
+      compile_time_update: true
+    cloud:
+      provider: 'vagrant'
+      public_ips: ['192.0.2.2']
+    rs-haproxy:
+      pools: ['test_example', 'appserver', 'example']
+      ssl_incoming_port: 445
+      stats_uri: '/haproxy-status'
+      health_check_uri: '/'
+      session_stickiness: true
+
+      # Self-signed certificate used only for testing purposes
+      ssl_cert: |
+        Certificate:
+            Data:
+                Version: 3 (0x2)
+                Serial Number: 17807422684612141336 (0xf720ac95798a2118)
+            Signature Algorithm: sha1WithRSAEncryption
+                Issuer: C=CO, ST=ST, L=LO, O=ORG, CN=*.example.com
+                Validity
+                    Not Before: Apr 11 21:13:50 2014 GMT
+                    Not After : Apr 10 21:13:50 2034 GMT
+                Subject: C=CO, ST=ST, L=LO, O=ORG, CN=*.example.com
+                Subject Public Key Info:
+                    Public Key Algorithm: rsaEncryption
+                        Public-Key: (2048 bit)
+                        Modulus:
+                            00:b5:cf:eb:63:43:1a:c9:e7:70:c3:03:43:15:ce:
+                            b6:3f:db:49:f8:20:1d:cb:94:c5:c5:ef:10:ca:3d:
+                            99:fa:d9:5c:6e:4f:5d:7f:6a:3e:bd:2e:ad:02:c6:
+                            88:ae:ed:3e:06:58:10:53:8a:45:35:01:fb:2f:b4:
+                            59:57:73:2d:1f:a5:45:f6:cf:cd:37:33:6d:39:b9:
+                            49:1b:4d:07:50:05:8a:be:93:62:c6:5e:e0:19:08:
+                            ce:ba:12:57:19:b8:96:91:09:98:27:ab:46:fd:9c:
+                            5f:b7:56:71:26:c7:bd:f9:fe:ff:06:c3:73:e7:83:
+                            c5:7d:d9:7c:bd:84:c2:58:8d:5d:32:05:34:9e:27:
+                            65:69:76:5c:9a:73:cf:6a:06:88:f5:4c:91:6c:65:
+                            5d:7a:3f:ef:a2:bf:0b:8f:8c:60:70:d7:7e:5d:e6:
+                            09:c7:d3:e9:42:fd:ff:9a:85:3c:2e:80:43:3b:d2:
+                            81:36:56:65:55:7a:5b:a1:ab:4f:1e:65:79:00:4a:
+                            fa:8e:3c:70:73:bf:f0:a4:50:74:aa:10:17:45:97:
+                            d9:c7:ee:d9:24:3c:3d:ee:81:70:29:8f:58:0b:ef:
+                            42:d9:9c:50:1c:3d:93:66:89:56:47:69:e6:c0:a9:
+                            69:a8:49:ed:9d:2d:c4:90:53:a7:cc:f1:6e:a2:55:
+                            9c:83
+                        Exponent: 65537 (0x10001)
+                X509v3 extensions:
+                    X509v3 Subject Key Identifier:
+                        B4:7F:4B:B5:BF:0B:05:D4:74:33:E3:DC:57:E3:DB:31:D2:48:60:71
+                    X509v3 Authority Key Identifier:
+                        keyid:B4:7F:4B:B5:BF:0B:05:D4:74:33:E3:DC:57:E3:DB:31:D2:48:60:71
+                    X509v3 Basic Constraints:
+                        CA:TRUE
+            Signature Algorithm: sha1WithRSAEncryption
+                 b2:32:0c:31:d6:d9:e0:74:c0:e4:fb:d3:84:83:09:0f:3e:e9:
+                 47:93:76:02:06:20:42:d9:dd:ca:5a:ca:0e:7f:24:d3:bc:91:
+                 7f:06:9e:98:10:60:ac:2d:4c:91:6f:23:ef:0e:7f:e3:ce:54:
+                 c3:27:2d:e8:8c:04:cc:02:2b:59:64:9e:c8:73:fe:77:73:4a:
+                 82:2b:78:8b:50:9e:87:0e:1e:f2:d5:63:bd:8b:a6:b0:fb:a7:
+                 4e:41:2a:cc:1d:d4:01:9c:42:03:6e:26:16:31:70:a9:5d:ab:
+                 51:93:e8:00:ce:10:bf:f6:08:e9:5d:3d:6d:fc:94:3e:65:79:
+                 db:01:c7:cb:16:70:84:f9:32:b2:00:57:28:8b:3c:64:0a:f4:
+                 86:99:3f:e3:a8:92:91:da:f2:74:d4:7c:95:c1:bc:c7:b6:76:
+                 d7:b9:60:f6:e4:25:49:fb:99:8a:2c:03:97:97:dd:ac:e3:2a:
+                 d6:e9:c8:5b:83:84:eb:c6:a7:25:b8:68:76:d8:ac:25:f3:79:
+                 c7:77:a5:f8:de:94:2b:32:4d:64:be:71:b3:c9:26:95:70:08:
+                 b8:50:b9:af:8a:0b:7c:01:81:ed:6e:12:88:72:f6:a0:e7:d2:
+                 4f:e5:f6:6b:1a:92:0c:f3:74:92:ce:8d:d5:b5:4a:bd:c8:01:
+                 52:50:e0:08
+        -----BEGIN CERTIFICATE-----
+        MIIDbTCCAlWgAwIBAgIJAPcgrJV5iiEYMA0GCSqGSIb3DQEBBQUAME0xCzAJBgNV
+        BAYTAkNPMQswCQYDVQQIDAJTVDELMAkGA1UEBwwCTE8xDDAKBgNVBAoMA09SRzEW
+        MBQGA1UEAwwNKi5leGFtcGxlLmNvbTAeFw0xNDA0MTEyMTEzNTBaFw0zNDA0MTAy
+        MTEzNTBaME0xCzAJBgNVBAYTAkNPMQswCQYDVQQIDAJTVDELMAkGA1UEBwwCTE8x
+        DDAKBgNVBAoMA09SRzEWMBQGA1UEAwwNKi5leGFtcGxlLmNvbTCCASIwDQYJKoZI
+        hvcNAQEBBQADggEPADCCAQoCggEBALXP62NDGsnncMMDQxXOtj/bSfggHcuUxcXv
+        EMo9mfrZXG5PXX9qPr0urQLGiK7tPgZYEFOKRTUB+y+0WVdzLR+lRfbPzTczbTm5
+        SRtNB1AFir6TYsZe4BkIzroSVxm4lpEJmCerRv2cX7dWcSbHvfn+/wbDc+eDxX3Z
+        fL2EwliNXTIFNJ4nZWl2XJpzz2oGiPVMkWxlXXo/76K/C4+MYHDXfl3mCcfT6UL9
+        /5qFPC6AQzvSgTZWZVV6W6GrTx5leQBK+o48cHO/8KRQdKoQF0WX2cfu2SQ8Pe6B
+        cCmPWAvvQtmcUBw9k2aJVkdp5sCpaahJ7Z0txJBTp8zxbqJVnIMCAwEAAaNQME4w
+        HQYDVR0OBBYEFLR/S7W/CwXUdDPj3Ffj2zHSSGBxMB8GA1UdIwQYMBaAFLR/S7W/
+        CwXUdDPj3Ffj2zHSSGBxMAwGA1UdEwQFMAMBAf8wDQYJKoZIhvcNAQEFBQADggEB
+        ALIyDDHW2eB0wOT704SDCQ8+6UeTdgIGIELZ3cpayg5/JNO8kX8GnpgQYKwtTJFv
+        I+8Of+POVMMnLeiMBMwCK1lknshz/ndzSoIreItQnocOHvLVY72LprD7p05BKswd
+        1AGcQgNuJhYxcKldq1GT6ADOEL/2COldPW38lD5ledsBx8sWcIT5MrIAVyiLPGQK
+        9IaZP+OokpHa8nTUfJXBvMe2dte5YPbkJUn7mYosA5eX3azjKtbpyFuDhOvGpyW4
+        aHbYrCXzecd3pfjelCsyTWS+cbPJJpVwCLhQua+KC3wBge1uEohy9qDn0k/l9msa
+        kgzzdJLOjdW1Sr3IAVJQ4Ag=
+        -----END CERTIFICATE-----
+        -----BEGIN PRIVATE KEY-----
+        MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC1z+tjQxrJ53DD
+        A0MVzrY/20n4IB3LlMXF7xDKPZn62VxuT11/aj69Lq0Cxoiu7T4GWBBTikU1Afsv
+        tFlXcy0fpUX2z803M205uUkbTQdQBYq+k2LGXuAZCM66ElcZuJaRCZgnq0b9nF+3
+        VnEmx735/v8Gw3Png8V92Xy9hMJYjV0yBTSeJ2Vpdlyac89qBoj1TJFsZV16P++i
+        vwuPjGBw135d5gnH0+lC/f+ahTwugEM70oE2VmVVeluhq08eZXkASvqOPHBzv/Ck
+        UHSqEBdFl9nH7tkkPD3ugXApj1gL70LZnFAcPZNmiVZHaebAqWmoSe2dLcSQU6fM
+        8W6iVZyDAgMBAAECggEADdRP6k/7ZKo3GI5R9wGvOTI78SS4P3kEhibGFywSX1NT
+        RYzB5uQ0+3zmahSh5vRiyGbAbypQU1TgP2OvfAhlwUd4B+sMiAtgXoiqd+onCT4y
+        rIZXeBFVaHIUD3E/sNQql8OsEDBmCPpxCWgI2VNOLwrnaSNK2KxcRFNbuqqzgbq2
+        G2OzPdAIC3IxvPbI3jOBoIT6HQltpeK3TQoDRGmX6am3tyx+cporcNOQVFuttqAo
+        CsBWG2wSqZNo1PdS9cAeBoh85cNvMM8S5t9U37n8ZyZ1QKOghDi4SGadiqc3VjWm
+        xhVKD4SCxWrSVpJvQ5qeT/KW4FBjqTf/L0WYoP6PAQKBgQDm+1adnJfXEoIDhc/j
+        ib9muLdZkb5LTPxw5dZOX0I5nRAdAGPxviG8EIKrpIyD9vFs/YsKaaCsfDN0oMfk
+        y9b/00eNluY3A+yREPSv4MYpNhyFzyTTeLQ8VcDxQjiqb4IfQ+oWy1nv8X1UidJo
+        W6cCcpx3BjJZlz1E3XlT6dsyAwKBgQDJgTTmUmDHoFPBHabbcYoOkRSlfowGCoeU
+        uuPlYIStuKGqwXvZH8xDICXrDGmx4oW2gt5morFna1MAQBjg8lCnkQZUqawkXoF6
+        fOeea/xTyS9n8Y3uDhFNFLnSmNSmc3JGd8DnXWPn95webWNt20io6e92VoTk2zeK
+        XI5y0FkjgQKBgQCcbA1mQ0vYzKHbfN0iPICwMduI/tgd6o7ybdPJ01zn42OsID2O
+        0rHJyGyVjKPUIoGwy6tDa/DxnlLCYre8TAbXzN8iFdTl4PRt8UujZ9cKxahfPb60
+        r4NvcKtvNudlFIrMXZPDyAaqJaI4g/VH0vmxAKjROhMS9Qb7AflOSIq2vQKBgGui
+        j95DvJyFgJeUPi/T2znit1ObYDJN55RDrD43K0gcaobqqTwWpyZoArkmPUMey+vs
+        xd2vI/IpOwHUOzXVWc3YQrhwlZorvR/vnk1aQ0OCIMd2GSlC7GzvGD9tEZID8tO/
+        XhR4J0ieVA9QwR7KVmqb4ySkHIKesnE+9XxQ3HyBAoGAUf5iDIWBObupmpPKME+M
+        AqwXAhfW0K5ON7uqW3N41NCCkDP+Zbr5e1eB3Hud/7pohcK+77QPAZ6mb/APDaya
+        8av7fKKK4Y5T2PkVufR0aD09LX0T6K8heergtu/00N+MiCr/eIIqbPRQPdGoZ5v4
+        MKNVXaQ/jcM58ZlZ0kuTzl4=
+        -----END PRIVATE KEY-----
