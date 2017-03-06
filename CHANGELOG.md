@@ -3,6 +3,11 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.1.0
+------
+- updates haproxy cookbook to 3.0
+- adds in tuning recipe
+
 v2.0.1
 ------
 - pinning haproxy to ~> 3.0
