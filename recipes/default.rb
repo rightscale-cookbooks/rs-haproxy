@@ -18,10 +18,6 @@
 # limitations under the License.
 #
 
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
-
 # If installing from source, update attributes accordingly.
 if node['rs-haproxy']['install_method'] == 'source'
   Chef::Log.info "Overriding haproxy/install_method to 'source'..."

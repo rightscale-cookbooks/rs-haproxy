@@ -11,7 +11,7 @@ source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 chef_version '>= 12.0' if respond_to?(:chef_version)
 
 depends 'haproxy', '~> 3.0'
-depends 'collectd'
+depends 'collectd', '= 2.2.2'
 depends 'rightscale_tag'
 depends 'rs-base'
 depends 'rsc_remote_recipe'
