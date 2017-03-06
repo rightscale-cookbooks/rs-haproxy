@@ -1,10 +1,11 @@
+# frozen_string_literal: true
 name             'rs-haproxy'
 maintainer       'RightScale, Inc.'
 maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.0.1'
+version          '2.1.0'
 issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 chef_version '>= 12.0' if respond_to?(:chef_version)
@@ -15,6 +16,8 @@ depends 'collectd'
 depends 'rightscale_tag'
 depends 'rs-base'
 depends 'rsc_remote_recipe'
+depends 'sysctl'
+depends 'limits'
 
 recipe 'rs-haproxy::default', 'Installs HAProxy and sets up monitoring for the HAProxy process.'
 recipe 'rs-haproxy::tags', 'Adds load balancer related machine tags to the load balancer server.'
@@ -23,6 +26,7 @@ recipe 'rs-haproxy::frontend', 'Queries for application servers in the deploymen
                                ' to the corresponding backend pools served by the load balancer.'
 recipe 'rs-haproxy::schedule', 'Configure cron to periodically run rs-haproxy::frontend.'
 recipe 'rs-haproxy::hatop', 'installs hatop on the server'
+recipe 'rs-haproxy::tuning', 'tunes sysctl and limits'
 
 attribute 'rs-haproxy/pools',
   display_name: 'Load Balance Pools',
