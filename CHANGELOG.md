@@ -8,6 +8,13 @@ v2.1.0
 - updates haproxy cookbook to 3.0
 - adds in tuning recipe
 
+v2.0.1
+------
+- pinning haproxy to ~> 3.0
+- removing fork haproxy in favor of supermarket version
+- updating berksfile.lock for latest supermarket package
+- fixing stats socket for haproxy 3.0
+
 v2.0.0
 ------
 - Remove support for Chef 11
