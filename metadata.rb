@@ -13,7 +13,7 @@ chef_version '>= 12.0' if respond_to?(:chef_version)
 depends 'haproxy', '~> 3.0'
 depends 'collectd', '= 2.2.2'
 depends 'rightscale_tag'
-depends 'machine_tag', '>= 2.0.4'
+depends 'machine_tag', '~> 2.0.4'
 depends 'rs-base'
 depends 'rsc_remote_recipe'
 depends 'sysctl'

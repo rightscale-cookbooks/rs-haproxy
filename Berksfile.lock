@@ -5,13 +5,6 @@ DEPENDENCIES
     branch: chef-12-migration
   fake
     path: test/cookbooks/fake
-  machine_tag
-    git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: bc71ef59e2192e95dd243a67e3b41929e8e8da51
-    branch: docker
-  marker
-    git: https://github.com/rightscale-cookbooks/marker.git
-    revision: 058e70879408fceceb628c600d487b1ddfa06cdb
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
     revision: 93a8e1d1040f508623fa3cae4fbd7ecf67bcb450
@@ -94,7 +87,7 @@ GRAPH
   now (1.0.0)
   ntp (3.3.1)
   ohai (5.0.0)
-  openssl (6.1.1)
+  openssl (7.0.0)
   php (2.2.1)
     build-essential (>= 0.0.0)
     iis (>= 0.0.0)
@@ -142,6 +135,7 @@ GRAPH
     collectd (= 2.2.2)
     haproxy (~> 3.0)
     limits (>= 0.0.0)
+    machine_tag (~> 2.0.4)
     rightscale_tag (>= 0.0.0)
     rs-base (>= 0.0.0)
     rsc_remote_recipe (>= 0.0.0)
