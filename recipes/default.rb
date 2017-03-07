@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Recipe:: default
@@ -16,10 +17,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
 
 # If installing from source, update attributes accordingly.
 if node['rs-haproxy']['install_method'] == 'source'
@@ -67,7 +64,7 @@ node.default['haproxy']['config']['global'] = {
   'pidfile' => node['haproxy']['pid_file'],
   'log' => '/dev/log syslog info',
   'daemon' => true,
-  'quiet' => true
+  'quiet' => true,
 }
 
 node.default['haproxy']['config']['defaults']['log'] = 'global'
@@ -139,7 +136,7 @@ end
 Chef::Log.info node['haproxy']['config']
 haproxy_config = Mash.new(
   'global' => {
-    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10)
+    'maxconn' => (node['rs-haproxy']['maxconn'].to_i + 10),
   }
 )
 

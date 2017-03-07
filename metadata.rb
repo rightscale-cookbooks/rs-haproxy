@@ -5,15 +5,15 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.1.0'
+version          '2.1.1'
 issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 chef_version '>= 12.0' if respond_to?(:chef_version)
 
-depends 'marker'
 depends 'haproxy', '~> 3.0'
-depends 'collectd'
+depends 'collectd', '= 2.2.2'
 depends 'rightscale_tag'
+depends 'machine_tag', '~> 2.0.4'
 depends 'rs-base'
 depends 'rsc_remote_recipe'
 depends 'sysctl'
@@ -43,7 +43,7 @@ attribute 'rs-haproxy/pools',
   recipes: [
     'rs-haproxy::default',
     'rs-haproxy::tags',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/incoming_port',
@@ -52,7 +52,7 @@ attribute 'rs-haproxy/incoming_port',
   required: 'optional',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/ssl_cert',
@@ -62,7 +62,7 @@ attribute 'rs-haproxy/ssl_cert',
   required: 'optional',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/ssl_incoming_port',
@@ -71,7 +71,7 @@ attribute 'rs-haproxy/ssl_incoming_port',
   required: 'optional',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/stats_uri',
@@ -110,7 +110,7 @@ attribute 'rs-haproxy/session_stickiness',
   default: 'true',
   recipes: [
     'rs-haproxy::default',
-    'rs-haproxy::frontend'
+    'rs-haproxy::frontend',
   ]
 
 attribute 'rs-haproxy/health_check_uri',

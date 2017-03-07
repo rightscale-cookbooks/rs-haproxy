@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Recipe:: frontend
@@ -16,10 +17,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
 
 include_recipe 'rightscale_tag::default'
 
@@ -63,7 +60,7 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
     app_server_pools[remote_server_pool][remote_server_uuid] = {
       'bind_ip_address' => node['remote_recipe']['application_bind_ip'],
       'bind_port' => node['remote_recipe']['application_bind_port'],
-      'vhost_path' => node['remote_recipe']['vhost_path']
+      'vhost_path' => node['remote_recipe']['vhost_path'],
     }
   when 'detach'
     # Remove application server from the respective pool
@@ -124,7 +121,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
         'inter' => node['rs-haproxy']['backend']['inter'],
         'rise' => node['rs-haproxy']['backend']['rise'],
         'fall' => node['rs-haproxy']['backend']['fall'],
-        'maxconn' => node['haproxy']['member_max_connections']
+        'maxconn' => node['haproxy']['member_max_connections'],
       }
 
       if node['rs-haproxy']['health_check_uri']
@@ -160,7 +157,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
               'lb_private_ip' => (node['cloud']['private_ips'].first || nil),
               'lb_public_ip' => (node['cloud']['public_ips'].first || nil),
               'pool_name' => pool_name,
-              'action' => (application_action == 'detach' ? 'deny' : 'allow')
+              'action' => (application_action == 'detach' ? 'deny' : 'allow'),
             }.reject { |_key, value| value.nil? })
           action :create
         end

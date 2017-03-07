@@ -1,58 +1,86 @@
----
 driver:
-  name: vagrant
-driver_config:
-  require_chef_omnibus: '12.16'
-  customize:
-    cpus: 1
-    memory: 512
-  ssh:
-    insert_key: false
-  network:
-    - ['private_network', { ip: '192.0.2.2' }]
-provisioner:
-  name: chef_zero
-  always_update_cookbooks: true
-platforms:
-- name: ubuntu-14.04
-  run_list:
-  - recipe[apt]
-  driver_config:
-    box: bento/ubuntu-14.04
-- name: ubuntu-12.04
-  run_list:
-  - recipe[apt]
-  driver_config:
-    box: bento/ubuntu-12.04
-- name: centos-6.8
-  run_list: ['recipe[fake::create_secrets]','recipe[yum-epel]']
-  driver_config:
-    box: bento/centos-6.8 
-- name: centos-7.2
-  run_list: ['recipe[yum-epel]', 'recipe[fake::mysql_repo]']
-  driver_config:
-    box: bento/centos-7.2
-#- name: rhel-6.5
-#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::wget_cacert]']
-#  attributes:
-#    rhsm:
-#      username: <%= ENV['RHSM_USERNAME'] %>
-#      password: <%= ENV['RHSM_PASSWORD'] %>
-#      additional_repos: ['rhel-6-server-optional-rpms']
-#  driver_config:
-#    box: local-rhel-6.5
-#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-6.5_chef-provisionerless.box
-#- name: rhel-7.0
-#  run_list: ['recipe[yum-epel]', 'recipe[rhsm]', 'recipe[fake::mysql_repo]', 'recipe[fake::wget_cacert]']
-#  attributes:
-#    rhsm:
-#      username: <%= ENV['RHSM_USERNAME'] %>
-#      password: <%= ENV['RHSM_PASSWORD'] %>
-#      additional_repos: ['rhel-7-server-optional-rpms']
-#  driver_config:
-#    box: local-rhel-7.0
-#    box_url: file://<%= File.expand_path('~') %>/opscode_rhel-7.0_chef-provisionerless.box
+  name: dokken
+  privileged: true # because Docker and SystemD/Upstart
+  chef_version: 12.16.42
 
+transport:
+  name: dokken
+
+provisioner:
+  name: dokken
+
+verifier:
+  name: inspec
+
+platforms:
+- name: debian-8
+  driver:
+    image: debian:8
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: centos-6
+  driver:
+    image: centos:6
+    platform: rhel
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN yum -y install which initscripts net-tools wget
+
+- name: centos-7
+  driver:
+    image: centos:7
+    platform: rhel
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install lsof which systemd-sysv initscripts wget net-tools
+
+- name: fedora-latest
+  driver:
+    image: fedora:latest
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN dnf -y install yum which systemd-sysv initscripts wget net-tools
+
+- name: ubuntu-12.04
+  driver:
+    image: ubuntu-upstart:12.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: ubuntu-14.04
+  driver:
+    image: ubuntu-upstart:14.04
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: ubuntu-16.04
+  driver:
+    image: ubuntu:16.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install apt-transport-https lsb-release procps net-tools -y
+
+- name: opensuse-13.2
+  driver:
+    image: opensuse:13.2
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN zypper --non-interactive install aaa_base perl-Getopt-Long-Descriptive which net-tools
+
+- name: opensuse-leap
+  driver:
+    image: opensuse:leap
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN zypper --non-interactive install aaa_base perl-Getopt-Long-Descriptive which hostname
 # Tests the basic HAProxy configuration, load balancer related machine tags set on the server, and
 # the HAProxy collectd monitoring configuration. The HAProxy configuration is verified by ensuring
 # the HAProxy parameters in the haproxy.cfg file are set up as expected.
@@ -145,7 +173,6 @@ suites:
                         B4:7F:4B:B5:BF:0B:05:D4:74:33:E3:DC:57:E3:DB:31:D2:48:60:71
                     X509v3 Authority Key Identifier:
                         keyid:B4:7F:4B:B5:BF:0B:05:D4:74:33:E3:DC:57:E3:DB:31:D2:48:60:71
-
                     X509v3 Basic Constraints:
                         CA:TRUE
             Signature Algorithm: sha1WithRSAEncryption

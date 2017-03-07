@@ -5,12 +5,6 @@ DEPENDENCIES
     branch: chef-12-migration
   fake
     path: test/cookbooks/fake
-  machine_tag
-    git: https://github.com/rightscale-cookbooks/machine_tag.git
-    revision: 07f504ff554534e41099019fc911b3ea1dd8382c
-  marker
-    git: https://github.com/rightscale-cookbooks/marker.git
-    revision: 058e70879408fceceb628c600d487b1ddfa06cdb
   rightscale_tag
     git: https://github.com/rightscale-cookbooks/rightscale_tag.git
     revision: 93a8e1d1040f508623fa3cae4fbd7ecf67bcb450
@@ -39,7 +33,7 @@ GRAPH
     mingw (>= 1.1)
     seven_zip (>= 0.0.0)
   chef-sugar (3.4.0)
-  collectd (2.2.4)
+  collectd (2.2.2)
     poise (~> 2.2)
     poise-service (~> 1.0)
   collectd_plugins (2.1.3)
@@ -59,6 +53,7 @@ GRAPH
     hostsfile (>= 0.0.0)
     rs-application_php (>= 0.0.0)
     rs-haproxy (>= 0.0.0)
+    yum-epel (>= 0.0.0)
     yum-mysql-community (>= 0.0.0)
   git (6.0.0)
     build-essential (>= 0.0.0)
@@ -73,9 +68,10 @@ GRAPH
     windows (>= 1.34.6)
   limits (1.0.0)
   lvm (4.0.5)
-  machine_tag (2.0.3)
+  machine_tag (2.0.4)
     apt (>= 0.0.0)
     build-essential (>= 0.0.0)
+    chef-sugar (>= 0.0.0)
   mariadb (1.0.1)
     apt (>= 0.0.0)
     yum (>= 0.0.0)
@@ -91,7 +87,7 @@ GRAPH
   now (1.0.0)
   ntp (3.3.1)
   ohai (5.0.0)
-  openssl (6.1.1)
+  openssl (7.0.0)
   php (2.2.1)
     build-essential (>= 0.0.0)
     iis (>= 0.0.0)
@@ -135,11 +131,11 @@ GRAPH
     rsyslog (>= 0.0.0)
     swap (>= 0.0.0)
     yum-epel (>= 0.0.0)
-  rs-haproxy (2.1.0)
-    collectd (>= 0.0.0)
+  rs-haproxy (2.1.1)
+    collectd (= 2.2.2)
     haproxy (~> 3.0)
     limits (>= 0.0.0)
-    marker (>= 0.0.0)
+    machine_tag (~> 2.0.4)
     rightscale_tag (>= 0.0.0)
     rs-base (>= 0.0.0)
     rsc_remote_recipe (>= 0.0.0)
