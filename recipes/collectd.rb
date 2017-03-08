@@ -59,6 +59,7 @@ end
 
 # Set up haproxy monitoring
 collectd_plugin_file 'haproxy' do
+  plugin_instance_name 1
   source 'haproxy.conf.erb'
   cookbook 'rs-haproxy'
   variables(collectd_lib: node['collectd']['service']['configuration']['plugin_dir'],
@@ -69,6 +70,11 @@ end
 # Set up haproxy process monitoring
 collectd_plugin 'processes' do
   options(process: 'haproxy')
+end
+
+file '/etc/sudoers.d/collectd' do
+  mode '0644'
+  content 'collectd ALL=(ALL) NOPASSWD:ALL'
 end
 
 service 'collectd' do
