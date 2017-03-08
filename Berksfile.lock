@@ -64,7 +64,7 @@ GRAPH
     cpu (>= 0.2.0)
     poise-service (>= 0.0.0)
   hostsfile (2.4.5)
-  iis (5.0.5)
+  iis (5.0.7)
     windows (>= 1.34.6)
   limits (1.0.0)
   lvm (4.0.5)

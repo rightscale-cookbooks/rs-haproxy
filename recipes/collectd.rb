@@ -71,3 +71,7 @@ end
 collectd_plugin 'processes' do
   options(process: 'haproxy')
 end
+
+service 'collectd' do
+  action :restart
+end
