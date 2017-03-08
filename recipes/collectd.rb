@@ -49,19 +49,10 @@ include_recipe 'rs-base::monitoring_collectd'
 log 'Setting up monitoring for HAProxy...'
 
 # Install socat package which is required by the haproxy collectd script
-apt_package 'socat' do
-  options '--assume-no'
-  action :install
-  only_if { node['platform_family'] == 'debian' }
-end
-
-yum_package 'socat' do
-  action :install
-  only_if { node['platform_family'] == 'rhel' }
-end
+package 'socat'
 
 # Put the haproxy collectd plugin script into the collectd lib directory
-cookbook_file "#{node['collectd']['plugin_dir']}/haproxy" do
+cookbook_file ::File.join(node['collectd']['service']['configuration']['plugin_dir'], 'haproxy') do
   source 'haproxy'
   mode 0755
   cookbook 'rs-haproxy'
@@ -75,10 +66,10 @@ cookbook_file '/usr/share/collectd/haproxy.db' do
 end
 
 # Set up haproxy monitoring
-collectd_plugin 'haproxy' do
-  #  template 'haproxy.conf.erb'
-  #  cookbook 'rs-haproxy'
-  options(collectd_lib: node['collectd']['plugin_dir'],
+collectd_plugin_file 'haproxy' do
+  source 'haproxy.conf.erb'
+  cookbook 'rs-haproxy'
+  variables(collectd_lib: node['collectd']['service']['configuration']['plugin_dir'],
           instance_uuid: node['rightscale']['instance_uuid'],
           haproxy_socket: node['haproxy']['stats_socket_path'])
 end
