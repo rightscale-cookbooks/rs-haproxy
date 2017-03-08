@@ -59,7 +59,7 @@ end
 
 # Set up haproxy monitoring
 collectd_plugin_file 'haproxy' do
-  plugin_instance_name 1
+  plugin_instance_name 'localhost'
   source 'haproxy.conf.erb'
   cookbook 'rs-haproxy'
   variables(collectd_lib: node['collectd']['service']['configuration']['plugin_dir'],
