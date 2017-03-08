@@ -19,10 +19,6 @@
 #
 
 raise 'This script is only compatible with rs-base::monitoring_collectd' if node['rs-base']['monitoring_type'] != 'collectd'
-# chef_gem 'chef-rewind' do
-#  action :install
-# end
-# require 'chef/rewind'
 
 if node['rightscale'] && node['rightscale']['instance_uuid']
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
@@ -33,18 +29,15 @@ unless node['collectd']['service']['configuration']['types_d_b'].include?('/usr/
   node.override['collectd']['service']['configuration']['types_d_b'] = [node['collectd']['service']['configuration']['types_d_b'], '/usr/share/collectd/haproxy.db']
 end
 
+#temporary patch until collectd 2.2.4+ works on debian families
+node.override['collectd']['service']['configuration']['plugin_dir'] =
+  value_for_platform_family(
+    'rhel' => '/usr/lib64/collectd',
+    'debian' => '/usr/lib/collectd'
+)
+
 include_recipe 'rs-base::monitoring_collectd'
 
-# unwind 'package[collectd]' do
-#   only_if { ::File.exist?('/etc/collect.d/collectd.conf') }
-# end
-# collectd::default recipe attempts to delete collectd plugins that were not
-# created during the same runlist as this recipe. Some common plugins are installed
-# as a part of base install which runs in a different runlist. This resource
-# will safeguard the base plugins from being removed.
-# rewind 'ruby_block[delete_old_plugins]' do
-#   action :nothing
-# end
 
 log 'Setting up monitoring for HAProxy...'
 
