@@ -10,7 +10,7 @@ provisioner:
   name: dokken
 
 verifier:
-  name: inspec
+  name: serverspec
 
 platforms:
 - name: debian-8
