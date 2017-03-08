@@ -29,15 +29,14 @@ unless node['collectd']['service']['configuration']['types_d_b'].include?('/usr/
   node.override['collectd']['service']['configuration']['types_d_b'] = [node['collectd']['service']['configuration']['types_d_b'], '/usr/share/collectd/haproxy.db']
 end
 
-#temporary patch until collectd 2.2.4+ works on debian families
+# temporary patch until collectd 2.2.4+ works on debian families
 node.override['collectd']['service']['configuration']['plugin_dir'] =
   value_for_platform_family(
     'rhel' => '/usr/lib64/collectd',
     'debian' => '/usr/lib/collectd'
-)
+  )
 
 include_recipe 'rs-base::monitoring_collectd'
-
 
 log 'Setting up monitoring for HAProxy...'
 
@@ -63,8 +62,8 @@ collectd_plugin_file 'haproxy' do
   source 'haproxy.conf.erb'
   cookbook 'rs-haproxy'
   variables(collectd_lib: node['collectd']['service']['configuration']['plugin_dir'],
-          instance_uuid: node['rightscale']['instance_uuid'],
-          haproxy_socket: node['haproxy']['stats_socket_path'])
+            instance_uuid: node['rightscale']['instance_uuid'],
+            haproxy_socket: node['haproxy']['stats_socket_path'])
 end
 
 # Set up haproxy process monitoring
