@@ -72,6 +72,16 @@ collectd_plugin 'processes' do
   options(process: 'haproxy')
 end
 
+directory '/etc/sudoers.d' do
+  owner 'root'
+  group 'root'
+  mode '0750'
+  action :create
+  not_if do
+    ::File.exist?('/etc/sudoers.d')
+  end
+end
+
 file '/etc/sudoers.d/collectd' do
   mode '0644'
   content 'collectd ALL=(ALL) NOPASSWD:ALL'
