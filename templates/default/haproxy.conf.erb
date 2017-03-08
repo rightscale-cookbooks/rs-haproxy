@@ -1,5 +1,5 @@
 LoadPlugin exec
 
 <Plugin exec>
-  Exec "haproxy" "<%= @collectd_lib %>/haproxy" "--hostid" "<%= @instance_uuid %>" "--socket" "<%= @haproxy_socket %>" "--sampling-interval" "10"
+  Exec collectd "<%= @collectd_lib %>/haproxy" "--hostid" "<%= @instance_uuid %>" "--socket" "<%= @haproxy_socket %>" "--sampling-interval" "10"
 </Plugin>
