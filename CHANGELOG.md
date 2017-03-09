@@ -11,6 +11,9 @@ v2.1.1
 - updating for kitchen-dokken support and pinning to machine_tag >= 2.0.4
 - updating to fix issue [#45][], changing settings on the socket, and sudo from the collectd script
 - support for ubuntu 1604
+- cleaned up Gemfile
+- removed coveralls support
+- updated chefspec to ubuntu 1404
 
 v2.1.0
 ------
