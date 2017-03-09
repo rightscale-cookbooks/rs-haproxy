@@ -30,9 +30,9 @@ Github Repository: [https://github.com/rightscale-cookbooks/rs-haproxy](https://
   * [marker](http://community.opscode.com/cookbooks/marker)
   * [collectd](https://github.com/rightscale-cookbooks-contrib/chef-collectd)
 * Platform
-  * Ubuntu 12.04, 14.04
-  * CentOS 6.5, 7.0
-  * RHEL 6.5, 7.0
+  * Ubuntu 12.04, 14.04, 16.04
+  * CentOS 6.x, 7.x
+  * RHEL 6.x, 7.x
 
 # Usage
 
