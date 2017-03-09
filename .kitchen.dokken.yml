@@ -10,7 +10,7 @@ provisioner:
   name: dokken
 
 verifier:
-  name: serverspec
+  name: busser-serverspec
   root_path: '/opt/verifier'
   default_path: '/opt/verifier'
   sudo: false
