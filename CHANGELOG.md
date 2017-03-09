@@ -14,6 +14,7 @@ v2.1.1
 - cleaned up Gemfile
 - removed coveralls support
 - updated chefspec to ubuntu 1404
+- removed .ruby-version because we use chef-dk
 
 v2.1.0
 ------
