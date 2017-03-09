@@ -11,6 +11,8 @@ provisioner:
 
 verifier:
   name: serverspec
+  root_path: '/opt/verifier'
+  sudo: false
 
 platforms:
 - name: debian-8
