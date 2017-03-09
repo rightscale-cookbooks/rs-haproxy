@@ -26,11 +26,7 @@ describe 'rs-haproxy::collectd' do
     end
 
     it 'installs socat package' do
-      expect(chef_run).to install_apt_package('socat')
-    end
-
-    it 'does not install socat package' do
-      expect(chef_run).to_not install_yum_package('socat')
+      expect(chef_run).to install_package('socat')
     end
 
     it 'logs message' do
@@ -38,12 +34,12 @@ describe 'rs-haproxy::collectd' do
     end
 
     it 'Put the haproxy collectd plugin script into the collectd lib directory' do
-      expect(chef_run).to create_cookbook_file("#{chef_run.node['collectd']['plugin_dir']}/haproxy")
+      expect(chef_run).to create_cookbook_file("#{chef_run.node['collectd']['service']['configuration']['plugin_dir']}/haproxy")
       expect(chef_run).to create_cookbook_file('/usr/share/collectd/haproxy.db')
     end
 
     it 'creates the collectd plug' do
-      expect(chef_run).to create_collectd_plugin('haproxy')
+      expect(chef_run).to create_collectd_plugin_file('haproxy')
       expect(chef_run).to create_collectd_plugin('processes')
     end
   end

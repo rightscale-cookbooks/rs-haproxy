@@ -10,7 +10,9 @@ provisioner:
   name: dokken
 
 verifier:
-  name: inspec
+  root_path: '/opt/verifier'
+  default_path: '/opt/verifier'
+  sudo: false
 
 platforms:
 - name: debian-8

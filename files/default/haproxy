@@ -59,27 +59,27 @@ get_status_code()
   case $1 in
     # Server is actively up.
     UP)
-      $server_status=2
+      server_status=2
       ;;
      # Server is actively down.
     DOWN)
-      $server_status=-2
+      server_status=-2
       ;;
     # Server up but going down. Haproxy returns UP x/y.
     GOINGDOWN)
-      $server_status=-1
+      server_status=-1
       ;;
     # Server down but going up. Haproxy returns DOWN x/y.
     GOINGUP)
-      $server_status=1
+      server_status=1
       ;;
     # not checked. Haproxy returns "no check".
     NOCHECK)
-      $server_status=0
+      server_status=0
       ;;
     # Up with load balancing disabled. Haproxy returns "NOLB".
     NOLB)
-      $server_status=0
+      server_status=0
       ;;
   esac
 }
@@ -87,7 +87,7 @@ get_status_code()
 while true
 do
   current_time=`date +%s`
-  echo "show stat" | socat - UNIX-CLIENT:$socket \
+  echo "show stat" | sudo socat - UNIX-CLIENT:$socket \
   | while IFS=',' read pxname svname qcur qmax scur smax slim stot bin bout dreq dresp ereq econ eresp wretr wredis status weight act bck chkfail chdown lastchg downtime qlimit pid iid sid throttle lbtot tracked type rate rate_lim rate_max check_status check_code check_duration hrsp_1xx hrsp_2xx hrsp_3xx hrsp_4xx hrsp_5xx hrsp_other hanafail req_rate req_rate_max req_tot cli_abrt srv_abrt
   do
     # Skip the header line
