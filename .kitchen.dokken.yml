@@ -9,8 +9,8 @@ transport:
 provisioner:
   name: dokken
 
-verifier:
-  name: serverspec
+#verifier:
+#  name: serverspec
 
 platforms:
 - name: debian-8
