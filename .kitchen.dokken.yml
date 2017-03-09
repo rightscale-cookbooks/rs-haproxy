@@ -12,6 +12,7 @@ provisioner:
 verifier:
   name: serverspec
   root_path: '/opt/verifier'
+  default_path: '/opt/verifier'
   sudo: false
 
 platforms:
