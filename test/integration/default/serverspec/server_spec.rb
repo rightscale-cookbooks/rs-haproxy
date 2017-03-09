@@ -22,7 +22,7 @@ describe 'Verify settings in haproxy.cfg file' do
     ['global', 'maxconn 4106'],
     ['global', 'user haproxy'],
     ['global', 'group haproxy'],
-    ['global', 'stats socket +/var/run/haproxy.sock user haproxy group haproxy'],
+    ['global', 'stats socket +/var/run/haproxy.sock'],
     ['defaults', 'log +global'],
     ['defaults', 'mode +http'],
     ['defaults', 'balance +roundrobin'],
