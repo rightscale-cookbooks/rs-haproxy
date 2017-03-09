@@ -4,7 +4,6 @@ source 'https://supermarket.chef.io'
 metadata
 
 cookbook 'rs-base', github: 'rightscale-cookbooks/rs-base'
-cookbook 'rightscale_tag', github: 'rightscale-cookbooks/rightscale_tag'
 cookbook 'rsc_remote_recipe', github: 'rightscale-services-cookbooks/rsc_remote_recipe'
 
 group :integration do

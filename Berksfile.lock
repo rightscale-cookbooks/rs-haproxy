@@ -5,9 +5,6 @@ DEPENDENCIES
     branch: chef-12-migration
   fake
     path: test/cookbooks/fake
-  rightscale_tag
-    git: https://github.com/rightscale-cookbooks/rightscale_tag.git
-    revision: 93a8e1d1040f508623fa3cae4fbd7ecf67bcb450
   rs-application_php
     git: https://github.com/rightscale-cookbooks/rs-application_php.git
     revision: a8890d13daad3fab3b69b507540323ced0cc9398
