@@ -9,6 +9,7 @@ v2.1.1
 - removing marker
 - updating to chefdk - 1.2.22
 - updating for kitchen-dokken support and pinning to machine_tag >= 2.0.4
+- updating to fix issue [#45][], changing settings on the socket, and sudo from the collectd script
 
 v2.1.0
 ------

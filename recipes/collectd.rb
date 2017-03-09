@@ -86,7 +86,3 @@ file '/etc/sudoers.d/collectd' do
   mode '0644'
   content 'collectd ALL=(ALL) NOPASSWD:ALL'
 end
-
-service 'collectd' do
-  action :restart
-end
