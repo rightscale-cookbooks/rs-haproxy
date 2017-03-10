@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Recipe:: schedule
@@ -16,10 +17,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
 
 # From rs-haproxy/schedule/enable, determine if we are to enable or disable scheduling.
 schedule_enable = node['rs-haproxy']['schedule']['enable'] == true || node['rs-haproxy']['schedule']['enable'] == 'true'

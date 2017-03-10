@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 require 'rspec/core/rake_task'
-require 'foodcritic'
-require 'kitchen'
 
 directory = File.expand_path(File.dirname(__FILE__))
 
@@ -71,15 +69,6 @@ task :foodcritic do
   cmd = "chef exec foodcritic --epic-fail any #{directory}"
   puts cmd
   sh(cmd)
-end
-
-desc 'runs foodcritic linttask'
-task :fc_new do
-  FoodCritic::Rake::LintTask.new(:chef) do |t|
-    t.options = {
-      fail_tags: ['any']
-    }
-  end
 end
 
 desc 'runs rspec'

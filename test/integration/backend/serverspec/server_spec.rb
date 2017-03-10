@@ -80,7 +80,7 @@ describe 'Verify frontend settings in haproxy.cfg file' do
     ['frontend all_requests', 'use_backend example if acl_example'],
     ['frontend all_requests', 'bind 0.0.0.0:80'],
     ['frontend all_requests', 'bind 0.0.0.0:445 ssl crt /usr/local/etc/haproxy/ssl_cert.pem no-sslv3'],
-    ['frontend all_requests', 'redirect scheme https if !{ ssl_fc }']
+    ['frontend all_requests', 'redirect scheme https if !{ ssl_fc }'],
   ].each do |pair|
     frontend = pair.first
     backend = pair.last
@@ -97,7 +97,7 @@ describe 'Verify backend settings in haproxy.cfg file' do
     ['backend appserver', 'server disabled-server 127.0.0.1:1 disabled'],
     ['backend appserver', "server 02-ABCDEFGH0123 #{ipaddress?}:8080 inter 300 rise 3 fall 2 maxconn 100 check cookie 02-ABCDEFGH0123"],
     ['backend example', 'server disabled-server 127.0.0.1:1 disabled'],
-    ['backend example', "server 03-ABCDEFGH0123 #{ipaddress?}:8080 inter 300 rise 3 fall 2 maxconn 100 check cookie 03-ABCDEFGH0123"]
+    ['backend example', "server 03-ABCDEFGH0123 #{ipaddress?}:8080 inter 300 rise 3 fall 2 maxconn 100 check cookie 03-ABCDEFGH0123"],
   ].each do |pair|
     it "#{pair.first} should contain #{pair.last}" do
       expect(find_haproxy_setting(config_file, pair.first, pair.last)).to eq(true)
@@ -115,7 +115,7 @@ describe 'Verify backend configuration' do
       describe command([
         'curl',
         '--silent',
-        'https://www.example.com:445'
+        'https://www.example.com:445',
       ].join(' ')) do
         its(:exit_status) { should eq 60 }
       end
@@ -127,7 +127,7 @@ describe 'Verify backend configuration' do
         'curl',
         '--silent',
         '--write-out "HTTP Response Code: %{http_code}\nRedirect URL: %{redirect_url}\n"',
-        'http://www.example.com'
+        'http://www.example.com',
       ].join(' ')) do
         its(:stdout) do
           should match(/HTTP Response Code: 302/)
@@ -142,7 +142,7 @@ describe 'Verify backend configuration' do
       'curl',
       '--silent',
       '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
-      'https://www.example.com:445'
+      'https://www.example.com:445',
     ].join(' ')) do
       its(:stdout) { should match(/Basic html serving succeeded\./) }
     end
@@ -155,7 +155,7 @@ describe 'Verify backend configuration' do
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
           'https://www.example.com:445;',
-          'cat /tmp/cookie'
+          'cat /tmp/cookie',
         ].join(' ')) do
           its(:stdout) { should match(/03-ABCDEFGH0123/) }
         end
@@ -166,7 +166,7 @@ describe 'Verify backend configuration' do
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
           'https://www.example.com:445/appserver/;',
-          'cat /tmp/cookie'
+          'cat /tmp/cookie',
         ].join(' ')) do
           its(:stdout) { should match(/02-ABCDEFGH0123/) }
         end
@@ -177,7 +177,7 @@ describe 'Verify backend configuration' do
           '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
           '--cookie-jar /tmp/cookie',
           'https://test.example.com:445;',
-          'cat /tmp/cookie'
+          'cat /tmp/cookie',
         ].join(' ')) do
           its(:stdout) { should match(/01-ABCDEFGH0123/) }
         end
@@ -192,7 +192,7 @@ describe 'Verify backend configuration' do
         '--show-error',
         '--cacert /usr/local/etc/haproxy/ssl_cert.pem',
         '--sslv3',
-        'https://www.example.com:445'
+        'https://www.example.com:445',
       ].join(' ')) do
         its(:exit_status) { should eq 35 }
       end
@@ -226,7 +226,7 @@ describe 'Verify settings through haproxy socket' do
     %w(appserver BACKEND UP),
     ['example', 'disabled-server', 'MAINT'],
     ['example', '03-ABCDEFGH0123', 'UP'],
-    %w(example BACKEND UP)
+    %w(example BACKEND UP),
   ].each do |pool_name, server, status|
     it "#{server} in the pool #{pool_name} should have status of #{status}" do
       expect(haproxy_stat(pool_name, server)).to eq(status)

@@ -3,6 +3,19 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.1.1
+------
+- updating attributes/default.rb, and .kitchen.yml to match default.rb
+- removing marker
+- updating to chefdk - 1.2.22
+- updating for kitchen-dokken support and pinning to machine_tag >= 2.0.4
+- updating to fix issue [#45][], changing settings on the socket, and sudo from the collectd script
+- support for ubuntu 1604
+- cleaned up Gemfile
+- removed coveralls support
+- updated chefspec to ubuntu 1404
+- removed .ruby-version because we use chef-dk
+
 v2.1.0
 ------
 - updates haproxy cookbook to 3.0

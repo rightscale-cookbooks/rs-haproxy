@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Recipe:: tags
@@ -16,10 +17,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
 
 include_recipe 'rightscale_tag::default'
 

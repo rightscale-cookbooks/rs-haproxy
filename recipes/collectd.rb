@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Cookbook Name:: rs-haproxy
 # Recipe:: collectd
@@ -17,15 +18,7 @@
 # limitations under the License.
 #
 
-marker 'recipe_start_rightscale' do
-  template 'rightscale_audit_entry.erb'
-end
-
 raise 'This script is only compatible with rs-base::monitoring_collectd' if node['rs-base']['monitoring_type'] != 'collectd'
-# chef_gem 'chef-rewind' do
-#  action :install
-# end
-# require 'chef/rewind'
 
 if node['rightscale'] && node['rightscale']['instance_uuid']
   node.override['collectd']['fqdn'] = node['rightscale']['instance_uuid']
@@ -36,35 +29,22 @@ unless node['collectd']['service']['configuration']['types_d_b'].include?('/usr/
   node.override['collectd']['service']['configuration']['types_d_b'] = [node['collectd']['service']['configuration']['types_d_b'], '/usr/share/collectd/haproxy.db']
 end
 
-include_recipe 'rs-base::monitoring_collectd'
+# temporary patch until collectd 2.2.4+ works on debian families
+node.override['collectd']['service']['configuration']['plugin_dir'] =
+  value_for_platform_family(
+    'rhel' => '/usr/lib64/collectd',
+    'debian' => '/usr/lib/collectd'
+  )
 
-# unwind 'package[collectd]' do
-#   only_if { ::File.exist?('/etc/collect.d/collectd.conf') }
-# end
-# collectd::default recipe attempts to delete collectd plugins that were not
-# created during the same runlist as this recipe. Some common plugins are installed
-# as a part of base install which runs in a different runlist. This resource
-# will safeguard the base plugins from being removed.
-# rewind 'ruby_block[delete_old_plugins]' do
-#   action :nothing
-# end
+include_recipe 'rs-base::monitoring_collectd'
 
 log 'Setting up monitoring for HAProxy...'
 
 # Install socat package which is required by the haproxy collectd script
-apt_package 'socat' do
-  options '--assume-no'
-  action :install
-  only_if { node['platform_family'] == 'debian' }
-end
-
-yum_package 'socat' do
-  action :install
-  only_if { node['platform_family'] == 'rhel' }
-end
+package 'socat'
 
 # Put the haproxy collectd plugin script into the collectd lib directory
-cookbook_file "#{node['collectd']['plugin_dir']}/haproxy" do
+cookbook_file ::File.join(node['collectd']['service']['configuration']['plugin_dir'], 'haproxy') do
   source 'haproxy'
   mode 0755
   cookbook 'rs-haproxy'
@@ -78,15 +58,31 @@ cookbook_file '/usr/share/collectd/haproxy.db' do
 end
 
 # Set up haproxy monitoring
-collectd_plugin 'haproxy' do
-  #  template 'haproxy.conf.erb'
-  #  cookbook 'rs-haproxy'
-  options(collectd_lib: node['collectd']['plugin_dir'],
-          instance_uuid: node['rightscale']['instance_uuid'],
-          haproxy_socket: node['haproxy']['stats_socket_path'])
+collectd_plugin_file 'haproxy' do
+  plugin_instance_name 'localhost'
+  source 'haproxy.conf.erb'
+  cookbook 'rs-haproxy'
+  variables(collectd_lib: node['collectd']['service']['configuration']['plugin_dir'],
+            instance_uuid: node['rightscale']['instance_uuid'],
+            haproxy_socket: node['haproxy']['stats_socket_path'])
 end
 
 # Set up haproxy process monitoring
 collectd_plugin 'processes' do
   options(process: 'haproxy')
+end
+
+directory '/etc/sudoers.d' do
+  owner 'root'
+  group 'root'
+  mode '0750'
+  action :create
+  not_if do
+    ::File.exist?('/etc/sudoers.d')
+  end
+end
+
+file '/etc/sudoers.d/collectd' do
+  mode '0644'
+  content 'collectd ALL=(ALL) NOPASSWD:ALL'
 end
