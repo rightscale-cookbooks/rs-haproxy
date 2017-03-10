@@ -76,7 +76,7 @@ Vagrant.configure('2') do |config|
 
     chef.run_list = [
       'recipe[apt]',
-      'recipe[rs-haproxy::default]'
+      'recipe[rs-haproxy::default]',
     ]
   end
 end
