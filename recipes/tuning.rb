@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-include_recipe 'haproxy::tuning'
 include_recipe 'sysctl::default'
 
 set_limit '*' do

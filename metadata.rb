@@ -5,13 +5,13 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache 2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.1.1'
+version          '2.1.2'
 issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 chef_version '>= 12.0' if respond_to?(:chef_version)
 
 depends 'haproxy', '~> 3.0'
-depends 'collectd', '= 2.2.2'
+depends 'collectd'
 depends 'rightscale_tag'
 depends 'machine_tag', '~> 2.0.4'
 depends 'rs-base'
