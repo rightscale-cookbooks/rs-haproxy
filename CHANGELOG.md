@@ -3,6 +3,10 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.1.2
+------
+- as we compile with multiproc enabled removing haproxy tuning for affinity
+
 v2.1.1
 ------
 - updating attributes/default.rb, and .kitchen.yml to match default.rb
