@@ -85,7 +85,7 @@ node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node[
 node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node['rs-haproxy']['maxconn']
 
 # Initialize backend section which will be generated in the haproxy.cfg
-node.default['haproxy']['config']['backend'] = {}
+node.default['haproxy']['config']['backend'] ||= {}
 
 # Iterate through each application server pool served by the HAProxy server and set up the
 # ACLs in the frontend section and the corresponding backed sections
