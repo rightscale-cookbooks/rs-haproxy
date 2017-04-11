@@ -6,6 +6,8 @@ This file is used to list changes made in each version of the rs-haproxy cookboo
 v2.1.2
 ------
 - as we compile with multiproc enabled removing haproxy tuning for affinity
+- configured frontend and backend to support multiple items, especially when wrapped.
+- removed ubuntu 12.04 from test-kitchen as its EOL
 
 v2.1.1
 ------
