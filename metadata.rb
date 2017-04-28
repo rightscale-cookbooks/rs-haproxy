@@ -10,6 +10,9 @@ issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 chef_version '>= 12.0' if respond_to?(:chef_version)
 
+supports 'ubuntu'
+supports 'centos'
+
 depends 'haproxy', '= 3.0.4'
 depends 'collectd'
 depends 'rightscale_tag'
