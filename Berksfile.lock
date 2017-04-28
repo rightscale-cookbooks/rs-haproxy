@@ -135,7 +135,7 @@ GRAPH
     yum-epel (>= 0.0.0)
   rs-haproxy (2.1.2)
     collectd (>= 0.0.0)
-    haproxy (~> 3.0)
+    haproxy (= 3.0.4)
     limits (>= 0.0.0)
     machine_tag (~> 2.0.4)
     rightscale_tag (>= 0.0.0)
