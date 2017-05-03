@@ -4,7 +4,7 @@ require_relative 'spec_helper'
 describe 'rs-haproxy::hatop' do
   let(:chef_run) do
     ChefSpec::SoloRunner.new(file_cache_path: Chef::Config[:file_cache_path]) do |node|
-     node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
+      node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
     end.converge(described_recipe)
   end
 
