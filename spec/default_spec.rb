@@ -5,6 +5,7 @@ describe 'rs-haproxy::default' do
   context 'main haproxy without ssl' do
     let(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
       end.converge(described_recipe)
     end
 
@@ -39,6 +40,7 @@ describe 'rs-haproxy::default' do
   context 'ssl is enabled' do
     let(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
         node.set['rs-haproxy']['ssl_cert'] = 'certdata'
       end.converge(described_recipe)
     end

@@ -7,6 +7,7 @@ describe 'rs-haproxy::collectd' do
       node.set['rs-base']['monitoring_type'] = 'collectd'
       node.set['rightscale']['instance_uuid'] = 'abcd1234'
       node.set['rs-base']['collectd_server'] = 'tss-4.rightscale.com'
+      node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
     end.converge(described_recipe)
   end
   file_content = <<-EOF
