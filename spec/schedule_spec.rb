@@ -7,6 +7,7 @@ describe 'rs-haproxy::schedule' do
       ChefSpec::SoloRunner.new do |node|
         node.set['rs-haproxy']['schedule']['enable'] = true
         node.set['rs-haproxy']['schedule']['interval'] = '15'
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
       end.converge(described_recipe)
     end
 
@@ -24,6 +25,7 @@ describe 'rs-haproxy::schedule' do
       ChefSpec::SoloRunner.new do |node|
         node.set['rs-haproxy']['schedule']['enable'] = false
         node.set['rs-haproxy']['schedule']['interval'] = '15'
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
       end.converge(described_recipe)
     end
 
