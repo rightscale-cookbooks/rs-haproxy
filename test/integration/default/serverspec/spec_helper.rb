@@ -5,7 +5,7 @@ require 'socket'
 require 'csv'
 require 'json'
 require 'rubygems/dependency_installer'
-
+set :backend, :exec
 # Helper function to sort through the haproxy.cfg
 #
 # @param config_file [String] the name of the config file (/var/haproxy/haproxy.cfg)

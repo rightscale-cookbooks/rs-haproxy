@@ -78,14 +78,14 @@ unless node['remote_recipe'].nil? || node['remote_recipe'].empty?
 end
 
 # Initialize frontend section which will be generated in the haproxy.cfg
-node.default['haproxy']['config']['frontend'] = {}
+node.default['haproxy']['config']['frontend'] ||= {}
 node.default['haproxy']['config']['frontend']['all_requests'] ||= {}
 node.default['haproxy']['config']['frontend']['all_requests']['default_backend'] = node['rs-haproxy']['pools'].last
 node.default['haproxy']['config']['frontend']['all_requests']['bind'] = "#{node['haproxy']['incoming_address']}:#{node['haproxy']['incoming_port']}"
 node.default['haproxy']['config']['frontend']['all_requests']['maxconn'] = node['rs-haproxy']['maxconn']
 
 # Initialize backend section which will be generated in the haproxy.cfg
-node.default['haproxy']['config']['backend'] = {}
+node.default['haproxy']['config']['backend'] ||= {}
 
 # Iterate through each application server pool served by the HAProxy server and set up the
 # ACLs in the frontend section and the corresponding backed sections

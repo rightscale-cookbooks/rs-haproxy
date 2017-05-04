@@ -7,6 +7,7 @@ describe 'rs-haproxy::schedule' do
       ChefSpec::SoloRunner.new do |node|
         node.set['rs-haproxy']['schedule']['enable'] = true
         node.set['rs-haproxy']['schedule']['interval'] = '15'
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
       end.converge(described_recipe)
     end
 
@@ -14,7 +15,7 @@ describe 'rs-haproxy::schedule' do
       expect(chef_run).to create_cron('rs-haproxy::frontend').with(
         minute: '*/15',
         hour: '*',
-        command: "rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
+        command: "/usr/local/bin/rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
       )
     end
   end
@@ -24,6 +25,7 @@ describe 'rs-haproxy::schedule' do
       ChefSpec::SoloRunner.new do |node|
         node.set['rs-haproxy']['schedule']['enable'] = false
         node.set['rs-haproxy']['schedule']['interval'] = '15'
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
       end.converge(described_recipe)
     end
 
@@ -31,7 +33,7 @@ describe 'rs-haproxy::schedule' do
       expect(chef_run).to delete_cron('rs-haproxy::frontend').with(
         minute: '*/15',
         hour: '*',
-        command: "rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
+        command: "/usr/local/bin/rsc rl10 run_right_script /rll/run/right_script 'right_script=Haproxy Frontend - chef'"
       )
     end
   end

@@ -6,6 +6,7 @@ describe 'rs-haproxy::frontend' do
     let(:chef_run) do
       ChefSpec::SoloRunner.new do |node|
         node.set['cloud']['provider'] = 'vagrant'
+        node.set['rightscale']['monitoring_collector_http'] = 'tss4.rightscale.com'
       end.converge(described_recipe)
     end
 
