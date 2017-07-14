@@ -205,7 +205,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
   end
 
   # Set up backend section for each application server pool served by HAProxy
-  node.default['haproxy']['config']['backend'][pool_name] = {}
+  node.default['haproxy']['config']['backend'][pool_name] ||= {}
   node.default['haproxy']['config']['backend'][pool_name]['server'] ||= []
   node.default['haproxy']['config']['backend'][pool_name]['server'] = backend_servers_list
 end
