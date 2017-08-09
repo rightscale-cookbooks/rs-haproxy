@@ -3,6 +3,14 @@ rs-haproxy Cookbook CHANGELOG
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
 
+v2.1.4
+------
+- updating foodcritic items
+
+v2.1.3
+------
+- allow ['haproxy']['config']['backend'][pool_name] to be set in wrapper
+
 v2.1.2
 ------
 - as we compile with multiproc enabled removing haproxy tuning for affinity
