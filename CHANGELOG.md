@@ -2,6 +2,9 @@ rs-haproxy Cookbook CHANGELOG
 =======================
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
+v2.1.5
+------
+- adding in compression, and compression algo
 
 v2.1.4
 ------
