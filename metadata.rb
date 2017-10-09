@@ -109,8 +109,8 @@ attribute 'rs-haproxy/session_stickiness',
     ' use sticky sessions; the load balancer will establish a connection' \
     ' with the next available server. Example: true',
   required: 'optional',
-  choice: (true false),
-  default: 'false',
+  choice: %w(true false),
+  default: false,
   type: 'boolean',
   recipes: [
     'rs-haproxy::default',

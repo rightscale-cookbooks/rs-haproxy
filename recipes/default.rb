@@ -127,7 +127,7 @@ if node['haproxy']['httpchk']
   node.default['haproxy']['config']['defaults']['http-check'] = 'disable-on-404'
 end
 
-if node['rs-haproxy']['session_stickiness']
+if node['rs-haproxy']['session_stickiness'] == true
   node.default['haproxy']['config']['defaults']['cookie'] = 'SERVERID insert indirect nocache'
 end
 
