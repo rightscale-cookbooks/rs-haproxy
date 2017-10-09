@@ -5,7 +5,7 @@ maintainer_email 'cookbooks@rightscale.com'
 license          'Apache-2.0'
 description      'Application cookbook to set up HAProxy on a RightScale environment'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version          '2.1.5'
+version          '2.1.6'
 issues_url       'https://github.com/rightscale-cookbooks/rs-haproxy/issues'
 source_url       'https://github.com/rightscale-cookbooks/rs-haproxy'
 chef_version '>= 12.0' if respond_to?(:chef_version)
@@ -105,12 +105,12 @@ attribute 'rs-haproxy/session_stickiness',
   display_name: 'Use Session Stickiness',
   description:     "Determines session stickiness. Set to 'True' to use session stickiness," \
     ' where the load balancer will reconnect a session to the last server it' \
-    " was connected to (via a cookie). Set to 'False' if you do not want to" \
+    " was connected to (via a cookie). Set to 'nil' if you do not want to" \
     ' use sticky sessions; the load balancer will establish a connection' \
     ' with the next available server. Example: true',
   required: 'optional',
-  choice: %w(true false),
-  default: 'true',
+  choice: %w(true nil),
+  default: 'nil',
   recipes: [
     'rs-haproxy::default',
     'rs-haproxy::frontend',

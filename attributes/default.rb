@@ -40,7 +40,7 @@ default['rs-haproxy']['stats']['user'] = nil
 default['rs-haproxy']['stats']['password'] = nil
 
 # Enable/Disable sticky sessions using cookie
-default['rs-haproxy']['session_stickiness'] = true
+default['rs-haproxy']['session_stickiness'] = nil
 
 # Enable/Disable periodically running rs-haproxy::frontend
 default['rs-haproxy']['schedule']['enable'] = true
