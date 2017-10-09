@@ -105,12 +105,13 @@ attribute 'rs-haproxy/session_stickiness',
   display_name: 'Use Session Stickiness',
   description:     "Determines session stickiness. Set to 'True' to use session stickiness," \
     ' where the load balancer will reconnect a session to the last server it' \
-    " was connected to (via a cookie). Set to 'nil' if you do not want to" \
+    " was connected to (via a cookie). Set to 'false' if you do not want to" \
     ' use sticky sessions; the load balancer will establish a connection' \
     ' with the next available server. Example: true',
   required: 'optional',
-  choice: %w(true nil),
-  default: 'nil',
+  choice: (true false),
+  default: 'false',
+  type: 'boolean',
   recipes: [
     'rs-haproxy::default',
     'rs-haproxy::frontend',
