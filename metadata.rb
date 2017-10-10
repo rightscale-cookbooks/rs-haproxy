@@ -111,7 +111,6 @@ attribute 'rs-haproxy/session_stickiness',
   required: 'optional',
   choice: %w(true false),
   default: 'true',
-  type: 'string',
   recipes: [
     'rs-haproxy::default',
     'rs-haproxy::frontend',
