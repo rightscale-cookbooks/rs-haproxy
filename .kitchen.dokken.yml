@@ -102,6 +102,8 @@ suites:
       compile_time_update: true
     rightscale:
       instance_uuid: '01-ABCDEFGH0123'
+      monitoring_collector_http: 'localhost'
+      RS_RLL_PORT: '12345'
     cloud:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']
@@ -133,7 +135,9 @@ suites:
       provider: 'vagrant'
       public_ips: ['192.0.2.2']
     rightscale:
-      monitoring_collector_http: 'tss-4.rightscale.com'
+      instance_uuid: '01-ABCDEFGH0123'
+      monitoring_collector_http: 'localhost'
+      RS_RLL_PORT: '12345'
     rs-haproxy:
       pools: ['test_example', 'appserver', 'example']
       ssl_incoming_port: 445

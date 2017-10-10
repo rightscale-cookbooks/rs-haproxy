@@ -86,3 +86,6 @@ default['haproxy']['source']['use_openssl'] = true
 default['haproxy']['source']['use_zlib'] = true
 default['build_essential']['compiletime'] = true
 default['build-essential']['compile_time'] = true
+
+default['rs-haproxy']['enable_compression'] = true
+default['rs-haproxy']['compression_types'] = 'text/html text/plain text/css application/javascript application/json'
