@@ -92,7 +92,7 @@ node.default['haproxy']['config']['backend'] ||= {}
 node['rs-haproxy']['pools'].each do |pool_name|
   backend_servers_list = []
 
-  if node['rs-haproxy']['session_stickiness'] == true
+  if node['rs-haproxy']['session_stickiness']
     # When cookie is enabled the haproxy.cnf should have this dummy server
     # entry for the haproxy to start without any errors
     backend_servers_list << { 'disabled-server 127.0.0.1:1' => { 'disabled' => true } }
@@ -130,7 +130,7 @@ node['rs-haproxy']['pools'].each do |pool_name|
       end
 
       # Configure cookie for backend server
-      if node['rs-haproxy']['session_stickiness'] == true
+      if node['rs-haproxy']['session_stickiness']
         backend_server_hash['cookie'] = backend_server.split(' ').first
       end
 
