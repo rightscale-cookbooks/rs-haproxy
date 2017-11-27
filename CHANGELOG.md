@@ -2,6 +2,10 @@ rs-haproxy Cookbook CHANGELOG
 =======================
 
 This file is used to list changes made in each version of the rs-haproxy cookbook.
+v2.1.6
+------
+- fixing sticky session from false input to nil
+
 v2.1.5
 ------
 - adding in compression, and compression algo
